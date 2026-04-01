@@ -276,7 +276,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.8.1</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.9</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -316,12 +316,14 @@
   </div>
 
   <div id="panel-geopolitics" class="panel"></div>
+  <div id="panel-conflicts"   class="panel"></div>
   <div id="panel-finance"     class="panel"></div>
+  <div id="panel-indiaeco"    class="panel"></div>
   <div id="panel-ai"          class="panel"></div>
   <div id="panel-tech"        class="panel"></div>
   <div id="panel-politics"    class="panel"></div>
   <div id="panel-disasters"   class="panel"></div>
-  <div id="panel-science"     class="panel"></div>
+  <div id="panel-health"      class="panel"></div>
   <div id="panel-energy"      class="panel"></div>
   <div id="panel-tamilnadu"   class="panel"></div>
   <div id="panel-wildcard"    class="panel"></div>
@@ -383,7 +385,7 @@
     Powered by <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
     Direct browser · CORS native &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
-    MERIDIAN v1.8.1
+    MERIDIAN v1.9
   </div>
 </main>
 
@@ -478,52 +480,119 @@ function markCurrentRead(){
 /* ════════════════════════════════════════
    CATEGORIES
 ════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   SOURCE DOMAIN WHITELIST
+   Tier 1: Global wire services
+   Tier 2: Major English-language outlets
+   Tier 3: India-specific trusted outlets
+   Articles from unlisted domains are filtered out client-side.
+════════════════════════════════════════ */
+const TRUSTED_DOMAINS = new Set([
+  // Tier 1 — Global wire services
+  'reuters.com','apnews.com','afp.com','bloomberg.com','bbc.com','bbc.co.uk',
+  'theguardian.com','nytimes.com','wsj.com','ft.com','economist.com',
+  'aljazeera.com','dw.com','france24.com','straitstimes.com',
+  // Tier 2 — Major English outlets
+  'washingtonpost.com','politico.com','axios.com','thehill.com',
+  'foreignpolicy.com','foreignaffairs.com','cfr.org','bellingcat.com',
+  'scmp.com','japantimes.co.jp','timesofindia.indiatimes.com',
+  'channel newsasia.com','channelnewsasia.com','theatlantic.com',
+  'npr.org','pbs.org','abc.net.au','cbsnews.com','nbcnews.com',
+  'cnbc.com','cnn.com','sky.com','independent.co.uk','telegraph.co.uk',
+  'thetimes.co.uk','forbes.com','businessinsider.com',
+  // Tier 2 — Finance & Markets specialists
+  'marketwatch.com','barrons.com','seekingalpha.com','investing.com',
+  'kitco.com','oilprice.com','energymonitor.ai','spglobal.com',
+  // Tier 3 — India trusted outlets
+  'thehindu.com','indianexpress.com','hindustantimes.com',
+  'economictimes.indiatimes.com','livemint.com','business-standard.com',
+  'thewire.in','scroll.in','ndtv.com','moneycontrol.com',
+  'financialexpress.com','theprint.in','thequint.com',
+  'deccanherald.com','tribuneindia.com','telegraphindia.com',
+  // Tier 3 — India regional (Tamil Nadu)
+  'thehindu.com','newindianexpress.com','dinamalar.com','dtnext.in',
+  'thenewsminute.com','murasoli.net',
+  // Defence & geopolitics specialists
+  'defenseone.com','breakingdefense.com','janes.com','rferl.org',
+  'bellingcat.com','mei.edu','stimson.org','orfonline.org',
+  // Science & health
+  'nature.com','science.org','thelancet.com','who.int','isro.gov.in',
+  'nasa.gov','newscientist.com','sciencedaily.com',
+  // Tech specialists
+  'techcrunch.com','theverge.com','wired.com','arstechnica.com',
+  'mit.edu','ieee.org','venturebeat.com'
+]);
+
+function isTrusted(domain){
+  if(!domain) return false;
+  const d = domain.replace(/^www\./,'').toLowerCase();
+  if(TRUSTED_DOMAINS.has(d)) return true;
+  // Also match subdomains — e.g. m.economictimes.indiatimes.com
+  for(const td of TRUSTED_DOMAINS){
+    if(d.endsWith('.'+td) || d === td) return true;
+  }
+  return false;
+}
+
 const CATS = [
-  { id:'home',       name:'Home',              ico:'◈', hex:'#D4A843',
-    // Broad mix — kept as keywords, home needs variety not precision
+  { id:'home',       name:'Home',                  ico:'◈', hex:'#D4A843',
     q:'(India OR Modi OR economy OR war OR election OR "stock market" OR crisis OR technology) sourcelang:english',
-    ts:'24H', max:10 },   // reduced from 20 → 10 (1 hero + 6 grid is enough)
-  { id:'geopolitics',name:'Geopolitics',       ico:'◎', hex:'#E05252',
-    // ARMEDCONFLICT theme + India/region keywords for local relevance
-    q:'theme:ARMEDCONFLICT (India OR "Middle East" OR Ukraine OR Gaza OR Taiwan OR ceasefire) sourcelang:english',
+    ts:'24H', max:10 },
+
+  { id:'geopolitics',name:'Conflicts & Diplomacy', ico:'◎', hex:'#E05252',
+    // Diplomacy, sanctions, alliances — not active combat
+    q:'("India Pakistan" OR "Middle East diplomacy" OR "Russia Ukraine" OR "China Taiwan" OR "South China Sea" OR "Israel Iran" OR ceasefire OR sanctions OR NATO) sourcelang:english',
     ts:'24H', max:15 },
-  { id:'finance',    name:'Finance & Markets', ico:'◈', hex:'#3DB88A',
-    // Pure keyword — finance themes are too broad in GDELT
-    q:'("Nifty 50" OR Sensex OR "RBI policy" OR "Federal Reserve" OR "crude oil" OR "gold price" OR "FII flows" OR "Indian rupee") sourcelang:english',
+
+  { id:'conflicts',  name:'Active Conflicts',       ico:'◉', hex:'#CC2222',
+    // Live war zones, casualties, strikes — ARMEDCONFLICT + KILL themes
+    q:'(theme:ARMEDCONFLICT OR theme:KILL) (war OR attack OR strike OR missile OR killed OR bombing OR offensive OR troops OR frontline) sourcelang:english',
+    ts:'12H', max:15 },
+
+  { id:'finance',    name:'Global Markets',         ico:'◈', hex:'#3DB88A',
+    // Global finance — Fed, crude, gold, global indices
+    q:'("Federal Reserve" OR "crude oil" OR "gold price" OR "US markets" OR "S&P 500" OR "oil price" OR "dollar index" OR "bond yields") sourcelang:english',
     ts:'24H', max:15 },
-  { id:'ai',         name:'AI & ML',           ico:'◉', hex:'#9B6FE8',
-    // No good GDELT theme for AI — keyword only
+
+  { id:'indiaeco',   name:'India Economy',          ico:'◆', hex:'#26A67A',
+    // India-specific economic signals — your FIRE-relevant tab
+    q:'("Nifty 50" OR Sensex OR "RBI policy" OR "FII flows" OR "Indian rupee" OR "inflation India" OR "India GDP" OR "Indian economy") sourcelang:english sourcecountry:india',
+    ts:'24H', max:15 },
+
+  { id:'ai',         name:'AI & ML',                ico:'◉', hex:'#9B6FE8',
     q:'(OpenAI OR Anthropic OR "large language model" OR "AI regulation" OR DeepSeek OR "AI Act" OR "artificial intelligence" OR "India AI") sourcelang:english',
     ts:'24H', max:15 },
-  { id:'tech',       name:'Technology',        ico:'◫', hex:'#4B8EF0',
-    // WB_133 = ICT theme in GDELT, narrowed with tech keywords
+
+  { id:'tech',       name:'Technology',             ico:'◫', hex:'#4B8EF0',
     q:'theme:WB_133_INFORMATION_AND_COMMUNICATION_TECHNOLOGIES (semiconductors OR cybersecurity OR Nvidia OR "data breach" OR "quantum computing" OR "India startup") sourcelang:english',
     ts:'24H', max:15 },
-  { id:'politics',   name:'Politics (India)',  ico:'◆', hex:'#F0833A',
-    // ELECTION + GENERAL_GOVERNMENT themes, India only
+
+  { id:'politics',   name:'Politics (India)',        ico:'◆', hex:'#F0833A',
     q:'(theme:ELECTION OR theme:GENERAL_GOVERNMENT) ("Lok Sabha" OR BJP OR "Indian election" OR TVK OR DMK OR "Rahul Gandhi" OR "Modi policy") sourcelang:english sourcecountry:india',
     ts:'24H', max:15 },
-  { id:'disasters',  name:'Natural Disasters', ico:'◬', hex:'#E84C74',
-    // NATURAL_DISASTER is a precise GDELT theme — much better than keyword chain
+
+  { id:'disasters',  name:'Natural Disasters',       ico:'◬', hex:'#E84C74',
     q:'theme:NATURAL_DISASTER sourcelang:english',
     ts:'24H', max:15 },
-  { id:'science',    name:'Science',           ico:'◌', hex:'#2BBFCC',
-    // SCIENCE theme + specific India space keywords
-    q:'theme:SCIENCE (ISRO OR NASA OR SpaceX OR Chandrayaan OR Gaganyaan OR "climate change" OR "medical breakthrough" OR "space mission") sourcelang:english',
+
+  { id:'health',     name:'Health & Outbreaks',      ico:'◌', hex:'#2BBFCC',
+    // MEDICAL + TAX_DISEASE themes — higher daily volume than Science was
+    q:'(theme:MEDICAL OR theme:TAX_DISEASE) (outbreak OR epidemic OR pandemic OR "public health" OR virus OR disease OR WHO OR "health emergency") sourcelang:english',
     ts:'24H', max:15 },
-  { id:'energy',     name:'Energy & Commodities', ico:'◑', hex:'#D4B843',
-    // WB_507 = Energy and Extractives theme
+
+  { id:'energy',     name:'Energy & Commodities',    ico:'◑', hex:'#D4B843',
     q:'theme:WB_507_ENERGY_AND_EXTRACTIVES (OPEC OR "crude oil" OR "gold price" OR lithium OR "solar energy India" OR "renewable energy" OR "coal India") sourcelang:english',
     ts:'24H', max:15 },
-  { id:'tamilnadu',  name:'Tamil Nadu',        ico:'◀', hex:'#CC3A3A',
-    // No theme for TN — keywords + India country filter
+
+  { id:'tamilnadu',  name:'Tamil Nadu',              ico:'◀', hex:'#CC3A3A',
     q:'("Tamil Nadu" OR Chennai OR Coimbatore OR AIADMK OR "DMK government" OR "TVK party" OR "Chennai metro" OR "Tamil Nadu floods") sourcelang:english sourcecountry:india',
     ts:'48H', max:15 },
-  { id:'wildcard',   name:'Signal & Shift',    ico:'◈', hex:'#D44FA8',
-    // EPU_ECONOMY = Economic Policy Uncertainty theme + MANMADE_DISASTER for systemic risk
+
+  { id:'wildcard',   name:'Signal & Shift',          ico:'◈', hex:'#D44FA8',
     q:'(theme:EPU_ECONOMY OR theme:MANMADE_DISASTER_IMPLIED) ("market crash" OR "debt default" OR "banking crisis" OR stagflation OR recession OR "black swan" OR "financial contagion") sourcelang:english',
     ts:'24H', max:15 },
-  { id:'search',     name:'Search',            ico:'⌕', hex:'#7A8FA6', q:null }
+
+  { id:'search',     name:'Search',                  ico:'⌕', hex:'#7A8FA6', q:null }
 ];
 
 /* ════════════════════════════════════════
@@ -663,9 +732,14 @@ async function _gdeltFetch(q,ts,max,sort){
     if(!text.trim().startsWith('{'))throw new Error('GDELT returned non-JSON response');
     const d=JSON.parse(text);
     const raw=Array.isArray(d.articles)?d.articles:[];
-    const arts=raw.filter(a=>!a.language||a.language.toLowerCase()==='english');
-    const filtered=raw.length-arts.length;
-    if(filtered>0)DBG.info('FILTER',`Removed ${filtered} non-English of ${raw.length}`);
+    // Filter 1: English language only
+    const englishOnly=raw.filter(a=>!a.language||a.language.toLowerCase()==='english');
+    // Filter 2: Trusted domain whitelist (Tier 1/2/3 sources only)
+    const arts=englishOnly.filter(a=>isTrusted(a.domain));
+    const filteredLang=raw.length-englishOnly.length;
+    const filteredDomain=englishOnly.length-arts.length;
+    if(filteredLang>0)DBG.info('FILTER',`Removed ${filteredLang} non-English of ${raw.length}`);
+    if(filteredDomain>0)DBG.info('FILTER',`Removed ${filteredDomain} untrusted domains · ${arts.length} trusted remain`);
     const elapsed=((Date.now()-t0)/1000).toFixed(1);
     DBG.ok('GDELT',`✓ ${arts.length} English arts · ${elapsed}s`);
     DBG.stats.art+=arts.length;DBG._st();
@@ -675,7 +749,9 @@ async function _gdeltFetch(q,ts,max,sort){
     DBG.err('GDELT',e.message);DBG.stats.err++;DBG._st();
     const stale=cacheStale(q,ts,max);
     if(stale){
-      const staleArts=(stale.data.articles||[]).filter(a=>!a.language||a.language.toLowerCase()==='english');
+      const staleArts=(stale.data.articles||[])
+        .filter(a=>!a.language||a.language.toLowerCase()==='english')
+        .filter(a=>isTrusted(a.domain));
       DBG.warn('CACHE',`STALE fallback · ${Math.floor(stale.ageMs/60000)}m · ${staleArts.length} arts`);
       return{arts:staleArts,status:'STALE',ageMs:stale.ageMs};
     }
@@ -1099,7 +1175,7 @@ async function doSearch(){
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
   const keys=['1','2','3','4','5','6','7','8','9','0'];
-  const tabIds=['home','geopolitics','finance','ai','tech','politics','disasters','science','energy','tamilnadu'];
+  const tabIds=['home','geopolitics','conflicts','finance','indiaeco','ai','tech','politics','disasters','health'];
   const idx=keys.indexOf(e.key);
   if(idx>=0&&tabIds[idx]){switchTab(tabIds[idx]);return;}
   if(e.key==='r'||e.key==='R')manualRefresh();
@@ -1130,7 +1206,7 @@ function toggleAuto(){
    INIT
 ════════════════════════════════════════ */
 buildNav();
-DBG.info('INIT','MERIDIAN v1.8.1 · Request queue · theme: operators · home max=10');
+DBG.info('INIT','MERIDIAN v1.9 · Tab restructure · Source whitelist · Active Conflicts');
 DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = close modal');
 loadHome();
 </script>
