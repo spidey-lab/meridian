@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,257 +7,300 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --r:10px;--r-sm:6px;--t:0.2s ease;
-      --tone-neg:#E24B4A;--tone-pos:#1D9E75;--tone-neu:#888780;
-      --tone-neg-bg:#FCEBEB;--tone-pos-bg:#EAF3DE;
-      --tone-neg-txt:#A32D2D;--tone-pos-txt:#3B6D11;
-    }
-    @media(prefers-color-scheme:dark){:root{
-      --bg:#05070D;--bg-surf:#090C16;--bg-card:#0D1020;--bg-card-h:#111425;
-      --bg-modal:#0A0D1A;--border:#1A2038;--border-sub:#131828;
-      --text:#DCE2EF;--text-sub:#5A6A8A;--text-muted:#2A3450;
-      --shadow:0 4px 24px rgba(0,0,0,.5);--shadow-md:0 8px 48px rgba(0,0,0,.65);
-      --nav-bg:#07090F;--sk-base:#111625;--sk-shine:#182038;
-      --tone-neg-bg:rgba(226,75,74,.1);--tone-pos-bg:rgba(29,158,117,.1);
+    /* ── THEME TOKENS ── */
+    [data-theme="dark"] {
+      --bg:#05070D;--bg-surf:#090C16;--bg-card:#0D1020;--bg-card-h:#111628;
+      --bg-modal:#0A0D1A;--border:#1E2540;--border-sub:#141828;
+      --text:#DCE2EF;--text-sub:#5A6A8A;--text-muted:#283048;
+      --shadow:0 4px 24px rgba(0,0,0,.55);--shadow-md:0 8px 48px rgba(0,0,0,.7);
+      --nav-bg:#07090F;--sk-base:#111828;--sk-shine:#1A2438;
+      --tone-neg-bg:rgba(226,75,74,.12);--tone-pos-bg:rgba(29,158,117,.12);
       --tone-neg-txt:#F09595;--tone-pos-txt:#5DCAA5;
-    }}
-    @media(prefers-color-scheme:light){:root{
-      --bg:#EEE9DF;--bg-surf:#F5F1E8;--bg-card:#FDFBF7;--bg-card-h:#F9F6EF;
+      --tone-neu-bg:rgba(90,106,138,.1);--tone-neu-txt:#5A6A8A;
+    }
+    [data-theme="light"] {
+      --bg:#F0EBE1;--bg-surf:#F7F3EA;--bg-card:#FDFBF7;--bg-card-h:#F9F5EE;
       --bg-modal:#FDFBF7;--border:#DDD8CE;--border-sub:#E8E4DA;
       --text:#1A1E2C;--text-sub:#6A7590;--text-muted:#ADB5C8;
-      --shadow:0 2px 16px rgba(0,0,0,.06);--shadow-md:0 8px 40px rgba(0,0,0,.12);
-      --nav-bg:#F5F1E8;--sk-base:#E4DFD5;--sk-shine:#EDE8DF;
-    }}
+      --shadow:0 2px 16px rgba(0,0,0,.06);--shadow-md:0 8px 40px rgba(0,0,0,.13);
+      --nav-bg:#F0EBE1;--sk-base:#E4DFD5;--sk-shine:#EDE8DF;
+      --tone-neg-bg:#FCEBEB;--tone-pos-bg:#EAF3DE;
+      --tone-neg-txt:#A32D2D;--tone-pos-txt:#3B6D11;
+      --tone-neu-bg:#F1EFE8;--tone-neu-txt:#5F5E5A;
+    }
+
+    :root {
+      --r:10px;--r-sm:6px;--t:0.18s ease;
+      --gold:#D4A843;
+      --neg:#E24B4A;--pos:#1D9E75;--neu:#888780;
+    }
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;transition:background .2s,color .2s}
     a{color:inherit;text-decoration:none}
     button{cursor:pointer;font-family:'DM Sans',sans-serif}
 
     /* ── HEADER ── */
-    .hdr{position:sticky;top:0;z-index:200;background:var(--nav-bg);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between}
-    .hdr-left{display:flex;align-items:baseline;gap:14px}
-    .logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;letter-spacing:5px;text-transform:uppercase}
-    .logo em{font-style:normal;color:#D4A843}
-    .tagline{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:1px}
-    .hdr-right{display:flex;align-items:center;gap:12px}
-    #lastUpdated{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
-    .btn-refresh{background:none;border:1px solid var(--border);color:var(--text-sub);padding:5px 13px;border-radius:var(--r-sm);font-size:12px;font-weight:500;transition:var(--t);display:flex;align-items:center;gap:5px}
-    .btn-refresh:hover{border-color:#D4A843;color:#D4A843}
+    .hdr{position:sticky;top:0;z-index:200;background:var(--nav-bg);border-bottom:1px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .hdr-left{display:flex;align-items:baseline;gap:12px;min-width:0}
+    .logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;letter-spacing:5px;text-transform:uppercase;flex-shrink:0}
+    .logo em{font-style:normal;color:var(--gold)}
+    .tagline{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:1px;white-space:nowrap}
+    .hdr-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    #lastUpdated{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);white-space:nowrap}
+
+    .btn-hdr{background:none;border:1px solid var(--border);color:var(--text-sub);padding:4px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:500;transition:var(--t);display:flex;align-items:center;gap:5px;white-space:nowrap}
+    .btn-hdr:hover{border-color:var(--gold);color:var(--gold)}
     .spin-icon{display:inline-block;transition:transform .6s ease}
-    .btn-refresh.spinning .spin-icon{transform:rotate(360deg)}
-    .auto-row{display:flex;align-items:center;gap:6px}
+    .btn-hdr.spinning .spin-icon{transform:rotate(360deg)}
+
+    /* Theme toggle */
+    .theme-btn{background:none;border:1px solid var(--border);width:30px;height:28px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:14px;transition:var(--t);cursor:pointer;flex-shrink:0}
+    .theme-btn:hover{border-color:var(--gold)}
+
+    /* Auto-refresh toggle */
+    .auto-row{display:flex;align-items:center;gap:5px}
     .toggle-wrap{position:relative}
     .toggle-wrap input{position:absolute;opacity:0;width:0;height:0}
-    .pill{display:block;width:34px;height:18px;background:var(--border);border-radius:9px;position:relative;cursor:pointer;transition:background var(--t)}
-    .pill::after{content:'';position:absolute;width:12px;height:12px;background:var(--bg-surf);border-radius:50%;top:3px;left:3px;transition:transform var(--t)}
-    .toggle-wrap input:checked~.pill{background:#D4A843}
-    .toggle-wrap input:checked~.pill::after{transform:translateX(16px)}
+    .pill{display:block;width:30px;height:16px;background:var(--border);border-radius:8px;position:relative;cursor:pointer;transition:background var(--t)}
+    .pill::after{content:'';position:absolute;width:10px;height:10px;background:var(--bg-surf);border-radius:50%;top:3px;left:3px;transition:transform var(--t)}
+    .toggle-wrap input:checked~.pill{background:var(--gold)}
+    .toggle-wrap input:checked~.pill::after{transform:translateX(14px)}
     .toggle-txt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);cursor:pointer}
 
     /* ── NAV ── */
-    .nav{position:sticky;top:56px;z-index:190;background:var(--nav-bg);border-bottom:1px solid var(--border);padding:0 28px;display:flex;overflow-x:auto;scrollbar-width:none;gap:2px}
+    .nav{position:sticky;top:54px;z-index:190;background:var(--nav-bg);border-bottom:1px solid var(--border);padding:0 28px;display:flex;overflow-x:auto;scrollbar-width:none;gap:0}
     .nav::-webkit-scrollbar{display:none}
-    .tab{display:flex;align-items:center;gap:5px;padding:0 14px;height:42px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-sub);font-size:12px;font-weight:500;white-space:nowrap;transition:color var(--t),border-color var(--t)}
+    .tab{display:flex;align-items:center;gap:5px;padding:0 13px;height:40px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-sub);font-size:12px;font-weight:500;white-space:nowrap;transition:color var(--t),border-color var(--t)}
     .tab:hover{color:var(--text)}
     .tab.active{color:var(--text);font-weight:600}
+    .tab-ico{font-size:11px;opacity:.7}
 
     /* ── MAIN ── */
-    .main{max-width:1440px;margin:0 auto;padding:28px 28px 60px}
-    .panel{display:none;animation:fadeIn .25s ease}
+    .main{max-width:1440px;margin:0 auto;padding:24px 28px 60px}
+    .panel{display:none;animation:fadeIn .22s ease}
     .panel.active{display:block}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
-    /* ── HOME ── */
-    .home-head{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px}
-    .home-title{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;line-height:1.1}
+    /* ── HOME HEAD ── */
+    .home-head{margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .home-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;line-height:1.1}
     .home-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);letter-spacing:1px;margin-top:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .home-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-sub);text-align:right}
+    .home-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-sub)}
 
     /* ── CATEGORY HEAD ── */
-    .cat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
-    .cat-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .cat-pip{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-    .cat-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700}
-    .cat-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-sub);display:flex;align-items:center;gap:8px}
+    .cat-head{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    .cat-head-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+    .cat-title-row{display:flex;align-items:center;gap:10px}
+    .cat-pip{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .cat-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700}
+    .cat-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 
-    /* ── CARD GRID — 2 col desktop, 1 col mobile ── */
-    .art-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    @media(max-width:860px){.art-grid{grid-template-columns:1fr}}
+    /* ── TONE BAR ── */
+    .tone-bar-wrap{display:flex;align-items:center;gap:10px}
+    .tone-bar-track{flex:1;max-width:200px;height:3px;border-radius:2px;background:var(--border);display:flex;overflow:hidden}
+    .tb-neg{background:var(--neg);height:100%}
+    .tb-neu{background:var(--neu);height:100%;opacity:.5}
+    .tb-pos{background:var(--pos);height:100%}
+    .tone-bar-labels{display:flex;gap:10px;font-family:'JetBrains Mono',monospace;font-size:10px}
+    .tbl-neg{color:var(--neg)}
+    .tbl-neu{color:var(--text-muted)}
+    .tbl-pos{color:var(--pos)}
 
-    /* ── CARD ── */
-    .card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--tone-neu);border-radius:var(--r);padding:14px 18px;cursor:pointer;transition:background var(--t),box-shadow var(--t),transform var(--t);position:relative}
+    /* ── HERO CARD ── */
+    .hero-card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--neu);border-radius:var(--r);padding:20px 22px;margin-bottom:12px;cursor:pointer;transition:background var(--t),box-shadow var(--t)}
+    .hero-card:hover{background:var(--bg-card-h);box-shadow:var(--shadow)}
+    .hero-card.neg{border-left-color:var(--neg)}
+    .hero-card.pos{border-left-color:var(--pos)}
+    .hero-card.neu{border-left-color:var(--neu)}
+    .hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+    .hero-top-left{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+    .hero-title{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;line-height:1.35;color:var(--text);margin-bottom:9px}
+    .hero-desc{font-size:13px;color:var(--text-sub);line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .badge-top{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:3px;background:rgba(212,168,67,.12);color:#D4A843;border:0.5px solid rgba(212,168,67,.3);font-weight:500;letter-spacing:.5px}
+
+    /* ── CARD GRID ── */
+    .art-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+
+    /* ── REGULAR CARD ── */
+    .card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--neu);border-radius:var(--r);padding:13px 15px;cursor:pointer;transition:background var(--t),box-shadow var(--t),transform var(--t)}
     .card:hover{background:var(--bg-card-h);box-shadow:var(--shadow);transform:translateY(-1px)}
-    .card.neg{border-left-color:var(--tone-neg)}
-    .card.pos{border-left-color:var(--tone-pos)}
-    .card.neu{border-left-color:var(--tone-neu)}
-
-    .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;gap:8px}
-    .card-top-left{display:flex;align-items:center;gap:7px;flex-wrap:wrap;flex:1;min-width:0}
-    .c-flag{font-size:13px;line-height:1;flex-shrink:0}
-    .c-src{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
-    .c-tone-badge{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;font-weight:500;flex-shrink:0}
-    .c-tone-neg{background:var(--tone-neg-bg);color:var(--tone-neg-txt)}
-    .c-tone-pos{background:var(--tone-pos-bg);color:var(--tone-pos-txt)}
-    .c-tone-neu{background:var(--bg-surf);color:var(--text-muted);border:0.5px solid var(--border)}
-    .c-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);flex-shrink:0;white-space:nowrap}
-
-    .c-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--text)}
-    .c-desc{font-size:12px;color:var(--text-sub);line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-    .c-desc.loading{font-style:italic;color:var(--text-muted)}
-    .c-desc.na{font-style:italic;color:var(--text-muted)}
+    .card.neg{border-left-color:var(--neg)}
+    .card.pos{border-left-color:var(--pos)}
+    .card.neu{border-left-color:var(--neu)}
+    .card.read{opacity:.45}
+    .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+    .card-top-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
+    .c-flag{font-size:12px;line-height:1;flex-shrink:0}
+    .c-src{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px}
+    .c-tone{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;font-weight:500;flex-shrink:0}
+    .c-tone.neg{background:var(--tone-neg-bg);color:var(--tone-neg-txt)}
+    .c-tone.pos{background:var(--tone-pos-bg);color:var(--tone-pos-txt)}
+    .c-tone.neu{background:var(--tone-neu-bg);color:var(--tone-neu-txt)}
+    .c-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);flex-shrink:0}
+    .c-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 
     /* ── CACHE BADGE ── */
-    .cache-badge{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:3px;font-weight:500}
-    .cache-live{background:rgba(29,158,117,.1);color:#1D9E75;border:0.5px solid rgba(29,158,117,.25)}
-    .cache-hit{background:rgba(55,138,221,.1);color:#378ADD;border:0.5px solid rgba(55,138,221,.25)}
-    .cache-stale{background:rgba(186,117,23,.1);color:#BA7517;border:0.5px solid rgba(186,117,23,.25)}
-    .cache-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-    .cache-live .cache-dot{background:#1D9E75;animation:pulse 2s infinite}
-    .cache-hit .cache-dot{background:#378ADD}
-    .cache-stale .cache-dot{background:#BA7517}
+    .cache-badge{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:3px;font-weight:500}
+    .cb-live{background:rgba(29,158,117,.1);color:var(--pos);border:0.5px solid rgba(29,158,117,.25)}
+    .cb-hit{background:rgba(55,138,221,.1);color:#378ADD;border:0.5px solid rgba(55,138,221,.25)}
+    .cb-stale{background:rgba(186,117,23,.1);color:#BA7517;border:0.5px solid rgba(186,117,23,.25)}
+    .cb-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .cb-live .cb-dot{background:var(--pos);animation:pulse 2s infinite}
+    .cb-hit .cb-dot{background:#378ADD}
+    .cb-stale .cb-dot{background:#BA7517}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
     /* ── SKELETON ── */
     .sk{background:var(--sk-base);border-radius:4px;position:relative;overflow:hidden}
     .sk::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 20%,var(--sk-shine) 50%,transparent 80%);animation:shim 1.6s infinite}
     @keyframes shim{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-    .sk-card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--border);border-radius:var(--r);padding:16px}
+    .sk-card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--border);border-radius:var(--r);padding:15px}
 
     /* ── PROGRESS ── */
-    .progress-wrap{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:28px 20px 16px;gap:12px}
-    .progress-stages{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:center}
-    .p-stage{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border-radius:20px;border:0.5px solid var(--border);color:var(--text-muted);transition:all .3s ease}
-    .p-stage.active{color:#D4A843;border-color:#D4A843;background:rgba(212,168,67,.08)}
-    .p-stage.done{opacity:.4}
+    .progress-wrap{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;padding:24px 20px;gap:10px}
+    .progress-stages{display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:center}
+    .p-stage{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border-radius:20px;border:0.5px solid var(--border);color:var(--text-muted);transition:all .3s}
+    .p-stage.active{color:var(--gold);border-color:var(--gold);background:rgba(212,168,67,.07)}
+    .p-stage.done{opacity:.35}
     .p-arr{color:var(--text-muted);font-size:9px}
     .p-msg{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-sub)}
     .p-dots::after{content:'';animation:dots 1.5s infinite}
     @keyframes dots{0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'}}
 
     /* ── EMPTY / ERROR ── */
-    .empty{grid-column:1/-1;padding:52px 20px;text-align:center;color:var(--text-sub)}
-    .empty-ico{font-size:28px;margin-bottom:10px;opacity:.4}
+    .empty{grid-column:1/-1;padding:48px 20px;text-align:center;color:var(--text-sub)}
+    .empty-ico{font-size:26px;margin-bottom:10px;opacity:.35}
     .empty-txt{font-size:13px;margin-bottom:5px}
     .empty-hint{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
-    .err-box{grid-column:1/-1;background:rgba(226,75,74,.05);border:0.5px solid rgba(226,75,74,.2);border-radius:var(--r);padding:18px 22px}
-    .err-title{font-family:'JetBrains Mono',monospace;font-size:11px;color:#E24B4A;margin-bottom:6px;font-weight:500}
-    .err-msg{font-size:13px;color:var(--text-sub);margin-bottom:6px}
+    .err-box{grid-column:1/-1;background:rgba(226,75,74,.05);border:0.5px solid rgba(226,75,74,.2);border-radius:var(--r);padding:16px 20px}
+    .err-title{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--neg);margin-bottom:5px;font-weight:500}
+    .err-msg{font-size:13px;color:var(--text-sub);margin-bottom:5px}
     .err-hint{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.9}
-    .btn-retry{background:none;border:0.5px solid var(--border);color:var(--text);padding:7px 18px;border-radius:var(--r-sm);font-size:12px;transition:var(--t);margin-top:10px}
+    .btn-retry{background:none;border:0.5px solid var(--border);color:var(--text);padding:6px 16px;border-radius:var(--r-sm);font-size:12px;transition:var(--t);margin-top:10px}
     .btn-retry:hover{border-color:var(--text-sub)}
 
     /* ── MODAL ── */
-    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:900;align-items:center;justify-content:center;padding:20px}
-    .overlay.open{display:flex;animation:fadeIn .18s ease}
-    .modal{background:var(--bg-modal);border:0.5px solid var(--border);border-radius:14px;max-width:680px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-md);scrollbar-width:thin}
-    .m-head{padding:20px 22px 14px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg-modal);z-index:10}
-    .m-close{position:absolute;top:14px;right:14px;width:26px;height:26px;border-radius:50%;border:0.5px solid var(--border);background:none;color:var(--text-sub);font-size:13px;display:flex;align-items:center;justify-content:center;transition:var(--t)}
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.68);backdrop-filter:blur(4px);z-index:900;align-items:center;justify-content:center;padding:20px}
+    .overlay.open{display:flex;animation:fadeIn .16s ease}
+    .modal{background:var(--bg-modal);border:0.5px solid var(--border);border-radius:14px;max-width:660px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-md);scrollbar-width:thin}
+    .m-head{padding:18px 22px 14px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:var(--bg-modal);z-index:10}
+    .m-close{position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;border:0.5px solid var(--border);background:none;color:var(--text-sub);font-size:12px;display:flex;align-items:center;justify-content:center;transition:var(--t)}
     .m-close:hover{border-color:var(--text-sub);color:var(--text)}
-    .m-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border-radius:3px;margin-bottom:9px;color:#fff;font-weight:500}
-    .m-title{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;line-height:1.35;padding-right:32px;color:var(--text)}
+    .m-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 7px;border-radius:3px;margin-bottom:8px;color:#fff;font-weight:500}
+    .m-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;line-height:1.35;padding-right:30px;color:var(--text)}
     .m-meta{padding:10px 22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:0.5px solid var(--border-sub)}
     .m-mi{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
-    .m-body{padding:18px 22px 4px}
-    .m-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:9px}
-    .m-desc{font-size:14px;line-height:1.8;color:var(--text);margin-bottom:16px}
+    .m-body{padding:16px 22px 4px}
+    .m-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+    .m-desc{font-size:14px;line-height:1.8;color:var(--text);margin-bottom:14px}
     .m-desc.loading{color:var(--text-muted);font-style:italic}
-    .m-tone-box{padding:12px 14px;background:var(--bg-surf);border:0.5px solid var(--border-sub);border-radius:var(--r-sm)}
+    .m-tone-box{padding:11px 14px;background:var(--bg-surf);border:0.5px solid var(--border-sub);border-radius:var(--r-sm)}
     .m-tone-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
     .m-tone-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
     .m-tone-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500}
-    .m-tone-bar{height:3px;border-radius:2px;background:var(--border);margin-top:7px;overflow:hidden}
+    .m-tone-bar{height:3px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden}
     .m-tone-fill{height:100%;border-radius:2px;transition:width .4s ease}
-    .m-foot{padding:14px 22px 20px;border-top:0.5px solid var(--border-sub);margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .btn-open{display:inline-flex;align-items:center;gap:6px;background:var(--text);color:var(--bg);padding:8px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:600;transition:opacity var(--t)}
+    .m-foot{padding:12px 22px 18px;border-top:0.5px solid var(--border-sub);margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .btn-open{display:inline-flex;align-items:center;gap:5px;background:var(--text);color:var(--bg);padding:8px 16px;border-radius:var(--r-sm);font-size:13px;font-weight:600;transition:opacity var(--t)}
     .btn-open:hover{opacity:.82}
-    .btn-mob{display:inline-flex;align-items:center;gap:5px;background:var(--bg-surf);color:var(--text);border:0.5px solid var(--border);padding:8px 14px;border-radius:var(--r-sm);font-size:12px;transition:opacity var(--t)}
+    .btn-mob{display:inline-flex;align-items:center;gap:5px;background:var(--bg-surf);color:var(--text);border:0.5px solid var(--border);padding:8px 13px;border-radius:var(--r-sm);font-size:12px;transition:opacity var(--t)}
     .btn-mob:hover{opacity:.82}
+    .btn-mark{display:inline-flex;align-items:center;gap:5px;background:none;color:var(--text-sub);border:0.5px solid var(--border);padding:8px 13px;border-radius:var(--r-sm);font-size:12px;transition:var(--t)}
+    .btn-mark:hover{border-color:var(--text-sub);color:var(--text)}
 
     /* ── SEARCH ── */
-    .search-wrap{max-width:720px;margin:0 auto}
-    .search-ttl{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;margin-bottom:5px}
-    .search-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);margin-bottom:20px}
-    .search-row{display:flex;gap:10px;margin-bottom:12px}
-    .s-input{flex:1;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color var(--t)}
+    .search-wrap{max-width:760px;margin:0 auto}
+    .search-ttl{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;margin-bottom:4px}
+    .search-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);margin-bottom:18px}
+    .search-bar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+    .s-input{flex:1;min-width:200px;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color var(--t)}
     .s-input:focus{border-color:#7A8FA6}
     .s-input::placeholder{color:var(--text-muted)}
-    .btn-srch{background:var(--text);color:var(--bg);border:none;border-radius:var(--r);padding:11px 20px;font-size:13px;font-weight:600;transition:opacity var(--t)}
+    .btn-srch{background:var(--text);color:var(--bg);border:none;border-radius:var(--r);padding:10px 20px;font-size:13px;font-weight:600;transition:opacity var(--t);white-space:nowrap}
     .btn-srch:hover{opacity:.85}
-    .filters{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px}
-    .f-grp{display:flex;align-items:center;gap:7px}
-    .f-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
-    .f-sel{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r-sm);padding:5px 10px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;outline:none}
+    .search-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+    .f-sel{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r-sm);padding:6px 10px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color var(--t)}
+    .f-sel:focus{border-color:#7A8FA6}
+    .f-lbl-row{display:flex;align-items:center;gap:6px}
+    .f-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
 
     /* ── ATTR ── */
-    .attr{margin-top:48px;padding-top:18px;border-top:0.5px solid var(--border-sub);text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
+    .attr{margin-top:44px;padding-top:16px;border-top:0.5px solid var(--border-sub);text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
 
     /* ── DEBUG ── */
-    #dbg-toggle{position:fixed;bottom:16px;right:16px;z-index:800;background:#0D1020;border:1px solid #1A2038;border-radius:20px;padding:5px 13px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#5A6A8A;cursor:pointer;display:flex;align-items:center;gap:6px;transition:border-color .2s,color .2s}
-    #dbg-toggle:hover{border-color:#4B8EF0;color:#4B8EF0}
-    #dbg-pip{width:7px;height:7px;border-radius:50%;background:#2A3450;transition:background .3s}
+    #dbg-btn{position:fixed;bottom:16px;right:16px;z-index:800;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);cursor:pointer;display:flex;align-items:center;gap:6px;transition:border-color .2s}
+    #dbg-btn:hover{border-color:#4B8EF0;color:#4B8EF0}
+    #dbg-pip{width:6px;height:6px;border-radius:50%;background:var(--text-muted);transition:background .3s}
     #dbg-pip.ok{background:#3DB88A}
-    #dbg-pip.warn{background:#D4A843;animation:blink 1s infinite}
-    #dbg-pip.err{background:#E05252;animation:blink .5s infinite}
+    #dbg-pip.warn{background:var(--gold);animation:blink 1s infinite}
+    #dbg-pip.err{background:var(--neg);animation:blink .5s infinite}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-    #dbg-panel{display:none;position:fixed;bottom:52px;right:16px;width:min(660px,calc(100vw - 32px));max-height:420px;z-index:799;background:#05070D;border:1px solid #1A2038;border-radius:12px;overflow:hidden;box-shadow:0 8px 48px rgba(0,0,0,.8);flex-direction:column;font-family:'JetBrains Mono',monospace}
+    #dbg-panel{display:none;position:fixed;bottom:50px;right:16px;width:min(660px,calc(100vw - 32px));max-height:420px;z-index:799;background:#05070D;border:1px solid #1A2038;border-radius:12px;overflow:hidden;box-shadow:0 8px 48px rgba(0,0,0,.8);flex-direction:column;font-family:'JetBrains Mono',monospace}
     #dbg-panel.open{display:flex}
-    .dbg-hdr{padding:9px 14px;border-bottom:1px solid #1A2038;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .dbg-hdr{padding:8px 14px;border-bottom:1px solid #1A2038;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
     .dbg-hdr-l{font-size:10px;color:#3A4A6A;letter-spacing:1px}
-    .dbg-btns{display:flex;gap:6px}
-    .dbg-btn{background:none;border:1px solid #1A2038;border-radius:4px;color:#3A4A6A;font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;cursor:pointer;transition:color .15s,border-color .15s}
+    .dbg-btns{display:flex;gap:5px}
+    .dbg-btn{background:none;border:1px solid #1A2038;border-radius:4px;color:#3A4A6A;font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 7px;cursor:pointer;transition:color .15s,border-color .15s}
     .dbg-btn:hover{color:#DCE2EF;border-color:#2A3A5A}
     #dbg-log{overflow-y:auto;flex:1;padding:8px 14px;font-size:11px;line-height:1.8;scrollbar-width:thin;scrollbar-color:#1A2038 transparent}
     .dl{display:flex;gap:8px;margin-bottom:1px}
     .dl-ts{color:#1E2E50;flex-shrink:0;min-width:54px}
-    .dl-tag{flex-shrink:0;min-width:52px;font-weight:500}
+    .dl-tag{flex-shrink:0;min-width:50px;font-weight:500}
     .dl-msg{color:#5A7AA0;word-break:break-all}
     .dl.info .dl-tag{color:#4B8EF0}
-    .dl.ok   .dl-tag{color:#3DB88A}.dl.ok   .dl-msg{color:#2A5A3A}
+    .dl.ok .dl-tag{color:#3DB88A}.dl.ok .dl-msg{color:#2A5A3A}
     .dl.warn .dl-tag{color:#D4A843}
-    .dl.err  .dl-tag{color:#E05252}.dl.err  .dl-msg{color:#6A3040}
+    .dl.err .dl-tag{color:#E05252}.dl.err .dl-msg{color:#6A3040}
     .dl.data .dl-tag{color:#9B6FE8}.dl.data .dl-msg{color:#4A3A6A}
-    .dbg-stats{padding:8px 14px;border-top:1px solid #1A2038;flex-shrink:0;display:flex;gap:14px;flex-wrap:wrap;font-size:10px}
+    .dbg-stats{padding:7px 14px;border-top:1px solid #1A2038;flex-shrink:0;display:flex;gap:12px;flex-wrap:wrap;font-size:10px}
     .ds{color:#3A4A6A}.ds span{color:#5A7AA0}
 
     /* ── RESPONSIVE ── */
     @media(max-width:860px){
-      .hdr{padding:0 16px}.tagline{display:none}
-      .nav{padding:0 16px}.main{padding:20px 16px 40px}
-      #lastUpdated{display:none}
+      .hdr{padding:0 14px}.tagline{display:none}
+      .nav{padding:0 14px}.main{padding:18px 14px 40px}
+      .art-grid{grid-template-columns:1fr}
+      #lastUpdated{display:none}.toggle-txt{display:none}
     }
     @media(max-width:520px){
-      .logo{font-size:16px;letter-spacing:3px}
-      .m-title{font-size:18px}.home-title{font-size:26px}
+      .logo{font-size:15px;letter-spacing:3px}
+      .m-title{font-size:17px}.home-title{font-size:24px}
     }
   </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.7.2</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.8</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
-    <button class="btn-refresh" id="refreshBtn" onclick="manualRefresh()">
+    <button class="btn-hdr" id="refreshBtn" onclick="manualRefresh()">
       <span class="spin-icon">↻</span> Refresh
     </button>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme"></button>
     <label class="auto-row" title="Auto-refresh every 15 minutes">
       <span class="toggle-wrap">
         <input type="checkbox" id="autoTog" onchange="toggleAuto()">
         <span class="pill"></span>
       </span>
-      <span class="toggle-txt">AUTO ↻</span>
+      <span class="toggle-txt">AUTO</span>
     </label>
   </div>
 </header>
 
+<!-- NAV -->
 <nav class="nav" id="nav"></nav>
 
+<!-- MAIN -->
 <main class="main">
+
+  <!-- HOME -->
   <div id="panel-home" class="panel active">
     <div class="home-head">
       <div>
@@ -268,6 +311,7 @@
       </div>
       <div class="home-date" id="homeDate"></div>
     </div>
+    <div id="home-hero"></div>
     <div class="art-grid" id="home-grid"></div>
   </div>
 
@@ -282,42 +326,52 @@
   <div id="panel-tamilnadu"   class="panel"></div>
   <div id="panel-wildcard"    class="panel"></div>
 
+  <!-- SEARCH -->
   <div id="panel-search" class="panel">
     <div class="search-wrap">
       <div class="search-ttl">Search Any Topic</div>
-      <div class="search-sub">// FULL-TEXT SEARCH · GDELT GLOBAL NEWS ARCHIVE · ENGLISH SOURCES</div>
-      <div class="search-row">
+      <div class="search-sub">// FULL-TEXT SEARCH · GDELT GLOBAL ARCHIVE · ENGLISH SOURCES</div>
+      <div class="search-bar">
         <input class="s-input" id="sInput" type="text"
           placeholder='e.g. "Tamil Nadu floods" OR "RBI rate cut" OR "Anthropic"'
           onkeydown="if(event.key==='Enter')doSearch()">
         <button class="btn-srch" onclick="doSearch()">Search →</button>
       </div>
-      <div class="filters">
-        <div class="f-grp">
+      <div class="search-filters">
+        <div class="f-lbl-row">
           <span class="f-lbl">TIMESPAN</span>
           <select class="f-sel" id="sTime">
-            <option value="6H">Last 6 hours</option>
-            <option value="24H" selected>Last 24 hours</option>
-            <option value="48H">Last 48 hours</option>
+            <option value="6H">Last 6h</option>
+            <option value="24H" selected>Last 24h</option>
+            <option value="48H">Last 48h</option>
             <option value="7D">Last 7 days</option>
           </select>
         </div>
-        <div class="f-grp">
+        <div class="f-lbl-row">
           <span class="f-lbl">SORT</span>
           <select class="f-sel" id="sSort">
-            <option value="DateDesc">Newest first</option>
-            <option value="HybridRel" selected>Relevance</option>
+            <option value="DateDesc" selected>Newest first</option>
+            <option value="HybridRel">Relevance</option>
             <option value="ToneAsc">Most negative</option>
             <option value="ToneDesc">Most positive</option>
           </select>
         </div>
-        <div class="f-grp">
-          <span class="f-lbl">SOURCE COUNTRY</span>
+        <div class="f-lbl-row">
+          <span class="f-lbl">TONE</span>
+          <select class="f-sel" id="sTone">
+            <option value="">Any</option>
+            <option value=" tone<-1">Negative only</option>
+            <option value=" tone>1">Positive only</option>
+            <option value=" toneabs<1">Neutral only</option>
+          </select>
+        </div>
+        <div class="f-lbl-row">
+          <span class="f-lbl">COUNTRY</span>
           <select class="f-sel" id="sSrc">
             <option value="">Global</option>
-            <option value=" sourcecountry:india">India only</option>
-            <option value=" sourcecountry:unitedstates">USA only</option>
-            <option value=" sourcecountry:unitedkingdom">UK only</option>
+            <option value=" sourcecountry:india">India</option>
+            <option value=" sourcecountry:unitedstates">USA</option>
+            <option value=" sourcecountry:unitedkingdom">UK</option>
           </select>
         </div>
       </div>
@@ -329,7 +383,7 @@
     Powered by <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
     Direct browser · CORS native &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
-    MERIDIAN v1.7.2
+    MERIDIAN v1.8
   </div>
 </main>
 
@@ -345,35 +399,36 @@
     <div class="m-body">
       <div class="m-lbl">SUMMARY</div>
       <div class="m-desc loading" id="mDesc">Fetching article context…</div>
-      <div class="m-lbl" style="margin-top:16px">TONE ANALYSIS</div>
+      <div class="m-lbl" style="margin-top:14px">TONE ANALYSIS</div>
       <div class="m-tone-box" id="mTone"></div>
     </div>
     <div class="m-foot">
       <a class="btn-open" id="mLink" href="#" target="_blank" rel="noopener noreferrer">Open Full Article →</a>
       <a class="btn-mob" id="mMobLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none">Mobile Version</a>
+      <button class="btn-mark" id="mMarkBtn" onclick="markCurrentRead()">Mark as read</button>
     </div>
   </div>
 </div>
 
 <!-- DEBUG -->
-<button id="dbg-toggle" onclick="toggleDbg()"><span id="dbg-pip"></span> DEBUG</button>
+<button id="dbg-btn" onclick="toggleDbg()"><span id="dbg-pip"></span> DEBUG</button>
 <div id="dbg-panel">
   <div class="dbg-hdr">
-    <span class="dbg-hdr-l">// MERIDIAN DEBUG · v1.7 · Direct GDELT · localStorage</span>
+    <span class="dbg-hdr-l">// MERIDIAN v1.8 · Direct GDELT · localStorage</span>
     <div class="dbg-btns">
-      <button class="dbg-btn" onclick="testDirect()">⚡ Test GDELT</button>
+      <button class="dbg-btn" onclick="testDirect()">⚡ Test</button>
       <button class="dbg-btn" onclick="showCacheInfo()">◎ Cache</button>
       <button class="dbg-btn" onclick="clearAllCache()">⊘ Clear</button>
-      <button class="dbg-btn" onclick="clearLog()">✕ Log</button>
+      <button class="dbg-btn" onclick="clearLog()">✕</button>
     </div>
   </div>
   <div id="dbg-log"></div>
   <div class="dbg-stats">
-    <span class="ds">REQUESTS <span id="ds-req">0</span></span>
-    <span class="ds">CACHE HITS <span id="ds-hit">0</span></span>
-    <span class="ds">GDELT FETCHES <span id="ds-fetch">0</span></span>
+    <span class="ds">REQ <span id="ds-req">0</span></span>
+    <span class="ds">HITS <span id="ds-hit">0</span></span>
+    <span class="ds">FETCHES <span id="ds-fetch">0</span></span>
     <span class="ds">FAILED <span id="ds-err">0</span></span>
-    <span class="ds">ARTICLES <span id="ds-art">0</span></span>
+    <span class="ds">ARTS <span id="ds-art">0</span></span>
   </div>
 </div>
 
@@ -381,74 +436,83 @@
 /* ════════════════════════════════════════
    CONFIG
 ════════════════════════════════════════ */
-const GDELT   = 'https://api.gdeltproject.org/api/v2/doc/doc';
+const GDELT     = 'https://api.gdeltproject.org/api/v2/doc/doc';
 const GDELT_CTX = 'https://api.gdeltproject.org/api/v2/context/context';
 const CACHE_TTL = 15 * 60 * 1000;
-const LS_PFX    = 'mer17_';
+const LS_PFX    = 'mer18_';
+const LS_READ   = 'mer18_read';
+const LS_THEME  = 'mer18_theme';
 
 /* ════════════════════════════════════════
-   CATEGORIES — TIGHTENED + ENGLISH ONLY
-   Rule: (OR list) sourcelang:english
-   Each query targets only its specific domain
+   THEME
+════════════════════════════════════════ */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('themeBtn').textContent = t==='dark' ? '☀' : '☾';
+  localStorage.setItem(LS_THEME, t);
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur==='dark' ? 'light' : 'dark');
+}
+// Init theme
+(()=>{
+  const saved = localStorage.getItem(LS_THEME);
+  if(saved) applyTheme(saved);
+  else {
+    const sys = window.matchMedia('(prefers-color-scheme:light)').matches ? 'light' : 'dark';
+    applyTheme(sys);
+  }
+})();
+
+/* ════════════════════════════════════════
+   READ TRACKING
+════════════════════════════════════════ */
+function getRead(){ try{ return new Set(JSON.parse(localStorage.getItem(LS_READ)||'[]')); }catch{ return new Set(); } }
+function markRead(url){ try{ const r=getRead(); r.add(url); localStorage.setItem(LS_READ, JSON.stringify([...r].slice(-200))); }catch{} }
+let _currentModalUrl = '';
+function markCurrentRead(){
+  if(_currentModalUrl){ markRead(_currentModalUrl); closeModal(); }
+}
+
+/* ════════════════════════════════════════
+   CATEGORIES
 ════════════════════════════════════════ */
 const CATS = [
-  {
-    // Single words unquoted. Multi-word phrases quoted. Max 8 terms.
-    id:'home', name:'Home', ico:'◈', hex:'#D4A843',
+  { id:'home',       name:'Home',              ico:'◈', hex:'#D4A843',
     q:'(India OR Modi OR economy OR war OR election OR "stock market" OR crisis OR technology) sourcelang:english',
-    ts:'24H', max:20
-  },
-  {
-    id:'geopolitics', name:'Geopolitics', ico:'◎', hex:'#E05252',
+    ts:'24H', max:20 },
+  { id:'geopolitics',name:'Geopolitics',       ico:'◎', hex:'#E05252',
     q:'("India Pakistan" OR "Middle East" OR "Russia Ukraine" OR "China Taiwan" OR "South China Sea" OR "Israel Iran" OR Gaza OR ceasefire) sourcelang:english',
-    ts:'24H', max:15
-  },
-  {
-    id:'finance', name:'Finance & Markets', ico:'◈', hex:'#3DB88A',
+    ts:'24H', max:15 },
+  { id:'finance',    name:'Finance & Markets', ico:'◈', hex:'#3DB88A',
     q:'("Nifty 50" OR Sensex OR "RBI policy" OR "Federal Reserve" OR "crude oil" OR "gold price" OR "FII flows" OR "Indian rupee") sourcelang:english',
-    ts:'24H', max:15
-  },
-  {
-    id:'ai', name:'AI & ML', ico:'◉', hex:'#9B6FE8',
+    ts:'24H', max:15 },
+  { id:'ai',         name:'AI & ML',           ico:'◉', hex:'#9B6FE8',
     q:'(OpenAI OR Anthropic OR "large language model" OR "AI regulation" OR DeepSeek OR "AI Act" OR "artificial intelligence" OR "India AI") sourcelang:english',
-    ts:'24H', max:15
-  },
-  {
-    id:'tech', name:'Technology', ico:'◫', hex:'#4B8EF0',
+    ts:'24H', max:15 },
+  { id:'tech',       name:'Technology',        ico:'◫', hex:'#4B8EF0',
     q:'(semiconductors OR cybersecurity OR Nvidia OR "data breach" OR "chip export" OR "quantum computing" OR "India startup" OR "tech layoffs") sourcelang:english',
-    ts:'24H', max:15
-  },
-  {
-    id:'politics', name:'Politics (India)', ico:'◆', hex:'#F0833A',
+    ts:'24H', max:15 },
+  { id:'politics',   name:'Politics (India)',  ico:'◆', hex:'#F0833A',
     q:'("Lok Sabha" OR "Rajya Sabha" OR BJP OR "Indian election" OR TVK OR DMK OR "Rahul Gandhi" OR "Modi policy") sourcelang:english sourcecountry:india',
-    ts:'24H', max:15
-  },
-  {
-    id:'disasters', name:'Natural Disasters', ico:'◬', hex:'#E84C74',
+    ts:'24H', max:15 },
+  { id:'disasters',  name:'Natural Disasters', ico:'◬', hex:'#E84C74',
     q:'(earthquake OR "flood India" OR cyclone OR tsunami OR landslide OR "heatwave India" OR "natural disaster" OR wildfire) sourcelang:english',
-    ts:'24H', max:15
-  },
-  {
-    id:'science', name:'Science', ico:'◌', hex:'#2BBFCC',
+    ts:'24H', max:15 },
+  { id:'science',    name:'Science',           ico:'◌', hex:'#2BBFCC',
     q:'(ISRO OR NASA OR SpaceX OR Chandrayaan OR Gaganyaan OR "climate change" OR "medical breakthrough" OR "space mission") sourcelang:english',
-    ts:'24H', max:15
-  },
-  {
-    id:'energy', name:'Energy & Commodities', ico:'◑', hex:'#D4B843',
+    ts:'24H', max:15 },
+  { id:'energy',     name:'Energy & Commodities', ico:'◑', hex:'#D4B843',
     q:'(OPEC OR "crude oil" OR "gold price" OR lithium OR "solar energy India" OR "renewable energy" OR "coal India" OR "natural gas") sourcelang:english',
-    ts:'24H', max:15
-  },
-  {
-    id:'tamilnadu', name:'Tamil Nadu', ico:'◀', hex:'#CC3A3A',
+    ts:'24H', max:15 },
+  { id:'tamilnadu',  name:'Tamil Nadu',        ico:'◀', hex:'#CC3A3A',
     q:'("Tamil Nadu" OR Chennai OR Coimbatore OR AIADMK OR "DMK government" OR "TVK party" OR "Chennai metro" OR "Tamil Nadu floods") sourcelang:english sourcecountry:india',
-    ts:'48H', max:15
-  },
-  {
-    id:'wildcard', name:'Signal & Shift', ico:'◈', hex:'#D44FA8',
+    ts:'48H', max:15 },
+  { id:'wildcard',   name:'Signal & Shift',    ico:'◈', hex:'#D44FA8',
     q:'("currency crisis" OR "market crash" OR "debt default" OR "banking crisis" OR stagflation OR "financial contagion" OR "black swan" OR recession) sourcelang:english',
-    ts:'24H', max:15
-  },
-  { id:'search', name:'Search', ico:'⌕', hex:'#7A8FA6', q:null }
+    ts:'24H', max:15 },
+  { id:'search',     name:'Search',            ico:'⌕', hex:'#7A8FA6', q:null }
 ];
 
 /* ════════════════════════════════════════
@@ -466,14 +530,12 @@ const DBG = {
   log(type,tag,msg){
     const el=document.getElementById('dbg-log');if(!el)return;
     const ts=new Date().toTimeString().slice(0,8);
-    const row=document.createElement('div');
-    row.className='dl '+type;
+    const row=document.createElement('div');row.className='dl '+type;
     row.innerHTML=`<span class="dl-ts">${ts}</span><span class="dl-tag">${esc(tag)}</span><span class="dl-msg">${esc(String(msg))}</span>`;
-    el.appendChild(row);el.scrollTop=el.scrollHeight;
-    this._pip(type);this._st();
+    el.appendChild(row);el.scrollTop=el.scrollHeight;this._pip(type);this._st();
   },
-  info:(t,m)=>DBG.log('info',t,m), ok:(t,m)=>DBG.log('ok',t,m),
-  warn:(t,m)=>DBG.log('warn',t,m), err:(t,m)=>DBG.log('err',t,m),
+  info:(t,m)=>DBG.log('info',t,m),ok:(t,m)=>DBG.log('ok',t,m),
+  warn:(t,m)=>DBG.log('warn',t,m),err:(t,m)=>DBG.log('err',t,m),
   data:(t,m)=>DBG.log('data',t,m),
   _lastErr:0,
   _pip(type){
@@ -483,65 +545,48 @@ const DBG = {
     else if(type==='ok'&&Date.now()-this._lastErr>4000)p.className='ok';
   },
   _st(){
-    document.getElementById('ds-req').textContent  =this.stats.req;
-    document.getElementById('ds-hit').textContent  =this.stats.hit;
-    document.getElementById('ds-fetch').textContent=this.stats.fetch;
-    document.getElementById('ds-err').textContent  =this.stats.err;
-    document.getElementById('ds-art').textContent  =this.stats.art;
+    ['req','hit','fetch','err','art'].forEach(k=>{
+      const el=document.getElementById('ds-'+k);if(el)el.textContent=this.stats[k];
+    });
   }
 };
 function toggleDbg(){
   DBG.visible=!DBG.visible;
   document.getElementById('dbg-panel').classList.toggle('open',DBG.visible);
   if(DBG.visible&&!document.getElementById('dbg-log').children.length){
-    DBG.info('INIT','MERIDIAN v1.7.1 — Direct GDELT · No proxy');
-    DBG.info('ARCH','Queries: fixed syntax · single words unquoted · max 8 terms · English only');
-    DBG.info('CACHE','localStorage · 15 min TTL');
+    DBG.info('INIT','MERIDIAN v1.8 · Direct GDELT · No proxy');
+    DBG.info('FEAT','Hero card · Tone bar · Theme toggle · Search fixed');
   }
 }
-function clearLog(){ document.getElementById('dbg-log').innerHTML=''; DBG.stats={req:0,hit:0,fetch:0,err:0,art:0}; DBG._st(); document.getElementById('dbg-pip').className=''; }
+function clearLog(){document.getElementById('dbg-log').innerHTML='';DBG.stats={req:0,hit:0,fetch:0,err:0,art:0};DBG._st();document.getElementById('dbg-pip').className='';}
 async function testDirect(){
   DBG.info('TEST','─── GDELT Direct Test ───');
   try{
     const {arts,status}=await fetchGdelt('(India OR war OR economy) sourcelang:english','6H',3,'DateDesc');
-    DBG.ok('TEST',`✓ ${arts.length} articles · ${status}`);
+    DBG.ok('TEST',`✓ ${arts.length} · ${status}`);
     arts.forEach((a,i)=>DBG.data('ART'+i,`"${(a.title||'').slice(0,55)}" | tone:${a.tone??'n/a'} | ${a.domain}`));
   }catch(e){DBG.err('TEST','✗ '+e.message);}
   DBG.info('TEST','─── Done ───');
 }
 
 /* ════════════════════════════════════════
-   LOCALSTORAGE CACHE
+   CACHE
 ════════════════════════════════════════ */
-function ck(q,ts,max){ return LS_PFX+btoa(encodeURIComponent(q+ts+max)).slice(0,40); }
+function ck(q,ts,max){return LS_PFX+btoa(encodeURIComponent(q+ts+max)).slice(0,40);}
 function cacheGet(q,ts,max){
-  try{
-    const raw=localStorage.getItem(ck(q,ts,max)); if(!raw)return null;
-    const {data,fetchedAt}=JSON.parse(raw);
-    const age=Date.now()-fetchedAt;
-    if(age>CACHE_TTL)return null;
-    return{data,ageMs:age};
-  }catch{return null;}
+  try{const raw=localStorage.getItem(ck(q,ts,max));if(!raw)return null;const {data,fetchedAt}=JSON.parse(raw);const age=Date.now()-fetchedAt;if(age>CACHE_TTL)return null;return{data,ageMs:age};}catch{return null;}
 }
 function cacheSet(q,ts,max,data){
-  try{localStorage.setItem(ck(q,ts,max),JSON.stringify({data,fetchedAt:Date.now()}));}
-  catch(e){DBG.warn('CACHE','Write failed: '+e.message);}
+  try{localStorage.setItem(ck(q,ts,max),JSON.stringify({data,fetchedAt:Date.now()}));}catch(e){DBG.warn('CACHE','Write failed: '+e.message);}
 }
 function cacheStale(q,ts,max){
-  try{
-    const raw=localStorage.getItem(ck(q,ts,max)); if(!raw)return null;
-    const {data,fetchedAt}=JSON.parse(raw);
-    return{data,ageMs:Date.now()-fetchedAt,stale:true};
-  }catch{return null;}
+  try{const raw=localStorage.getItem(ck(q,ts,max));if(!raw)return null;const {data,fetchedAt}=JSON.parse(raw);return{data,ageMs:Date.now()-fetchedAt};}catch{return null;}
 }
-function clearAllCache(){
-  let n=0;Object.keys(localStorage).forEach(k=>{if(k.startsWith(LS_PFX)){localStorage.removeItem(k);n++;}});
-  DBG.info('CACHE',`Cleared ${n} entries`);
-}
+function clearAllCache(){let n=0;Object.keys(localStorage).forEach(k=>{if(k.startsWith(LS_PFX)&&k!==LS_READ&&k!==LS_THEME){localStorage.removeItem(k);n++;}});DBG.info('CACHE',`Cleared ${n} entries`);}
 function showCacheInfo(){
   let n=0,sz=0;
   Object.keys(localStorage).forEach(k=>{
-    if(k.startsWith(LS_PFX)){
+    if(k.startsWith(LS_PFX)&&k!==LS_READ&&k!==LS_THEME){
       n++;try{const r=localStorage.getItem(k);sz+=r.length;const {fetchedAt}=JSON.parse(r);const m=Math.floor((Date.now()-fetchedAt)/60000);DBG.data('ENTRY',`${k.slice(-10)} · ${m}m · ${(r.length/1024).toFixed(1)}KB`);}catch{}
     }
   });
@@ -555,7 +600,7 @@ async function fetchGdelt(q,ts='24H',max=15,sort='DateDesc'){
   DBG.stats.req++;
   const cached=cacheGet(q,ts,max);
   if(cached){
-    DBG.ok('CACHE',`HIT · ${Math.floor(cached.ageMs/60000)}m old · ${cached.data.articles?.length||0} arts`);
+    DBG.ok('CACHE',`HIT · ${Math.floor(cached.ageMs/60000)}m · ${cached.data.articles?.length||0} arts`);
     DBG.stats.hit++;DBG._st();
     return{arts:cached.data.articles||[],status:'HIT',ageMs:cached.ageMs};
   }
@@ -563,6 +608,7 @@ async function fetchGdelt(q,ts='24H',max=15,sort='DateDesc'){
   const url=GDELT+'?'+params.toString();
   DBG.info('GDELT',`q="${q.slice(0,60)}…" ts=${ts} max=${max}`);
   DBG.stats.fetch++;
+  const t0=Date.now();
   try{
     const r=await fetch(url,{signal:AbortSignal.timeout(30000)});
     if(!r.ok)throw new Error(`GDELT HTTP ${r.status}`);
@@ -570,22 +616,21 @@ async function fetchGdelt(q,ts='24H',max=15,sort='DateDesc'){
     if(!text.trim().startsWith('{'))throw new Error('GDELT returned non-JSON response');
     const d=JSON.parse(text);
     const raw=Array.isArray(d.articles)?d.articles:[];
-    // Client-side English filter — GDELT sourcelang is unreliable, filter by article language field
+    // Client-side English filter
     const arts=raw.filter(a=>!a.language||a.language.toLowerCase()==='english');
     const filtered=raw.length-arts.length;
-    if(filtered>0)DBG.info('FILTER',`Removed ${filtered} non-English articles (of ${raw.length})`);
-    DBG.ok('GDELT',`✓ ${arts.length} English articles · caching`);
+    if(filtered>0)DBG.info('FILTER',`Removed ${filtered} non-English of ${raw.length}`);
+    const elapsed=((Date.now()-t0)/1000).toFixed(1);
+    DBG.ok('GDELT',`✓ ${arts.length} English arts · ${elapsed}s`);
     DBG.stats.art+=arts.length;DBG._st();
-    // Cache the filtered result
-    const toCache={...d,articles:arts};
-    cacheSet(q,ts,max,toCache);
-    return{arts,status:'LIVE',ageMs:0};
+    cacheSet(q,ts,max,{...d,articles:arts});
+    return{arts,status:'LIVE',ageMs:0,elapsed};
   }catch(e){
     DBG.err('GDELT',e.message);DBG.stats.err++;DBG._st();
     const stale=cacheStale(q,ts,max);
     if(stale){
       const staleArts=(stale.data.articles||[]).filter(a=>!a.language||a.language.toLowerCase()==='english');
-      DBG.warn('CACHE',`STALE fallback · ${Math.floor(stale.ageMs/60000)}m old · ${staleArts.length} English arts`);
+      DBG.warn('CACHE',`STALE fallback · ${Math.floor(stale.ageMs/60000)}m · ${staleArts.length} arts`);
       return{arts:staleArts,status:'STALE',ageMs:stale.ageMs};
     }
     throw e;
@@ -593,17 +638,17 @@ async function fetchGdelt(q,ts='24H',max=15,sort='DateDesc'){
 }
 
 /* ════════════════════════════════════════
-   LAZY DESCRIPTION FETCH (on card click)
+   LAZY DESCRIPTION FETCH
 ════════════════════════════════════════ */
 async function fetchDesc(article){
   const kw=(article.title||'').split(' ').slice(0,5).join(' ');
-  const params=new URLSearchParams({query:kw,mode:'artlist',maxrecords:'5',timespan:'24H',format:'json'});
+  const params=new URLSearchParams({query:kw,mode:'artlist',maxrecords:'3',timespan:'48H',format:'json'});
   try{
-    const r=await fetch(GDELT_CTX+'?'+params.toString(),{signal:AbortSignal.timeout(12000)});
+    const r=await fetch(GDELT_CTX+'?'+params.toString(),{signal:AbortSignal.timeout(10000)});
     const d=await r.json();
     const arts=Array.isArray(d.articles)?d.articles:[];
-    const match=arts.find(a=>a.domain===article.domain)||arts[0];
-    return match?.snippet||match?.seendate?`Published ${ago(parseGdeltDate(match.seendate))} by ${(match.domain||'').replace(/^www\./,'')}.`:null;
+    const match=arts.find(x=>x.domain===article.domain)||arts[0];
+    return match?.snippet||null;
   }catch{return null;}
 }
 
@@ -626,8 +671,8 @@ function ago(d){
 }
 const FLAGS={'India':'🇮🇳','United States':'🇺🇸','United Kingdom':'🇬🇧','China':'🇨🇳','Russia':'🇷🇺','Germany':'🇩🇪','France':'🇫🇷','Japan':'🇯🇵','Australia':'🇦🇺','Canada':'🇨🇦','Pakistan':'🇵🇰','Israel':'🇮🇱','Iran':'🇮🇷','Ukraine':'🇺🇦','Turkey':'🇹🇷','Saudi Arabia':'🇸🇦','UAE':'🇦🇪','Singapore':'🇸🇬','South Korea':'🇰🇷','Brazil':'🇧🇷','Taiwan':'🇹🇼','Bangladesh':'🇧🇩','Sri Lanka':'🇱🇰','Qatar':'🇶🇦','Indonesia':'🇮🇩','Thailand':'🇹🇭','Malaysia':'🇲🇾','Netherlands':'🇳🇱','Vietnam':'🇻🇳','Philippines':'🇵🇭','Nigeria':'🇳🇬'};
 function flag(c){return FLAGS[c]||'🌐';}
-const NEG_W=['war','crisis','crash','collapse','attack','killed','bomb','strike','conflict','disaster','recession','riot','explosion','coup','ban','flood','earthquake','cyclone','pandemic','violence','terror','famine','drought','sanction','killing','shooting','warns','threat'];
-const POS_W=['peace','surge','growth','breakthrough','record high','rally','recovery','deal','agreement','launch','success','milestone','approved','boost','innovation','discovery','reform','ceasefire','diplomacy','wins','gains','rises','climbs','record'];
+const NEG_W=['war','crisis','crash','collapse','attack','killed','bomb','strike','conflict','disaster','recession','riot','explosion','coup','flood','earthquake','cyclone','pandemic','violence','terror','famine','sanction','shooting','warns','threat'];
+const POS_W=['peace','surge','growth','breakthrough','record high','rally','recovery','deal','agreement','launch','success','milestone','approved','boost','innovation','discovery','reform','ceasefire','diplomacy','gains','rises','climbs'];
 function getTone(a){
   if(a.tone!==undefined&&a.tone!==null&&a.tone!==''){
     const t=parseFloat(a.tone);
@@ -645,10 +690,35 @@ function getTone(a){
   return{cls:'neu',lbl:'Neutral',sc:'~',raw:0};
 }
 function cat(id){return CATS.find(c=>c.id===id);}
-function cacheBadgeHTML(status,ageMs){
-  if(status==='HIT'){const m=ageMs?Math.floor(ageMs/60000):0;return`<span class="cache-badge cache-hit"><span class="cache-dot"></span>CACHED · ${m<1?'just now':m+'m ago'}</span>`;}
-  if(status==='STALE'){return`<span class="cache-badge cache-stale"><span class="cache-dot"></span>STALE · GDELT unavailable</span>`;}
-  return`<span class="cache-badge cache-live"><span class="cache-dot"></span>LIVE</span>`;
+
+function cacheBadgeHTML(status,ageMs,elapsed){
+  if(status==='HIT'){
+    const m=ageMs?Math.floor(ageMs/60000):0;
+    return`<span class="cache-badge cb-hit"><span class="cb-dot"></span>CACHED · ${m<1?'just now':m+'m ago'}</span>`;
+  }
+  if(status==='STALE')return`<span class="cache-badge cb-stale"><span class="cb-dot"></span>STALE</span>`;
+  const t=elapsed?` · ${elapsed}s`:'';
+  return`<span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE${t}</span>`;
+}
+
+function toneBarHTML(arts){
+  const n=arts.filter(a=>getTone(a).cls==='neg').length;
+  const p=arts.filter(a=>getTone(a).cls==='pos').length;
+  const u=arts.filter(a=>getTone(a).cls==='neu').length;
+  const total=arts.length||1;
+  const np=Math.round(n/total*100);const pp=Math.round(p/total*100);const up=100-np-pp;
+  return`<div class="tone-bar-wrap">
+    <div class="tone-bar-track">
+      <div class="tb-neg" style="width:${np}%"></div>
+      <div class="tb-neu" style="width:${up}%"></div>
+      <div class="tb-pos" style="width:${pp}%"></div>
+    </div>
+    <div class="tone-bar-labels">
+      <span class="tbl-neg">● ${n} neg</span>
+      <span class="tbl-neu">● ${u} neu</span>
+      <span class="tbl-pos">● ${p} pos</span>
+    </div>
+  </div>`;
 }
 
 /* ════════════════════════════════════════
@@ -679,7 +749,7 @@ function buildNav(){
     `<button class="tab${c.id==='home'?' active':''}" id="tab-${c.id}"
       style="${c.id==='home'?`border-bottom-color:${c.hex};color:var(--text)`:''}"
       onclick="switchTab('${c.id}')">
-      <span style="font-size:11px;opacity:.7">${c.ico}</span>${c.name}
+      <span class="tab-ico">${c.ico}</span>${c.name}
     </button>`
   ).join('');
 }
@@ -699,84 +769,69 @@ function skels(n=4){
   return Array(n).fill(0).map(()=>`
     <div class="sk-card">
       <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-        <div style="display:flex;gap:7px">
-          <div class="sk" style="width:20px;height:13px;border-radius:3px"></div>
-          <div class="sk" style="width:110px;height:11px;border-radius:3px;margin-top:1px"></div>
-        </div>
-        <div class="sk" style="width:55px;height:11px;border-radius:3px"></div>
+        <div style="display:flex;gap:6px"><div class="sk" style="width:18px;height:12px;border-radius:3px"></div><div class="sk" style="width:100px;height:10px;border-radius:3px;margin-top:1px"></div></div>
+        <div class="sk" style="width:50px;height:10px;border-radius:3px"></div>
       </div>
-      <div class="sk" style="width:97%;height:15px;border-radius:3px;margin-bottom:7px"></div>
-      <div class="sk" style="width:80%;height:15px;border-radius:3px;margin-bottom:12px"></div>
-      <div class="sk" style="width:100%;height:11px;border-radius:3px;margin-bottom:5px"></div>
-      <div class="sk" style="width:70%;height:11px;border-radius:3px"></div>
+      <div class="sk" style="width:96%;height:14px;border-radius:3px;margin-bottom:7px"></div>
+      <div class="sk" style="width:78%;height:14px;border-radius:3px"></div>
     </div>`).join('');
 }
-
 function storeArt(a){const id='a'+(artCount++);artStore[id]=a;return id;}
+
+function heroCardHTML(a,hex){
+  const id=storeArt(a);
+  const t=getTone(a);const d=parseGdeltDate(a.seendate);
+  const src=(a.domain||'unknown').replace(/^www\./,'');
+  const sc=t.sc!=='~'?' · '+t.sc:'';
+  const read=getRead().has(a.url||'');
+  return`<div class="hero-card ${t.cls}${read?' read':''}" id="hc-${id}" onclick="cardClick('${id}','${hex}')">
+    <div class="hero-top">
+      <div class="hero-top-left">
+        <span style="font-size:13px">${flag(a.sourcecountry)}</span>
+        <span class="c-src" style="max-width:180px">${esc(src)}</span>
+        <span class="c-tone ${t.cls}">${t.lbl}${sc}</span>
+        <span class="badge-top">TOP STORY</span>
+      </div>
+      <span class="c-time">${ago(d)}</span>
+    </div>
+    <div class="hero-title">${esc(a.title||'No title')}</div>
+    <div class="hero-desc" id="hdesc-${id}"></div>
+  </div>`;
+}
 
 function cardHTML(a,hex){
   const id=storeArt(a);
-  const t=getTone(a);
-  const d=parseGdeltDate(a.seendate);
+  const t=getTone(a);const d=parseGdeltDate(a.seendate);
   const src=(a.domain||'unknown').replace(/^www\./,'');
-  const sc=t.sc!=='~'?` · ${t.sc}`:'';
-  return `<div class="card ${t.cls}" id="card-${id}" onclick="cardClick('${id}','${hex}')">
+  const sc=t.sc!=='~'?' · '+t.sc:'';
+  const read=getRead().has(a.url||'');
+  return`<div class="card ${t.cls}${read?' read':''}" id="card-${id}" onclick="cardClick('${id}','${hex}')">
     <div class="card-top">
       <div class="card-top-left">
         <span class="c-flag">${flag(a.sourcecountry)}</span>
         <span class="c-src">${esc(src)}</span>
-        <span class="c-tone-badge c-tone-${t.cls}">${t.lbl}${sc}</span>
+        <span class="c-tone ${t.cls}">${t.lbl}${sc}</span>
       </div>
       <span class="c-time">${ago(d)}</span>
     </div>
     <div class="c-title">${esc(a.title||'No title')}</div>
-    <div class="c-desc loading" id="desc-${id}">Loading context…</div>
   </div>`;
 }
 
-function renderArts(el,arts,hex){
-  if(!arts?.length){
-    el.innerHTML=`<div class="empty"><div class="empty-ico">◎</div>
-      <div class="empty-txt">No stories found for this category right now.</div>
-      <div class="empty-hint">GDELT indexes every 15 min. Try refreshing or widening timespan.</div></div>`;
-    return;
-  }
-  el.innerHTML=arts.map(a=>cardHTML(a,hex)).join('');
-  // Lazy-load descriptions for visible cards
-  arts.forEach(a=>{
-    const id=Object.keys(artStore).find(k=>artStore[k]===a);
-    if(id) lazyDesc(id);
-  });
-}
-
-// Fetch description in background for each card
-async function lazyDesc(id){
+// Lazy desc for hero card only
+async function lazyHeroDesc(id){
   const a=artStore[id];if(!a)return;
-  const el=document.getElementById('desc-'+id);if(!el)return;
-  try{
-    const kw=(a.title||'').split(' ').slice(0,5).join(' ');
-    const params=new URLSearchParams({query:kw,mode:'artlist',maxrecords:'3',timespan:'48H',format:'json'});
-    const r=await fetch(GDELT_CTX+'?'+params.toString(),{signal:AbortSignal.timeout(10000)});
-    const d=await r.json();
-    const arts=Array.isArray(d.articles)?d.articles:[];
-    const match=arts.find(x=>x.domain===a.domain)||arts[0];
-    if(match?.snippet){
-      el.className='c-desc';
-      el.textContent=match.snippet.slice(0,180)+(match.snippet.length>180?'…':'');
-    } else {
-      el.className='c-desc na';
-      el.textContent='No preview available — click to open full article.';
-    }
-  }catch{
-    if(el){el.className='c-desc na';el.textContent='No preview available — click to open full article.';}
-  }
+  const el=document.getElementById('hdesc-'+id);if(!el)return;
+  const snip=await fetchDesc(a);
+  if(snip&&el){el.textContent=snip.slice(0,180)+(snip.length>180?'…':'');}
+  // else leave empty — no fallback text
 }
 
 function renderErr(el,msg,fn){
   el.innerHTML=`<div class="err-box">
     <div class="err-title">⚠ FETCH FAILED</div>
     <div class="err-msg">${esc(msg)}</div>
-    <div class="err-hint">GDELT latency: 15–25s is normal. Retry in 15 seconds.<br>Open debug panel → "Test GDELT" for full diagnosis.</div>
+    <div class="err-hint">GDELT latency is 15–25s normally. Retry in 15 seconds.</div>
     <button class="btn-retry" onclick="${fn}">↻ Retry</button>
   </div>`;
 }
@@ -785,26 +840,57 @@ function renderErr(el,msg,fn){
    LOAD HOME
 ════════════════════════════════════════ */
 async function loadHome(){
+  const hero=document.getElementById('home-hero');
   const grid=document.getElementById('home-grid');
-  grid.innerHTML=skels(6);
-  document.getElementById('homeDate').textContent=
-    new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  hero.innerHTML='';
+  grid.innerHTML=`<div class="progress-wrap" id="home-prog-wrap">${
+    `<div class="progress-stages">${STAGES.map((s,i)=>`<span class="p-stage${i===0?' active':''}" id="hpg-s${i}">${s}</span>${i<STAGES.length-1?'<span class="p-arr">→</span>':''}`).join('')}</div><div class="p-msg p-dots" id="hpg-pm">Contacting GDELT</div>`
+  }</div>`;
+  document.getElementById('homeDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   DBG.info('HOME','Loading…');
-  const stop=showProgress('home-grid');
+
+  let pgStage=0;
+  const pgTimer=setInterval(()=>{
+    const prev=document.getElementById(`hpg-s${pgStage}`);
+    if(prev){prev.classList.remove('active');prev.classList.add('done');}
+    pgStage=Math.min(pgStage+1,STAGES.length-1);
+    const curr=document.getElementById(`hpg-s${pgStage}`);if(curr)curr.classList.add('active');
+    const msg=document.getElementById('hpg-pm');if(msg)msg.textContent=STAGES[pgStage];
+  },7000);
+
   try{
-    const {arts,status,ageMs}=await fetchGdelt(cat('home').q,'24H',20,'DateDesc');
+    const {arts,status,ageMs,elapsed}=await fetchGdelt(cat('home').q,'24H',20,'DateDesc');
+    clearInterval(pgTimer);
+    const pgw=document.getElementById('home-prog-wrap');if(pgw)pgw.remove();
+
     const seen=new Set();
     const top=arts
       .sort((a,b)=>parseGdeltDate(b.seendate)-parseGdeltDate(a.seendate))
       .filter(a=>{const d=a.domain||'';if(seen.has(d))return false;seen.add(d);return true;})
-      .slice(0,6);
-    stop();
+      .slice(0,7);
+
     const sub=document.getElementById('home-sub');
-    if(sub)sub.innerHTML=`<span>// TOP STORIES · GDELT · LAST 24 HOURS</span>${cacheBadgeHTML(status,ageMs)}`;
-    renderArts(grid,top,'#D4A843');
-    updateStamp();
-    DBG.ok('HOME',`${top.length} stories · ${status}`);
-  }catch(e){stop();DBG.err('HOME',e.message);renderErr(grid,e.message,'loadHome()');}
+    if(sub)sub.innerHTML=`<span>// TOP STORIES · GDELT · LAST 24 HOURS</span>${cacheBadgeHTML(status,ageMs,elapsed)}`;
+
+    if(top.length){
+      // Hero = first article
+      hero.innerHTML=heroCardHTML(top[0],'#D4A843');
+      const heroId=Object.keys(artStore).find(k=>artStore[k]===top[0]);
+      if(heroId)lazyHeroDesc(heroId);
+      // Grid = rest
+      if(top.length>1)grid.innerHTML=top.slice(1).map(a=>cardHTML(a,'#D4A843')).join('');
+      else grid.innerHTML='';
+    } else {
+      hero.innerHTML='';
+      grid.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories right now.</div><div class="empty-hint">GDELT indexes every 15 min.</div></div>`;
+    }
+    updateStamp();DBG.ok('HOME',`${top.length} stories · ${status}`);
+  }catch(e){
+    clearInterval(pgTimer);
+    const pgw=document.getElementById('home-prog-wrap');if(pgw)pgw.remove();
+    DBG.err('HOME',e.message);
+    grid.innerHTML=`<div class="err-box"><div class="err-title">⚠ FETCH FAILED</div><div class="err-msg">${esc(e.message)}</div><div class="err-hint">Open debug panel for diagnosis.</div><button class="btn-retry" onclick="loadHome()">↻ Retry</button></div>`;
+  }
 }
 
 /* ════════════════════════════════════════
@@ -815,43 +901,67 @@ async function loadCat(id){
   const c=cat(id);const gid='g-'+id;
   panel.innerHTML=`
     <div class="cat-head">
-      <div class="cat-title-row">
-        <div class="cat-pip" style="background:${c.hex}"></div>
-        <div class="cat-name">${c.name}</div>
+      <div class="cat-head-row">
+        <div class="cat-title-row">
+          <div class="cat-pip" style="background:${c.hex}"></div>
+          <div class="cat-name">${c.name}</div>
+        </div>
         <div class="cat-meta" id="cc-${id}"></div>
       </div>
+      <div id="tonebar-${id}"></div>
     </div>
+    <div id="hero-${id}"></div>
     <div class="art-grid" id="${gid}">${skels(4)}</div>`;
   const grid=document.getElementById(gid);
   DBG.info('CAT','Loading '+c.name+' ts='+c.ts);
   const stop=showProgress(gid);
   try{
-    const {arts:raw,status,ageMs}=await fetchGdelt(c.q,c.ts,c.max||15,'DateDesc');
+    const {arts:raw,status,ageMs,elapsed}=await fetchGdelt(c.q,c.ts,c.max||15,'DateDesc');
     const seen=new Set();
     const arts=raw.filter(a=>{
       const k=(a.title||'').substring(0,50).toLowerCase();
       if(seen.has(k))return false;seen.add(k);return true;
     }).slice(0,7);
     stop();
-    document.getElementById('cc-'+id).innerHTML=`· ${arts.length} stories &nbsp;${cacheBadgeHTML(status,ageMs)}`;
-    renderArts(grid,arts,c.hex);
+
+    // Meta line
+    document.getElementById('cc-'+id).innerHTML=`· ${arts.length} stories &nbsp;${cacheBadgeHTML(status,ageMs,elapsed)}`;
+    // Tone bar
+    if(arts.length)document.getElementById('tonebar-'+id).innerHTML=toneBarHTML(arts);
+
+    if(!arts.length){
+      grid.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories found right now.</div><div class="empty-hint">GDELT indexes every 15 min. Try refreshing.</div></div>`;
+      return;
+    }
+
+    // Hero card = top article
+    const heroEl=document.getElementById('hero-'+id);
+    heroEl.innerHTML=heroCardHTML(arts[0],c.hex);
+    const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
+    if(hid)lazyHeroDesc(hid);
+
+    // Grid = rest
+    if(arts.length>1)grid.innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
+    else grid.innerHTML='';
+
     DBG.ok('CAT',`${c.name}: ${arts.length} · ${status}`);
-  }catch(e){stop();DBG.err('CAT',c.name+': '+e.message);renderErr(grid,e.message,`loadCat('${id}')`);}
+  }catch(e){
+    stop();DBG.err('CAT',c.name+': '+e.message);
+    renderErr(grid,e.message,`loadCat('${id}')`);
+  }
 }
 
 /* ════════════════════════════════════════
-   CARD CLICK — lazy fetch desc then open modal
+   CARD CLICK → lazy desc → modal
 ════════════════════════════════════════ */
 async function cardClick(id,hex){
   const a=artStore[id];if(!a)return;
-  // Open modal immediately with loading state
   openModalShell(id,hex);
-  // Fetch description
   const desc=await fetchDesc(a);
   const mDesc=document.getElementById('mDesc');
   if(mDesc){
     if(desc){mDesc.className='m-desc';mDesc.textContent=desc;}
-    else{mDesc.className='m-desc';mDesc.style.fontStyle='italic';mDesc.style.opacity='.6';mDesc.textContent='Full article summary not available from GDELT context API. Click "Open Full Article" to read the original source.';}
+    else{mDesc.className='m-desc';mDesc.style.cssText='color:var(--text-muted);font-style:italic';mDesc.textContent='Full summary not available from GDELT. Click "Open Full Article" to read the source.';}
   }
 }
 
@@ -862,6 +972,7 @@ function openModalShell(id,hex){
   const a=artStore[id];if(!a)return;
   const c=CATS.find(x=>x.hex===hex)||CATS[0];
   const t=getTone(a);const d=parseGdeltDate(a.seendate);
+  _currentModalUrl=a.url||'';
 
   document.getElementById('mTag').textContent=c.name.toUpperCase();
   document.getElementById('mTag').style.background=hex;
@@ -877,28 +988,17 @@ function openModalShell(id,hex){
     <span class="m-mi">◷ ${ago(d)}</span>
     <span class="m-mi">⌂ ${esc(a.language||'English')}</span>`;
 
-  // Reset desc to loading
   const mDesc=document.getElementById('mDesc');
-  mDesc.className='m-desc loading';mDesc.textContent='Fetching article context…';
-  mDesc.style.fontStyle='';mDesc.style.opacity='';
+  mDesc.className='m-desc loading';mDesc.textContent='Fetching article context…';mDesc.style.cssText='';
 
-  // Tone bar
   const raw=t.raw||0;
   const pct=Math.min(100,Math.max(0,(raw+15)/30*100));
   const fill=t.cls==='pos'?'#1D9E75':t.cls==='neg'?'#E24B4A':'#888780';
   document.getElementById('mTone').innerHTML=`
-    <div class="m-tone-row">
-      <span class="m-tone-lbl">SCORE</span>
-      <span class="m-tone-val" style="color:${fill}">${t.sc==='~'?'Heuristic (no GDELT score)':t.sc}</span>
-    </div>
-    <div class="m-tone-row" style="margin-top:3px">
-      <span class="m-tone-lbl">SENTIMENT</span>
-      <span class="m-tone-val">${t.lbl}</span>
-    </div>
+    <div class="m-tone-row"><span class="m-tone-lbl">SCORE</span><span class="m-tone-val" style="color:${fill}">${t.sc==='~'?'Heuristic':t.sc}</span></div>
+    <div class="m-tone-row" style="margin-top:3px"><span class="m-tone-lbl">SENTIMENT</span><span class="m-tone-val">${t.lbl}</span></div>
     <div class="m-tone-bar"><div class="m-tone-fill" style="width:${pct}%;background:${fill}"></div></div>
-    <div style="display:flex;justify-content:space-between;margin-top:4px">
-      <span class="m-tone-lbl">← Negative</span><span class="m-tone-lbl">Positive →</span>
-    </div>`;
+    <div style="display:flex;justify-content:space-between;margin-top:4px"><span class="m-tone-lbl">← Negative</span><span class="m-tone-lbl">Positive →</span></div>`;
 
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -908,29 +1008,39 @@ function handleOvClick(e){if(e.target===document.getElementById('overlay'))close
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 /* ════════════════════════════════════════
-   SEARCH
+   SEARCH — FIXED
 ════════════════════════════════════════ */
 async function doSearch(){
-  const q=document.getElementById('sInput').value.trim();if(!q)return;
+  const q=document.getElementById('sInput').value.trim();
+  if(!q){DBG.warn('SRCH','Empty query');return;}
   const ts=document.getElementById('sTime').value;
   const sort=document.getElementById('sSort').value;
+  const tone=document.getElementById('sTone').value;
   const src=document.getElementById('sSrc').value;
   const res=document.getElementById('s-results');
+
+  // Build query: wrap in parens, add filters
+  const query=`(${q}) sourcelang:english${tone}${src}`;
+  DBG.info('SRCH',`query="${query}" ts=${ts} sort=${sort}`);
+
   res.innerHTML=`<div class="art-grid">${skels(2)}</div>`;
-  // Auto-wrap in parens + add english filter + source country
-  const query=`(${q}) sourcelang:english${src}`;
-  DBG.info('SRCH',`q="${query}" ts=${ts} sort=${sort}`);
   try{
     const {arts}=await fetchGdelt(query,ts,10,sort);
     if(!arts.length){
-      res.innerHTML=`<div class="empty"><div class="empty-ico">◎</div>
-        <div class="empty-txt">No results for "${esc(q)}" in the last ${ts}.</div>
-        <div class="empty-hint">Try broader keywords or a wider timespan.</div></div>`;
+      res.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No English results for "${esc(q)}" in the last ${ts}.</div><div class="empty-hint">Try different keywords or a wider timespan.</div></div>`;
       return;
     }
+    // Hero + grid for search results
+    const heroWrap=document.createElement('div');
+    heroWrap.innerHTML=heroCardHTML(arts[0],'#7A8FA6');
+    const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
+    if(hid)lazyHeroDesc(hid);
+
     const g=document.createElement('div');g.className='art-grid';
-    renderArts(g,arts,'#7A8FA6');
-    res.innerHTML='';res.appendChild(g);
+    if(arts.length>1)g.innerHTML=arts.slice(1).map(a=>cardHTML(a,'#7A8FA6')).join('');
+
+    res.innerHTML='';res.appendChild(heroWrap);if(arts.length>1)res.appendChild(g);
+    DBG.ok('SRCH',`${arts.length} results for "${q}"`);
   }catch(e){
     DBG.err('SRCH',e.message);
     res.innerHTML=`<div class="err-box"><div class="err-title">⚠ SEARCH FAILED</div><div class="err-msg">${esc(e.message)}</div><button class="btn-retry" onclick="doSearch()">↻ Retry</button></div>`;
@@ -938,7 +1048,19 @@ async function doSearch(){
 }
 
 /* ════════════════════════════════════════
-   REFRESH / AUTO
+   KEYBOARD SHORTCUTS
+════════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  const keys=['1','2','3','4','5','6','7','8','9','0'];
+  const tabIds=['home','geopolitics','finance','ai','tech','politics','disasters','science','energy','tamilnadu'];
+  const idx=keys.indexOf(e.key);
+  if(idx>=0&&tabIds[idx]){switchTab(tabIds[idx]);return;}
+  if(e.key==='r'||e.key==='R')manualRefresh();
+});
+
+/* ════════════════════════════════════════
+   REFRESH
 ════════════════════════════════════════ */
 function updateStamp(){
   document.getElementById('lastUpdated').textContent=
@@ -962,7 +1084,8 @@ function toggleAuto(){
    INIT
 ════════════════════════════════════════ */
 buildNav();
-DBG.info('INIT','MERIDIAN v1.7');
+DBG.info('INIT','MERIDIAN v1.8 · Hero cards · Tone bars · Theme toggle · Search fixed');
+DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = close modal');
 loadHome();
 </script>
 </body>
