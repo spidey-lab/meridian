@@ -130,6 +130,9 @@
     .card.pos{border-left-color:var(--pos)}
     .card.neu{border-left-color:var(--neu)}
     .card.read{opacity:.45}
+    .card.unverified{border-left-color:#D4A843!important;border-left-width:3px}
+    .hero-card.unverified{border-left-color:#D4A843!important}
+    .badge-unverified{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(212,168,67,.15);color:#D4A843;border:0.5px solid rgba(212,168,67,.4);font-weight:500;letter-spacing:.3px;flex-shrink:0}
     .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
     .card-top-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
     .c-flag{font-size:12px;line-height:1;flex-shrink:0}
@@ -276,7 +279,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.9.1</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.9.2</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -385,7 +388,7 @@
     Powered by <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
     Direct browser · CORS native &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
-    MERIDIAN v1.9.1
+    MERIDIAN v1.9.2
   </div>
 </main>
 
@@ -990,13 +993,15 @@ function heroCardHTML(a,hex){
   const src=(a.domain||'unknown').replace(/^www\./,'');
   const sc=t.sc!=='~'?' · '+t.sc:'';
   const read=getRead().has(a.url||'');
-  return`<div class="hero-card ${t.cls}${read?' read':''}" id="hc-${id}" onclick="cardClick('${id}','${hex}')">
+  const unv=a._unverified?'unverified':'';
+  const unvBadge=a._unverified?`<span class="badge-unverified">⚠ UNVERIFIED SOURCE</span>`:'';
+  return`<div class="hero-card ${t.cls}${read?' read':''} ${unv}" id="hc-${id}" onclick="cardClick('${id}','${hex}')">
     <div class="hero-top">
       <div class="hero-top-left">
         <span style="font-size:13px">${flag(a.sourcecountry)}</span>
         <span class="c-src" style="max-width:180px">${esc(src)}</span>
         <span class="c-tone ${t.cls}">${t.lbl}${sc}</span>
-        <span class="badge-top">TOP STORY</span>
+        ${a._unverified?unvBadge:`<span class="badge-top">TOP STORY</span>`}
       </div>
       <span class="c-time">${ago(d)}</span>
     </div>
@@ -1011,12 +1016,15 @@ function cardHTML(a,hex){
   const src=(a.domain||'unknown').replace(/^www\./,'');
   const sc=t.sc!=='~'?' · '+t.sc:'';
   const read=getRead().has(a.url||'');
-  return`<div class="card ${t.cls}${read?' read':''}" id="card-${id}" onclick="cardClick('${id}','${hex}')">
+  const unv=a._unverified?'unverified':'';
+  const unvBadge=a._unverified?`<span class="badge-unverified">⚠ UNVERIFIED SOURCE</span>`:'';
+  return`<div class="card ${t.cls}${read?' read':''} ${unv}" id="card-${id}" onclick="cardClick('${id}','${hex}')">
     <div class="card-top">
       <div class="card-top-left">
         <span class="c-flag">${flag(a.sourcecountry)}</span>
         <span class="c-src">${esc(src)}</span>
         <span class="c-tone ${t.cls}">${t.lbl}${sc}</span>
+        ${unvBadge}
       </div>
       <span class="c-time">${ago(d)}</span>
     </div>
@@ -1100,6 +1108,96 @@ async function loadHome(){
 }
 
 /* ════════════════════════════════════════
+   FETCH WITH FALLBACK CASCADE
+   Step 1: trusted domains, 24H
+   Step 2: trusted domains, 48H  (merge)
+   Step 3: trusted domains, 7D   (merge)
+   Step 4: all domains,    24H   (merge, tag unverified)
+   Stops as soon as pool reaches MIN_ARTICLES.
+════════════════════════════════════════ */
+const MIN_ARTICLES = 6;
+
+function dedup(pool){
+  const seen=new Set();
+  return pool.filter(a=>{
+    const k=(a.title||'').substring(0,50).toLowerCase();
+    if(seen.has(k))return false;seen.add(k);return true;
+  });
+}
+
+async function fetchWithFallback(q, baseTs, max){
+  const TIMESPANS = ['24H','48H','7D'];
+  let pool = [];
+  let finalStatus = 'LIVE';
+  let finalAgeMs  = 0;
+  let finalElapsed = '0';
+
+  // Steps 1-3: trusted domains, widening timespan
+  for(const ts of TIMESPANS){
+    // Skip if already have enough
+    if(pool.length >= MIN_ARTICLES) break;
+
+    // Skip timespans narrower than category default
+    // (e.g. Active Conflicts uses 12H — still try 24H/48H/7D)
+    try{
+      DBG.info('FALLBACK',`Trying trusted · ts=${ts} · pool=${pool.length}`);
+      const {arts, status, ageMs, elapsed} = await fetchGdelt(q, ts, max, 'DateDesc');
+      // Merge new articles not already in pool
+      const prevCount = pool.length;
+      const merged = dedup([...pool, ...arts]);
+      if(merged.length > pool.length){
+        pool = merged;
+        finalStatus  = status;
+        finalAgeMs   = ageMs;
+        finalElapsed = elapsed||'0';
+        DBG.ok('FALLBACK',`ts=${ts} added ${pool.length-prevCount} · pool now ${pool.length}`);
+      }
+      if(pool.length >= MIN_ARTICLES) break;
+    }catch(e){
+      DBG.warn('FALLBACK',`ts=${ts} failed: ${e.message}`);
+    }
+  }
+
+  // Step 4: Tier 5 — all domains, 24H, no whitelist filter
+  if(pool.length < MIN_ARTICLES){
+    DBG.warn('FALLBACK',`Pool ${pool.length} < ${MIN_ARTICLES} · entering Tier 5 (unverified)`);
+    try{
+      const tier5 = await fetchGdeltUnfiltered(q, '24H', max);
+      // Only add articles not already in trusted pool
+      const trustedUrls = new Set(pool.map(a=>a.url||a.title));
+      const newArts = tier5.filter(a=>!trustedUrls.has(a.url||a.title));
+      // Tag as unverified
+      newArts.forEach(a=>{ a._unverified = true; });
+      pool = dedup([...pool, ...newArts]);
+      DBG.warn('FALLBACK',`Tier 5 added ${newArts.length} unverified · pool now ${pool.length}`);
+    }catch(e){
+      DBG.warn('FALLBACK',`Tier 5 failed: ${e.message}`);
+    }
+  }
+
+  return { arts: pool.slice(0,10), status: finalStatus, ageMs: finalAgeMs, elapsed: finalElapsed };
+}
+
+// Tier 5 fetch — bypasses domain whitelist, fetches raw GDELT
+async function fetchGdeltUnfiltered(q, ts, max){
+  // Use the internal _gdeltFetch directly — bypasses isTrusted filter
+  // We reimplement a minimal fetch here to avoid touching _gdeltFetch's filter path
+  const params = new URLSearchParams({query:q,mode:'artlist',maxrecords:String(max),timespan:ts,sort:'DateDesc',format:'json'});
+  const url = GDELT+'?'+params.toString();
+  DBG.info('T5','Fetching unfiltered: ts='+ts+' max='+max);
+  return queueFetch(async ()=>{
+    const r = await fetch(url,{signal:AbortSignal.timeout(30000)});
+    if(!r.ok) throw new Error(`T5 HTTP ${r.status}`);
+    const text = await r.text();
+    if(!text.trim().startsWith('{')) throw new Error('T5 non-JSON response');
+    const d = JSON.parse(text);
+    const raw = Array.isArray(d.articles)?d.articles:[];
+    // English filter only — no domain filter
+    return raw.filter(a=>!a.language||a.language.toLowerCase()==='english');
+  });
+}
+
+/* ════════════════════════════════════════
    LOAD CATEGORY
 ════════════════════════════════════════ */
 async function loadCat(id){
@@ -1122,35 +1220,32 @@ async function loadCat(id){
   DBG.info('CAT','Loading '+c.name+' ts='+c.ts);
   const stop=showProgress(gid);
   try{
-    const {arts:raw,status,ageMs,elapsed}=await fetchGdelt(c.q,c.ts,c.max||15,'DateDesc');
-    const seen=new Set();
-    const arts=raw.filter(a=>{
-      const k=(a.title||'').substring(0,50).toLowerCase();
-      if(seen.has(k))return false;seen.add(k);return true;
-    }).slice(0,7);
+    const {arts,status,ageMs,elapsed}=await fetchWithFallback(c.q, c.ts, c.max||15);
     stop();
 
-    // Meta line
-    document.getElementById('cc-'+id).innerHTML=`· ${arts.length} stories &nbsp;${cacheBadgeHTML(status,ageMs,elapsed)}`;
-    // Tone bar
-    if(arts.length)document.getElementById('tonebar-'+id).innerHTML=toneBarHTML(arts);
+    const unvCount = arts.filter(a=>a._unverified).length;
+    const trustCount = arts.length - unvCount;
+    let metaLabel = `· ${arts.length} stories`;
+    if(unvCount>0) metaLabel += ` <span style="color:#D4A843;font-size:9px">(${unvCount} unverified)</span>`;
+    document.getElementById('cc-'+id).innerHTML=`${metaLabel} &nbsp;${cacheBadgeHTML(status,ageMs,elapsed)}`;
+    if(arts.length) document.getElementById('tonebar-'+id).innerHTML=toneBarHTML(arts);
 
     if(!arts.length){
       grid.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories found right now.</div><div class="empty-hint">GDELT indexes every 15 min. Try refreshing.</div></div>`;
       return;
     }
 
-    // Hero card = top article
+    // Hero = first article
     const heroEl=document.getElementById('hero-'+id);
     heroEl.innerHTML=heroCardHTML(arts[0],c.hex);
     const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
-    if(hid)lazyHeroDesc(hid);
+    if(hid) lazyHeroDesc(hid);
 
     // Grid = rest
-    if(arts.length>1)grid.innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
+    if(arts.length>1) grid.innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
     else grid.innerHTML='';
 
-    DBG.ok('CAT',`${c.name}: ${arts.length} · ${status}`);
+    DBG.ok('CAT',`${c.name}: ${trustCount} trusted + ${unvCount} unverified = ${arts.length} total`);
   }catch(e){
     stop();DBG.err('CAT',c.name+': '+e.message);
     renderErr(grid,e.message,`loadCat('${id}')`);
