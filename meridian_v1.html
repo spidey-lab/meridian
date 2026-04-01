@@ -279,7 +279,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.9.2</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.9.3</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -388,7 +388,7 @@
     Powered by <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
     Direct browser · CORS native &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
-    MERIDIAN v1.9.2
+    MERIDIAN v1.9.3
   </div>
 </main>
 
@@ -1061,7 +1061,7 @@ async function loadHome(){
     `<div class="progress-stages">${STAGES.map((s,i)=>`<span class="p-stage${i===0?' active':''}" id="hpg-s${i}">${s}</span>${i<STAGES.length-1?'<span class="p-arr">→</span>':''}`).join('')}</div><div class="p-msg p-dots" id="hpg-pm">Contacting GDELT</div>`
   }</div>`;
   document.getElementById('homeDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  DBG.info('HOME','Loading…');
+  DBG.info('HOME','Loading… (cascade: 24H→48H→7D→Tier5)');
 
   let pgStage=0;
   const pgTimer=setInterval(()=>{
@@ -1073,32 +1073,37 @@ async function loadHome(){
   },7000);
 
   try{
-    const {arts,status,ageMs,elapsed}=await fetchGdelt(cat('home').q,'24H',20,'DateDesc');
+    // Use cascade — same as categories
+    const {arts,status,ageMs,elapsed}=await fetchWithFallback(cat('home').q,'24H',20);
     clearInterval(pgTimer);
     const pgw=document.getElementById('home-prog-wrap');if(pgw)pgw.remove();
 
+    // Title-based dedup (not domain-based) — keeps more variety
     const seen=new Set();
     const top=arts
       .sort((a,b)=>parseGdeltDate(b.seendate)-parseGdeltDate(a.seendate))
-      .filter(a=>{const d=a.domain||'';if(seen.has(d))return false;seen.add(d);return true;})
+      .filter(a=>{
+        const k=(a.title||'').substring(0,50).toLowerCase();
+        if(seen.has(k))return false;seen.add(k);return true;
+      })
       .slice(0,7);
 
     const sub=document.getElementById('home-sub');
     if(sub)sub.innerHTML=`<span>// TOP STORIES · GDELT · LAST 24 HOURS</span>${cacheBadgeHTML(status,ageMs,elapsed)}`;
 
     if(top.length){
-      // Hero = first article
       hero.innerHTML=heroCardHTML(top[0],'#D4A843');
       const heroId=Object.keys(artStore).find(k=>artStore[k]===top[0]);
       if(heroId)lazyHeroDesc(heroId);
-      // Grid = rest
       if(top.length>1)grid.innerHTML=top.slice(1).map(a=>cardHTML(a,'#D4A843')).join('');
       else grid.innerHTML='';
     } else {
       hero.innerHTML='';
       grid.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories right now.</div><div class="empty-hint">GDELT indexes every 15 min.</div></div>`;
     }
-    updateStamp();DBG.ok('HOME',`${top.length} stories · ${status}`);
+    const unvCount=top.filter(a=>a._unverified).length;
+    updateStamp();
+    DBG.ok('HOME',`${top.length} stories · ${top.length-unvCount} trusted · ${unvCount} unverified · ${status}`);
   }catch(e){
     clearInterval(pgTimer);
     const pgw=document.getElementById('home-prog-wrap');if(pgw)pgw.remove();
