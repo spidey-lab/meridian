@@ -238,7 +238,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.7.1</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.7.2</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -329,7 +329,7 @@
     Powered by <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
     Direct browser · CORS native &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
-    MERIDIAN v1.7.1
+    MERIDIAN v1.7.2
   </div>
 </main>
 
@@ -569,15 +569,25 @@ async function fetchGdelt(q,ts='24H',max=15,sort='DateDesc'){
     const text=await r.text();
     if(!text.trim().startsWith('{'))throw new Error('GDELT returned non-JSON response');
     const d=JSON.parse(text);
-    const arts=Array.isArray(d.articles)?d.articles:[];
-    DBG.ok('GDELT',`✓ ${arts.length} articles · caching`);
+    const raw=Array.isArray(d.articles)?d.articles:[];
+    // Client-side English filter — GDELT sourcelang is unreliable, filter by article language field
+    const arts=raw.filter(a=>!a.language||a.language.toLowerCase()==='english');
+    const filtered=raw.length-arts.length;
+    if(filtered>0)DBG.info('FILTER',`Removed ${filtered} non-English articles (of ${raw.length})`);
+    DBG.ok('GDELT',`✓ ${arts.length} English articles · caching`);
     DBG.stats.art+=arts.length;DBG._st();
-    cacheSet(q,ts,max,d);
+    // Cache the filtered result
+    const toCache={...d,articles:arts};
+    cacheSet(q,ts,max,toCache);
     return{arts,status:'LIVE',ageMs:0};
   }catch(e){
     DBG.err('GDELT',e.message);DBG.stats.err++;DBG._st();
     const stale=cacheStale(q,ts,max);
-    if(stale){DBG.warn('CACHE',`STALE fallback · ${Math.floor(stale.ageMs/60000)}m old`);return{arts:stale.data.articles||[],status:'STALE',ageMs:stale.ageMs};}
+    if(stale){
+      const staleArts=(stale.data.articles||[]).filter(a=>!a.language||a.language.toLowerCase()==='english');
+      DBG.warn('CACHE',`STALE fallback · ${Math.floor(stale.ageMs/60000)}m old · ${staleArts.length} English arts`);
+      return{arts:staleArts,status:'STALE',ageMs:stale.ageMs};
+    }
     throw e;
   }
 }
