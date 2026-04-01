@@ -279,7 +279,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.9.3</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.9.4</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -388,7 +388,7 @@
     Powered by <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
     Direct browser · CORS native &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
-    MERIDIAN v1.9.3
+    MERIDIAN v1.9.4
   </div>
 </main>
 
@@ -1325,32 +1325,60 @@ async function doSearch(){
   const src=document.getElementById('sSrc').value;
   const res=document.getElementById('s-results');
 
-  // Build query: wrap in parens, add filters
+  // Search uses NO domain whitelist — user-typed queries should return all relevant results
+  // Wrap user input in parens, add language + optional filters
   const query=`(${q}) sourcelang:english${tone}${src}`;
   DBG.info('SRCH',`query="${query}" ts=${ts} sort=${sort}`);
+  DBG.info('SRCH','Note: search bypasses domain whitelist — shows all English sources');
 
   res.innerHTML=`<div class="art-grid">${skels(2)}</div>`;
-  try{
-    const {arts}=await fetchGdelt(query,ts,10,sort);
-    if(!arts.length){
-      res.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No English results for "${esc(q)}" in the last ${ts}.</div><div class="empty-hint">Try different keywords or a wider timespan.</div></div>`;
-      return;
+
+  // Cascade: try requested timespan first, widen if needed
+  const timespans=[ts];
+  if(ts==='6H')  timespans.push('24H','48H');
+  if(ts==='24H') timespans.push('48H','7D');
+  if(ts==='48H') timespans.push('7D');
+
+  let arts=[];
+  for(const span of timespans){
+    try{
+      DBG.info('SRCH',`Trying ts=${span}…`);
+      arts = await fetchGdeltUnfiltered(query, span, 15);
+      if(arts.length>=3){
+        DBG.ok('SRCH',`${arts.length} results · ts=${span}`);
+        break;
+      }
+      DBG.warn('SRCH',`ts=${span} returned ${arts.length} — widening`);
+    }catch(e){
+      DBG.err('SRCH',`ts=${span} failed: ${e.message}`);
     }
-    // Hero + grid for search results
-    const heroWrap=document.createElement('div');
-    heroWrap.innerHTML=heroCardHTML(arts[0],'#7A8FA6');
-    const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
-    if(hid)lazyHeroDesc(hid);
-
-    const g=document.createElement('div');g.className='art-grid';
-    if(arts.length>1)g.innerHTML=arts.slice(1).map(a=>cardHTML(a,'#7A8FA6')).join('');
-
-    res.innerHTML='';res.appendChild(heroWrap);if(arts.length>1)res.appendChild(g);
-    DBG.ok('SRCH',`${arts.length} results for "${q}"`);
-  }catch(e){
-    DBG.err('SRCH',e.message);
-    res.innerHTML=`<div class="err-box"><div class="err-title">⚠ SEARCH FAILED</div><div class="err-msg">${esc(e.message)}</div><button class="btn-retry" onclick="doSearch()">↻ Retry</button></div>`;
   }
+
+  if(!arts.length){
+    res.innerHTML=`<div class="empty"><div class="empty-ico">◎</div>
+      <div class="empty-txt">No results for "${esc(q)}".</div>
+      <div class="empty-hint">Try different keywords, remove filters, or widen the timespan.</div></div>`;
+    return;
+  }
+
+  // Sort by date
+  arts.sort((a,b)=>parseGdeltDate(b.seendate)-parseGdeltDate(a.seendate));
+
+  // Render hero + grid
+  const heroWrap=document.createElement('div');
+  heroWrap.innerHTML=heroCardHTML(arts[0],'#7A8FA6');
+  const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
+  if(hid)lazyHeroDesc(hid);
+
+  res.innerHTML='';
+  res.appendChild(heroWrap);
+  if(arts.length>1){
+    const g=document.createElement('div');
+    g.className='art-grid';
+    g.innerHTML=arts.slice(1).map(a=>cardHTML(a,'#7A8FA6')).join('');
+    res.appendChild(g);
+  }
+  DBG.ok('SRCH',`Showing ${arts.length} results for "${q}"`);
 }
 
 /* ════════════════════════════════════════
