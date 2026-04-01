@@ -232,6 +232,80 @@
     /* ── ATTR ── */
     .attr{margin-top:44px;padding-top:16px;border-top:0.5px solid var(--border-sub);text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
 
+    /* ── MARKET KPI CARDS ── */
+    .mkt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+    .mkt-card{background:var(--bg-card);border:0.5px solid var(--border);border-top:3px solid var(--border);border-radius:var(--r);padding:14px 16px;transition:background var(--t)}
+    .mkt-card.up{border-top-color:var(--pos)}
+    .mkt-card.dn{border-top-color:var(--neg)}
+    .mkt-card.na{border-top-color:var(--text-muted)}
+    .mkt-card:hover{background:var(--bg-card-h)}
+    .mkt-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-bottom:4px;text-transform:uppercase}
+    .mkt-name{font-size:11px;color:var(--text-sub);margin-bottom:8px;font-weight:500}
+    .mkt-price{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:500;color:var(--text);margin-bottom:5px;line-height:1}
+    .mkt-change{font-family:'JetBrains Mono',monospace;font-size:11px;display:flex;align-items:center;gap:6px;margin-bottom:10px}
+    .mkt-change.up{color:var(--pos)}
+    .mkt-change.dn{color:var(--neg)}
+    .mkt-change.na{color:var(--text-muted)}
+    .mkt-spark{width:100%;height:36px;display:block}
+    .mkt-spark path{fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+    .mkt-spark.up path{stroke:var(--pos)}
+    .mkt-spark.dn path{stroke:var(--neg)}
+    .mkt-spark.na path{stroke:var(--text-muted)}
+    .mkt-spark .spark-fill{fill-opacity:.08}
+    .mkt-spark.up .spark-fill{fill:var(--pos)}
+    .mkt-spark.dn .spark-fill{fill:var(--neg)}
+    .mkt-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:4px}
+
+    /* ── HOME MARKET SECTION ── */
+    .home-mkt-head{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);letter-spacing:2px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+    .home-mkt-badge{font-size:9px;color:var(--text-muted)}
+
+    /* ── VIX WIDGET ── */
+    .vix-row{display:flex;align-items:stretch;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+    .vix-chip{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;display:flex;flex-direction:column;gap:4px;min-width:130px}
+    .vix-chip-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
+    .vix-chip-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;color:var(--text)}
+    .vix-chip-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
+    .mkt-status-open{color:var(--pos)}
+    .mkt-status-closed{color:var(--neg)}
+    .mkt-status-pre{color:#D4A843}
+
+    /* ── USGS EARTHQUAKE CARDS ── */
+    .quake-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:24px}
+    .quake-card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+    .quake-card.minor{border-left-color:#D4A843}
+    .quake-card.moderate{border-left-color:#F0833A}
+    .quake-card.strong{border-left-color:var(--neg)}
+    .quake-card.major{border-left-color:#9B1B1B;background:rgba(155,27,27,.05)}
+    .quake-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .quake-mag{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;line-height:1}
+    .quake-mag.minor{color:#D4A843}
+    .quake-mag.moderate{color:#F0833A}
+    .quake-mag.strong{color:var(--neg)}
+    .quake-mag.major{color:#E05252}
+    .quake-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
+    .quake-place{font-size:13px;font-weight:500;color:var(--text);line-height:1.35}
+    .quake-meta{display:flex;gap:10px;flex-wrap:wrap}
+    .quake-pill{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px;background:var(--bg-surf);color:var(--text-sub);border:0.5px solid var(--border)}
+    .quake-link{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);text-decoration:none;margin-top:2px}
+    .quake-link:hover{color:var(--text)}
+    .section-head{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text-sub);margin-bottom:12px;padding-bottom:8px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .section-badge{font-size:9px;color:var(--text-muted)}
+
+    /* ── RELIEFWEB CRISIS CARDS ── */
+    .crisis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:24px}
+    .crisis-card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--neg);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:background var(--t)}
+    .crisis-card:hover{background:var(--bg-card-h)}
+    .crisis-card.ongoing{border-left-color:var(--neg)}
+    .crisis-card.past{border-left-color:var(--text-muted)}
+    .crisis-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+    .crisis-status{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:3px;font-weight:500}
+    .crisis-status.ongoing{background:rgba(226,75,74,.12);color:var(--tone-neg-txt);border:0.5px solid rgba(226,75,74,.25)}
+    .crisis-status.past{background:var(--bg-surf);color:var(--text-muted);border:0.5px solid var(--border)}
+    .crisis-country{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
+    .crisis-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;line-height:1.35;color:var(--text);margin-bottom:6px}
+    .crisis-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
+
     /* ── DEBUG ── */
     #dbg-btn{position:fixed;bottom:16px;right:16px;z-index:800;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);cursor:pointer;display:flex;align-items:center;gap:6px;transition:border-color .2s}
     #dbg-btn:hover{border-color:#4B8EF0;color:#4B8EF0}
@@ -279,7 +353,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.9.4</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.0</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -314,12 +388,30 @@
       </div>
       <div class="home-date" id="homeDate"></div>
     </div>
+    <!-- VIX + Market Status widget -->
+    <div class="vix-row" id="vix-row">
+      <div class="vix-chip"><div class="vix-chip-lbl">Market Status</div><div class="vix-chip-val" id="mkt-status-val">—</div><div class="vix-chip-sub" id="mkt-status-sub">IST</div></div>
+      <div class="vix-chip"><div class="vix-chip-lbl">India VIX</div><div class="vix-chip-val" id="vix-val">—</div><div class="vix-chip-sub" id="vix-sub">Fear gauge</div></div>
+      <div class="vix-chip"><div class="vix-chip-lbl">Nifty 50</div><div class="vix-chip-val" id="nifty-val">—</div><div class="vix-chip-sub" id="nifty-sub">NSE</div></div>
+      <div class="vix-chip"><div class="vix-chip-lbl">Gold (USD/oz)</div><div class="vix-chip-val" id="gold-val">—</div><div class="vix-chip-sub" id="gold-sub">Spot</div></div>
+      <div class="vix-chip"><div class="vix-chip-lbl">Crude Oil (USD)</div><div class="vix-chip-val" id="crude-val">—</div><div class="vix-chip-sub" id="crude-sub">WTI</div></div>
+      <div class="vix-chip"><div class="vix-chip-lbl">USD / INR</div><div class="vix-chip-val" id="usdinr-val">—</div><div class="vix-chip-sub" id="usdinr-sub">Forex</div></div>
+    </div>
+    <!-- Market KPI Cards -->
+    <div class="home-mkt-head">
+      <span>// GLOBAL MARKETS · STOOQ · ~15 MIN DELAY</span>
+      <span class="home-mkt-badge" id="mkt-stamp">—</span>
+    </div>
+    <div class="mkt-grid" id="home-mkt-grid">
+      <!-- populated by loadMarkets() -->
+    </div>
     <div id="home-hero"></div>
     <div class="art-grid" id="home-grid"></div>
   </div>
 
   <div id="panel-geopolitics" class="panel"></div>
   <div id="panel-conflicts"   class="panel"></div>
+  <div id="panel-markets"     class="panel"></div>
   <div id="panel-finance"     class="panel"></div>
   <div id="panel-indiaeco"    class="panel"></div>
   <div id="panel-ai"          class="panel"></div>
@@ -388,7 +480,7 @@
     Powered by <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
     Direct browser · CORS native &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
-    MERIDIAN v1.9.4
+    MERIDIAN v2.0
   </div>
 </main>
 
@@ -636,7 +728,10 @@ const CATS = [
     q:'(theme:ARMEDCONFLICT OR theme:KILL) (war OR attack OR strike OR missile OR killed OR bombing OR offensive OR troops OR frontline) sourcelang:english',
     ts:'12H', max:15 },
 
-  { id:'finance',    name:'Global Markets',         ico:'◈', hex:'#3DB88A',
+  // Markets tab — loaded by loadMarkets(), not GDELT
+  { id:'markets',    name:'Markets',                ico:'◫', hex:'#3DB88A', q:null },
+
+  { id:'finance',    name:'Markets News',           ico:'◈', hex:'#2A9E70',
     // Global finance — Fed, crude, gold, global indices
     q:'("Federal Reserve" OR "crude oil" OR "gold price" OR "US markets" OR "S&P 500" OR "oil price" OR "dollar index" OR "bond yields") sourcelang:english',
     ts:'24H', max:15 },
@@ -968,7 +1063,11 @@ function switchTab(id){
   b.classList.add('active');b.style.borderBottomColor=c.hex;b.style.color='var(--text)';
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
-  if(!loaded.has(id)&&id!=='search'){loaded.add(id);loadCat(id);}
+  if(!loaded.has(id)&&id!=='search'){
+    loaded.add(id);
+    if(id==='markets') loadMarkets();
+    else loadCat(id);
+  }
 }
 
 /* ════════════════════════════════════════
@@ -1387,7 +1486,7 @@ async function doSearch(){
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
   const keys=['1','2','3','4','5','6','7','8','9','0'];
-  const tabIds=['home','geopolitics','conflicts','finance','indiaeco','ai','tech','politics','disasters','health'];
+  const tabIds=['home','geopolitics','conflicts','markets','finance','indiaeco','ai','tech','politics','disasters'];
   const idx=keys.indexOf(e.key);
   if(idx>=0&&tabIds[idx]){switchTab(tabIds[idx]);return;}
   if(e.key==='r'||e.key==='R')manualRefresh();
@@ -1417,11 +1516,579 @@ function toggleAuto(){
 /* ════════════════════════════════════════
    INIT
 ════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   MARKET DATA — STOOQ
+   Symbols: Nifty50, Sensex, USDINR, Gold, Silver, Crude, S&P500, Nasdaq100
+   URL: https://stooq.com/q/l/?s=SYMBOL&f=sd2t2ohlcvn&h&e=csv
+   Returns CSV: Symbol,Date,Time,Open,High,Low,Close,Volume,Name
+   Sparkline: fetch last 10 days from https://stooq.com/q/d/l/?s=SYMBOL&i=d
+════════════════════════════════════════ */
+const TICKERS = [
+  { sym:'^nsei',   name:'Nifty 50',    label:'India',  fmt:'₹', dec:0 },
+  { sym:'^bsesn',  name:'Sensex',      label:'India',  fmt:'₹', dec:0 },
+  { sym:'usdinr',  name:'USD / INR',   label:'Forex',  fmt:'₹', dec:2 },
+  { sym:'xauusd',  name:'Gold',        label:'USD/oz', fmt:'$', dec:1 },
+  { sym:'xagusd',  name:'Silver',      label:'USD/oz', fmt:'$', dec:2 },
+  { sym:'cl.f',    name:'Crude Oil',   label:'WTI USD',fmt:'$', dec:2 },
+  { sym:'^spx',    name:'S&P 500',     label:'US',     fmt:'',  dec:0 },
+  { sym:'^ndq',    name:'Nasdaq 100',  label:'US',     fmt:'',  dec:0 },
+];
+const MKT_CACHE_TTL  = 5  * 60 * 1000; // 5 min fresh
+const SPARK_CACHE_TTL= 60 * 60 * 1000; // 1 hr — sparklines change slowly
+const VIX_CACHE_TTL  = 5  * 60 * 1000; // 5 min
+const MKT_RETRY_DELAY= 3000;            // 3s before retry on Stooq failure
+const MKT_MAX_RETRIES= 2;
+
+function mktCacheKey(sym){ return 'mer_mkt_'+sym; }
+function sparkCacheKey(sym){ return 'mer_sp_'+sym; }
+function mktCacheGet(sym,ttl){
+  try{
+    const r=localStorage.getItem(mktCacheKey(sym));if(!r)return null;
+    const d=JSON.parse(r);
+    if(Date.now()-d.ts>ttl)return null;
+    return d;
+  }catch{return null;}
+}
+function mktCacheGetStale(sym){
+  // Returns expired cache — used as fallback when fetch fails
+  try{
+    const r=localStorage.getItem(mktCacheKey(sym));if(!r)return null;
+    return JSON.parse(r);
+  }catch{return null;}
+}
+function mktCacheSet(sym,data){
+  try{localStorage.setItem(mktCacheKey(sym),JSON.stringify({...data,ts:Date.now()}));}catch{}
+}
+function sparkCacheGet(sym){
+  try{
+    const r=localStorage.getItem(sparkCacheKey(sym));if(!r)return null;
+    const d=JSON.parse(r);
+    if(Date.now()-d.ts>SPARK_CACHE_TTL)return null;
+    return d.closes;
+  }catch{return null;}
+}
+function sparkCacheSet(sym,closes){
+  try{localStorage.setItem(sparkCacheKey(sym),JSON.stringify({closes,ts:Date.now()}));}catch{}
+}
+
+async function fetchTicker(t){
+  // 1. Fresh cache
+  const cached=mktCacheGet(t.sym,MKT_CACHE_TTL);
+  if(cached){ DBG.ok('MKT',`Cache hit: ${t.sym} · ${Math.floor((Date.now()-cached.ts)/60000)}m old`); return cached; }
+
+  const url=`https://stooq.com/q/l/?s=${encodeURIComponent(t.sym)}&f=sd2t2ohlcvn&h&e=csv`;
+  DBG.info('MKT','Fetching: '+t.sym);
+
+  // 2. Fetch with retry
+  for(let attempt=1; attempt<=MKT_MAX_RETRIES; attempt++){
+    try{
+      const r=await fetch(url,{signal:AbortSignal.timeout(12000)});
+      const text=await r.text();
+      const lines=text.trim().split('\n');
+      if(lines.length<2) throw new Error('Empty response');
+      const vals=lines[1].split(',');
+      const close=parseFloat(vals[6]);
+      const open=parseFloat(vals[3]);
+      if(isNaN(close)||isNaN(open)) throw new Error('Invalid price data');
+      const change=close-open;
+      const changePct=(change/open)*100;
+      const data={sym:t.sym,close,open,change,changePct,date:vals[1],time:vals[2],stale:false};
+      mktCacheSet(t.sym,data);
+      return data;
+    }catch(e){
+      DBG.warn('MKT',`${t.sym} attempt ${attempt}/${MKT_MAX_RETRIES} failed: ${e.message}`);
+      if(attempt<MKT_MAX_RETRIES) await new Promise(r=>setTimeout(r,MKT_RETRY_DELAY));
+    }
+  }
+
+  // 3. Stale cache fallback — show last known price with stale flag
+  const stale=mktCacheGetStale(t.sym);
+  if(stale){
+    const ageMin=Math.floor((Date.now()-stale.ts)/60000);
+    DBG.warn('MKT',`${t.sym} using stale data · ${ageMin}m old`);
+    return {...stale, stale:true};
+  }
+
+  return null;
+}
+
+async function fetchSparkline(sym){
+  // 1. Cached sparklines (1hr TTL — they don't change that fast)
+  const cached=sparkCacheGet(sym);
+  if(cached){ DBG.ok('MKT',`Spark cache hit: ${sym}`); return cached; }
+
+  const url=`https://stooq.com/q/d/l/?s=${encodeURIComponent(sym)}&i=d`;
+  try{
+    const r=await fetch(url,{signal:AbortSignal.timeout(12000)});
+    const text=await r.text();
+    const lines=text.trim().split('\n').slice(1);
+    const closes=lines.slice(-10).map(l=>parseFloat(l.split(',')[4])).filter(v=>!isNaN(v));
+    if(closes.length>1) sparkCacheSet(sym,closes);
+    return closes;
+  }catch(e){
+    DBG.warn('MKT',`Spark ${sym} failed: ${e.message}`);
+    return [];
+  }
+}
+
+async function fetchVix(){
+  // 1. VIX cache
+  try{
+    const cached=JSON.parse(localStorage.getItem('mer_vix')||'null');
+    if(cached&&Date.now()-cached.ts<VIX_CACHE_TTL){
+      _applyVixUI(cached.v);
+      return;
+    }
+  }catch{}
+
+  for(let attempt=1; attempt<=2; attempt++){
+    try{
+      const url='https://stooq.com/q/l/?s=%5Eindiavix&f=sd2t2ohlcvn&h&e=csv';
+      const r=await fetch(url,{signal:AbortSignal.timeout(10000)});
+      const text=await r.text();
+      const vals=text.trim().split('\n')[1]?.split(',');
+      if(!vals) throw new Error('No VIX data');
+      const v=parseFloat(vals[6]);
+      if(isNaN(v)) throw new Error('Invalid VIX value');
+      localStorage.setItem('mer_vix',JSON.stringify({v,ts:Date.now()}));
+      _applyVixUI(v);
+      return;
+    }catch(e){
+      DBG.warn('VIX',`Attempt ${attempt}/2 failed: ${e.message}`);
+      if(attempt<2) await new Promise(r=>setTimeout(r,3000));
+    }
+  }
+
+  // Stale VIX fallback
+  try{
+    const s=JSON.parse(localStorage.getItem('mer_vix')||'null');
+    if(s){ _applyVixUI(s.v,true); }
+  }catch{}
+}
+
+function _applyVixUI(v, stale=false){
+  const el=document.getElementById('vix-val');
+  const sub=document.getElementById('vix-sub');
+  if(el) el.textContent=v.toFixed(2)+(stale?' *':'');
+  if(sub){
+    const mood=v<13?'Low fear':v<18?'Moderate':v<25?'Elevated':'High fear';
+    const col=v<13?'var(--pos)':v<18?'var(--text-sub)':v<25?'#D4A843':'var(--neg)';
+    sub.innerHTML=`<span style="color:${col}">${mood}${stale?' (stale)':''}</span>`;
+  }
+}
+
+function buildSparkSVG(closes,cls){
+  if(!closes||closes.length<2)return`<svg class="mkt-spark ${cls}" viewBox="0 0 80 36"></svg>`;
+  const min=Math.min(...closes),max=Math.max(...closes);
+  const range=max-min||1;
+  const w=80,h=36,pad=3;
+  const pts=closes.map((v,i)=>{
+    const x=pad+(i/(closes.length-1))*(w-pad*2);
+    const y=h-pad-(v-min)/range*(h-pad*2);
+    return[x,y];
+  });
+  const line=pts.map((p,i)=>(i===0?`M${p[0].toFixed(1)},${p[1].toFixed(1)}`:`L${p[0].toFixed(1)},${p[1].toFixed(1)}`)).join(' ');
+  const fill=`${line} L${pts[pts.length-1][0]},${h} L${pts[0][0]},${h} Z`;
+  return`<svg class="mkt-spark ${cls}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <path class="spark-fill" d="${fill}"/>
+    <path d="${line}"/>
+  </svg>`;
+}
+
+function mktCardHTML(t,data,sparkline){
+  const cls=!data?'na':data.changePct>0?'up':'dn';
+  const arrow=!data?'—':data.changePct>0?'▲':'▼';
+  const price=data?`${t.fmt}${data.close.toLocaleString('en-IN',{minimumFractionDigits:t.dec,maximumFractionDigits:t.dec})}`:'—';
+  const chg=data?`${arrow} ${Math.abs(data.changePct).toFixed(2)}%`:'—';
+  const chgAbs=data?`${data.change>=0?'+':''}${data.change.toFixed(t.dec)}`:'';
+  const spark=buildSparkSVG(sparkline,cls);
+  const staleTag=data?.stale?`<span style="font-family:var(--font-mono,monospace);font-size:9px;color:#D4A843;opacity:.7"> STALE</span>`:'';
+  return`<div class="mkt-card ${cls}">
+    <div class="mkt-label">${esc(t.label)}</div>
+    <div class="mkt-name">${esc(t.name)}</div>
+    <div class="mkt-price">${price}${staleTag}</div>
+    <div class="mkt-change ${cls}">${chg} <span style="opacity:.6;font-size:10px">${chgAbs}</span></div>
+    ${spark}
+    <div class="mkt-time">${data?`${data.date} ${data.time||''}`:'—'}</div>
+  </div>`;
+}
+
+async function loadMarkets(targetId){
+  // Can target home-mkt-grid or panel-markets
+  const grids=[];
+  if(document.getElementById('home-mkt-grid')) grids.push('home-mkt-grid');
+  if(targetId&&document.getElementById(targetId)) grids.push(targetId);
+
+  grids.forEach(gid=>{
+    const g=document.getElementById(gid);
+    if(g) g.innerHTML=TICKERS.map(()=>`<div class="mkt-card na"><div class="mkt-label">Loading…</div><div class="mkt-price">—</div></div>`).join('');
+  });
+
+  // Fetch all tickers and sparklines in parallel (Stooq has no known rate limit)
+  const results=await Promise.allSettled(TICKERS.map(async t=>{
+    const data=await fetchTicker(t);
+    const spark=data?await fetchSparkline(t.sym):[];
+    return{t,data,spark};
+  }));
+
+  const cards=results.map(r=>r.status==='fulfilled'?mktCardHTML(r.value.t,r.value.data,r.value.spark):`<div class="mkt-card na"><div class="mkt-name">—</div><div class="mkt-price">Error</div></div>`).join('');
+
+  grids.forEach(gid=>{
+    const g=document.getElementById(gid);
+    if(g) g.innerHTML=cards;
+  });
+
+  // Update stamp
+  const stamp=document.getElementById('mkt-stamp');
+  if(stamp) stamp.textContent='Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+
+  // Update VIX widget from Nifty data and VIX ticker
+  updateVixWidget(results);
+
+  // If markets panel targeted, build full panel
+  if(targetId){
+    const panel=document.getElementById(targetId);
+    if(panel&&!panel.querySelector('.mkt-grid')){
+      // Already rendered via grids array above
+    }
+  }
+
+  DBG.ok('MKT',`Loaded ${TICKERS.length} tickers`);
+}
+
+async function updateVixWidget(results){
+  // Update Nifty chip from results
+  const niftyR=results.find(r=>r.status==='fulfilled'&&r.value.t.sym==='^nsei');
+  if(niftyR?.value?.data){
+    const d=niftyR.value.data;
+    const cls=d.changePct>=0?'mkt-status-open':'mkt-status-closed';
+    document.getElementById('nifty-val').textContent=d.close.toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:0});
+    document.getElementById('nifty-sub').innerHTML=`<span class="${cls}">${d.changePct>=0?'▲':'▼'} ${Math.abs(d.changePct).toFixed(2)}%</span>`;
+  }
+  // Gold chip
+  const goldR=results.find(r=>r.status==='fulfilled'&&r.value.t.sym==='xauusd');
+  if(goldR?.value?.data){
+    const d=goldR.value.data;
+    document.getElementById('gold-val').textContent='$'+d.close.toFixed(0);
+    document.getElementById('gold-sub').textContent=(d.changePct>=0?'▲ ':'▼ ')+Math.abs(d.changePct).toFixed(2)+'%';
+  }
+  // Crude chip
+  const crudeR=results.find(r=>r.status==='fulfilled'&&r.value.t.sym==='cl.f');
+  if(crudeR?.value?.data){
+    const d=crudeR.value.data;
+    document.getElementById('crude-val').textContent='$'+d.close.toFixed(2);
+    document.getElementById('crude-sub').textContent=(d.changePct>=0?'▲ ':'▼ ')+Math.abs(d.changePct).toFixed(2)+'%';
+  }
+  // USDINR chip
+  const fxR=results.find(r=>r.status==='fulfilled'&&r.value.t.sym==='usdinr');
+  if(fxR?.value?.data){
+    const d=fxR.value.data;
+    document.getElementById('usdinr-val').textContent='₹'+d.close.toFixed(2);
+    document.getElementById('usdinr-sub').textContent=(d.changePct>=0?'▲ ':'▼ ')+Math.abs(d.changePct).toFixed(2)+'%';
+  }
+  // VIX — separate fetch
+  fetchVix();
+  // Market status
+  updateMarketStatus();
+}
+
+function updateMarketStatus(){
+  const now=new Date();
+  // Convert to IST (UTC+5:30)
+  const ist=new Date(now.getTime()+((5.5*60+now.getTimezoneOffset())*60000));
+  const h=ist.getHours(),m=ist.getMinutes(),day=ist.getDay();
+  const mins=h*60+m;
+  const el=document.getElementById('mkt-status-val');
+  const sub=document.getElementById('mkt-status-sub');
+  if(!el)return;
+  if(day===0||day===6){
+    el.innerHTML=`<span class="mkt-status-closed">CLOSED</span>`;
+    if(sub) sub.textContent='Weekend';
+  } else if(mins>=555&&mins<930){// 9:15–15:30 IST
+    el.innerHTML=`<span class="mkt-status-open">OPEN</span>`;
+    if(sub) sub.textContent=`NSE/BSE`;
+  } else if(mins>=540&&mins<555){// 9:00–9:15 pre-open
+    el.innerHTML=`<span class="mkt-status-pre">PRE-OPEN</span>`;
+    if(sub) sub.textContent='9:00–9:15 IST';
+  } else {
+    el.innerHTML=`<span class="mkt-status-closed">CLOSED</span>`;
+    if(sub) sub.textContent='Opens 9:15 IST';
+  }
+}
+
+/* ════════════════════════════════════════
+   USGS EARTHQUAKE API
+   Global coverage. Significant earthquakes M2.5+.
+   Feeds:
+     significant_day:   https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.geojson
+     all_day M2.5+:     https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson
+     all_week M2.5+:    https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson
+════════════════════════════════════════ */
+const USGS_DAY  ='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson';
+const USGS_WEEK ='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson';
+const USGS_CACHE='mer_usgs_v1';
+
+async function fetchUSGS(url){
+  // Fresh cache (10 min)
+  try{
+    const cached=JSON.parse(localStorage.getItem(USGS_CACHE+'_'+url)||'null');
+    if(cached&&Date.now()-cached.ts<10*60*1000){ DBG.ok('USGS','Cache hit'); return cached.data; }
+  }catch{}
+  // Fetch with timeout
+  try{
+    const r=await fetch(url,{signal:AbortSignal.timeout(15000)});
+    const d=await r.json();
+    localStorage.setItem(USGS_CACHE+'_'+url,JSON.stringify({data:d,ts:Date.now()}));
+    return d;
+  }catch(e){
+    DBG.warn('USGS','Fetch failed: '+e.message);
+    // Stale fallback
+    try{
+      const s=JSON.parse(localStorage.getItem(USGS_CACHE+'_'+url)||'null');
+      if(s){ DBG.warn('USGS','Using stale cache'); return s.data; }
+    }catch{}
+    return null;
+  }
+}
+
+function magClass(m){
+  if(m>=7)return'major';
+  if(m>=5)return'strong';
+  if(m>=3.5)return'moderate';
+  return'minor';
+}
+
+function quakeCardHTML(f){
+  const p=f.properties;
+  const mag=p.mag?.toFixed(1)||'?';
+  const cls=magClass(parseFloat(p.mag)||0);
+  const place=p.place||'Unknown location';
+  const t=new Date(p.time);
+  const depth=f.geometry?.coordinates?.[2]?.toFixed(0)||'?';
+  const url=p.url||'#';
+  return`<div class="quake-card ${cls}">
+    <div class="quake-top">
+      <div class="quake-mag ${cls}">M${mag}</div>
+      <div class="quake-time">${ago(t)}</div>
+    </div>
+    <div class="quake-place">${esc(place)}</div>
+    <div class="quake-meta">
+      <span class="quake-pill">Depth ${depth} km</span>
+      <span class="quake-pill">${p.type||'Earthquake'}</span>
+      ${p.tsunami?'<span class="quake-pill" style="color:var(--neg)">⚠ Tsunami alert</span>':''}
+    </div>
+    <a class="quake-link" href="${esc(url)}" target="_blank" rel="noopener">→ USGS detail page</a>
+  </div>`;
+}
+
+async function loadUSGS(containerId){
+  const el=document.getElementById(containerId);if(!el)return;
+  el.innerHTML=`<div class="quake-grid">${Array(4).fill(`<div class="sk-card" style="height:120px"></div>`).join('')}</div>`;
+  DBG.info('USGS','Fetching today\'s earthquakes…');
+  let data=await fetchUSGS(USGS_DAY);
+  let features=data?.features||[];
+  if(features.length<3){
+    DBG.info('USGS','Widening to 7-day feed');
+    data=await fetchUSGS(USGS_WEEK);
+    features=data?.features||[];
+  }
+  // Sort by time desc, take top 8
+  features.sort((a,b)=>b.properties.time-a.properties.time);
+  const top=features.slice(0,8);
+  DBG.ok('USGS',`${top.length} earthquakes loaded`);
+  el.innerHTML=`<div class="quake-grid">${top.map(f=>quakeCardHTML(f)).join('')}</div>`;
+}
+
+/* ════════════════════════════════════════
+   RELIEFWEB API — UN Humanitarian Data
+   Global crisis and disaster coverage.
+   API: https://api.reliefweb.int/v1/disasters
+   Free, no key, CORS native.
+════════════════════════════════════════ */
+const RW_URL='https://api.reliefweb.int/v1/disasters?appname=meridian&fields[include][]=name&fields[include][]=date&fields[include][]=status&fields[include][]=country&fields[include][]=type&filter[operator]=AND&filter[conditions][0][field]=status&filter[conditions][0][value][]=ongoing&sort[]=date.created:desc&limit=10&profile=list';
+const RW_CACHE='mer_rw_v1';
+
+async function fetchReliefWeb(){
+  // Fresh cache (30 min)
+  try{
+    const cached=JSON.parse(localStorage.getItem(RW_CACHE)||'null');
+    if(cached&&Date.now()-cached.ts<30*60*1000){ DBG.ok('RW','Cache hit'); return cached.data; }
+  }catch{}
+  // Fetch with retry
+  for(let attempt=1; attempt<=2; attempt++){
+    try{
+      const r=await fetch(RW_URL,{signal:AbortSignal.timeout(15000)});
+      if(!r.ok) throw new Error(`HTTP ${r.status}`);
+      const d=await r.json();
+      localStorage.setItem(RW_CACHE,JSON.stringify({data:d,ts:Date.now()}));
+      return d;
+    }catch(e){
+      DBG.warn('RW',`Attempt ${attempt}/2 failed: ${e.message}`);
+      if(attempt<2) await new Promise(r=>setTimeout(r,3000));
+    }
+  }
+  // Stale fallback
+  try{
+    const s=JSON.parse(localStorage.getItem(RW_CACHE)||'null');
+    if(s){ DBG.warn('RW','Using stale cache'); return s.data; }
+  }catch{}
+  return null;
+}
+
+function crisisCardHTML(item){
+  const f=item.fields||{};
+  const name=f.name||'Unknown crisis';
+  const status=(f.status||'ongoing').toLowerCase();
+  const country=Array.isArray(f.country)?f.country.map(c=>c.name||c).join(', '):'Unknown';
+  const type=Array.isArray(f.type)?f.type.map(t=>t.name||t).join(', '):'Crisis';
+  const date=f.date?.created?new Date(f.date.created):null;
+  const url=`https://reliefweb.int/disaster/${item.id}`;
+  return`<div class="crisis-card ${status}" onclick="window.open('${esc(url)}','_blank')">
+    <div class="crisis-top">
+      <span class="crisis-status ${status}">${status.toUpperCase()}</span>
+      <span class="crisis-country">🌐 ${esc(country)}</span>
+    </div>
+    <div class="crisis-name">${esc(name)}</div>
+    <div class="crisis-meta">${esc(type)} · ${date?ago(date):'—'}</div>
+  </div>`;
+}
+
+async function loadReliefWeb(containerId){
+  const el=document.getElementById(containerId);if(!el)return;
+  el.innerHTML=Array(4).fill(`<div class="sk-card" style="height:100px"></div>`).join('');
+  DBG.info('RW','Fetching ReliefWeb ongoing crises…');
+  const data=await fetchReliefWeb();
+  const items=data?.data||[];
+  DBG.ok('RW',`${items.length} active crises loaded`);
+  if(!items.length){
+    el.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No active crises from ReliefWeb.</div></div>`;
+    return;
+  }
+  el.innerHTML=`<div class="crisis-grid">${items.map(i=>crisisCardHTML(i)).join('')}</div>`;
+}
+
+/* ════════════════════════════════════════
+   FULL MARKETS PANEL
+════════════════════════════════════════ */
+async function loadMarketsPanel(){
+  const panel=document.getElementById('panel-markets');if(!panel)return;
+  panel.innerHTML=`
+    <div class="cat-head">
+      <div class="cat-head-row">
+        <div class="cat-title-row">
+          <div class="cat-pip" style="background:#3DB88A"></div>
+          <div class="cat-name">Markets</div>
+        </div>
+        <div class="cat-meta"><span style="font-family:var(--font-mono,monospace);font-size:9px;color:var(--text-muted)">Stooq · ~15 min delay · No API key</span></div>
+      </div>
+    </div>
+    <div class="home-mkt-head">// GLOBAL INDICES &amp; COMMODITIES</div>
+    <div class="mkt-grid" id="panel-mkt-grid"></div>`;
+  await loadMarkets('panel-mkt-grid');
+}
+
+/* ════════════════════════════════════════
+   OVERRIDE loadCat for special panels
+════════════════════════════════════════ */
+const _origLoadCat = loadCat;
+async function loadCat(id){
+  if(id==='disasters'){
+    return loadDisastersPanel(id);
+  }
+  if(id==='conflicts'){
+    return loadConflictsPanel(id);
+  }
+  if(id==='markets'){
+    return loadMarketsPanel();
+  }
+  return _origLoadCat(id);
+}
+
+async function loadDisastersPanel(id){
+  const panel=document.getElementById('panel-'+id);
+  const c=cat(id);
+  panel.innerHTML=`
+    <div class="cat-head">
+      <div class="cat-head-row">
+        <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex}"></div><div class="cat-name">${c.name}</div></div>
+        <div class="cat-meta" id="cc-${id}"></div>
+      </div>
+      <div id="tonebar-${id}"></div>
+    </div>
+    <div class="section-head"><span>// USGS EARTHQUAKE MONITOR · GLOBAL · REAL-TIME</span><span class="section-badge">M2.5+ events</span></div>
+    <div id="usgs-container-${id}">Loading USGS…</div>
+    <div style="height:24px"></div>
+    <div class="section-head"><span>// GDELT NEWS · NATURAL DISASTERS</span><span class="section-badge" id="cc-${id}-gdelt"></span></div>
+    <div id="hero-${id}"></div>
+    <div class="art-grid" id="g-${id}">${skels(4)}</div>`;
+  // Load USGS and GDELT in parallel
+  await Promise.all([
+    loadUSGS('usgs-container-'+id),
+    (async()=>{
+      const stop=showProgress('g-'+id);
+      try{
+        const {arts,status,ageMs,elapsed}=await fetchWithFallback(c.q,c.ts,c.max||15);
+        stop();
+        document.getElementById('cc-'+id+'-gdelt').textContent=`${arts.length} stories`;
+        document.getElementById('cc-'+id).innerHTML=`${cacheBadgeHTML(status,ageMs,elapsed)}`;
+        if(arts.length) document.getElementById('tonebar-'+id).innerHTML=toneBarHTML(arts);
+        if(arts.length){
+          const heroEl=document.getElementById('hero-'+id);
+          heroEl.innerHTML=heroCardHTML(arts[0],c.hex);
+          const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
+          if(hid) lazyHeroDesc(hid);
+          if(arts.length>1) document.getElementById('g-'+id).innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
+          else document.getElementById('g-'+id).innerHTML='';
+        }
+      }catch(e){stop();renderErr(document.getElementById('g-'+id),e.message,`loadCat('${id}')`);}
+    })()
+  ]);
+}
+
+async function loadConflictsPanel(id){
+  const panel=document.getElementById('panel-'+id);
+  const c=cat(id);
+  panel.innerHTML=`
+    <div class="cat-head">
+      <div class="cat-head-row">
+        <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex}"></div><div class="cat-name">${c.name}</div></div>
+        <div class="cat-meta" id="cc-${id}"></div>
+      </div>
+    </div>
+    <div class="section-head"><span>// RELIEFWEB · UN HUMANITARIAN · ONGOING CRISES</span><span class="section-badge">Live data</span></div>
+    <div id="rw-container-${id}">Loading ReliefWeb…</div>
+    <div style="height:24px"></div>
+    <div class="section-head"><span>// GDELT · ARMED CONFLICT NEWS</span><span class="section-badge" id="cc-${id}-gdelt"></span></div>
+    <div id="hero-${id}"></div>
+    <div class="art-grid" id="g-${id}">${skels(4)}</div>`;
+  await Promise.all([
+    loadReliefWeb('rw-container-'+id),
+    (async()=>{
+      const stop=showProgress('g-'+id);
+      try{
+        const {arts,status,ageMs,elapsed}=await fetchWithFallback(c.q,c.ts,c.max||15);
+        stop();
+        document.getElementById('cc-'+id+'-gdelt').textContent=`${arts.length} stories`;
+        document.getElementById('cc-'+id).innerHTML=`${cacheBadgeHTML(status,ageMs,elapsed)}`;
+        if(arts.length){
+          const heroEl=document.getElementById('hero-'+id);
+          heroEl.innerHTML=heroCardHTML(arts[0],c.hex);
+          const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
+          if(hid) lazyHeroDesc(hid);
+          if(arts.length>1) document.getElementById('g-'+id).innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
+          else document.getElementById('g-'+id).innerHTML='';
+        }
+      }catch(e){stop();renderErr(document.getElementById('g-'+id),e.message,`loadCat('${id}')`);}
+    })()
+  ]);
+}
+
 buildNav();
-DBG.info('INIT','MERIDIAN v1.9.1 · Expanded whitelist · ~200 trusted domains');
-DBG.info('WHITELIST',`${TRUSTED_DOMAINS.size} domains loaded · T1:wire · T2:intl · T3:india · T4:specialist`);
+DBG.info('INIT','MERIDIAN v2.0 · Markets · USGS · ReliefWeb · VIX widget');
+DBG.info('SOURCES','GDELT + Stooq (markets) + USGS (earthquakes) + ReliefWeb (crises) · All free · No API keys');
 DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = close modal');
 loadHome();
+loadMarkets(); // Populate home market grid and VIX widget on startup
 </script>
 </body>
 </html>
