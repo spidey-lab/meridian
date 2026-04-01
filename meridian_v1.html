@@ -276,7 +276,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.9</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v1.9.1</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -385,7 +385,7 @@
     Powered by <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
     Direct browser · CORS native &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
-    MERIDIAN v1.9
+    MERIDIAN v1.9.1
   </div>
 </main>
 
@@ -481,55 +481,139 @@ function markCurrentRead(){
    CATEGORIES
 ════════════════════════════════════════ */
 /* ════════════════════════════════════════
-   SOURCE DOMAIN WHITELIST
-   Tier 1: Global wire services
-   Tier 2: Major English-language outlets
-   Tier 3: India-specific trusted outlets
-   Articles from unlisted domains are filtered out client-side.
+   SOURCE DOMAIN WHITELIST — v1.9.1
+   Tier 1: Global wire services (highest credibility)
+   Tier 2: Major international English outlets
+   Tier 3: India nationals + TV + digital
+   Tier 4: Regional/specialist (conflict, finance, health, tech)
 ════════════════════════════════════════ */
 const TRUSTED_DOMAINS = new Set([
-  // Tier 1 — Global wire services
-  'reuters.com','apnews.com','afp.com','bloomberg.com','bbc.com','bbc.co.uk',
-  'theguardian.com','nytimes.com','wsj.com','ft.com','economist.com',
-  'aljazeera.com','dw.com','france24.com','straitstimes.com',
-  // Tier 2 — Major English outlets
-  'washingtonpost.com','politico.com','axios.com','thehill.com',
-  'foreignpolicy.com','foreignaffairs.com','cfr.org','bellingcat.com',
-  'scmp.com','japantimes.co.jp','timesofindia.indiatimes.com',
-  'channel newsasia.com','channelnewsasia.com','theatlantic.com',
-  'npr.org','pbs.org','abc.net.au','cbsnews.com','nbcnews.com',
-  'cnbc.com','cnn.com','sky.com','independent.co.uk','telegraph.co.uk',
-  'thetimes.co.uk','forbes.com','businessinsider.com',
-  // Tier 2 — Finance & Markets specialists
-  'marketwatch.com','barrons.com','seekingalpha.com','investing.com',
-  'kitco.com','oilprice.com','energymonitor.ai','spglobal.com',
-  // Tier 3 — India trusted outlets
+
+  // ── TIER 1: Global wire services ──────────────────────────────
+  'reuters.com','apnews.com','bloomberg.com','afp.com',
+  'bbc.com','bbc.co.uk','bbc.in',
+  'ft.com','wsj.com','economist.com',
+  'nytimes.com','theguardian.com','washingtonpost.com',
+  'aljazeera.com','aljazeera.net',
+  'dw.com','france24.com','straitstimes.com',
+
+  // ── TIER 2: Major international English outlets ───────────────
+  // US majors
+  'time.com','newsweek.com','usatoday.com','latimes.com',
+  'cnbc.com','cnn.com','nbcnews.com','cbsnews.com','abcnews.go.com',
+  'politico.com','axios.com','thehill.com','npr.org','pbs.org',
+  'theatlantic.com','newyorker.com','foreignpolicy.com',
+  'foreignaffairs.com','cfr.org','brookings.edu',
+  // UK outlets
+  'independent.co.uk','telegraph.co.uk','thetimes.co.uk',
+  'sky.com','itv.com','standard.co.uk','mirror.co.uk',
+  // Australia/Canada/others
+  'abc.net.au','theglobeandmail.com','cbc.ca','smh.com.au',
+  'theage.com.au','rnz.co.nz',
+  // Asia-Pacific
+  'channelnewsasia.com','nikkei.com','scmp.com','japantimes.co.jp',
+  'bangkokpost.com','thejakartapost.com','philstar.com',
+  // Europe
+  'euractiv.com','politico.eu','spiegel.de','lemonde.fr',
+
+  // ── TIER 2: Finance & Markets specialists ─────────────────────
+  'marketwatch.com','barrons.com','investing.com',
+  'seekingalpha.com','kitco.com','oilprice.com',
+  'spglobal.com','moodys.com','imf.org','worldbank.org',
+  'bis.org','ecb.europa.eu','federalreserve.gov','rbi.org.in',
+
+  // ── TIER 3: India — National outlets ─────────────────────────
+  // Print nationals
   'thehindu.com','indianexpress.com','hindustantimes.com',
-  'economictimes.indiatimes.com','livemint.com','business-standard.com',
-  'thewire.in','scroll.in','ndtv.com','moneycontrol.com',
-  'financialexpress.com','theprint.in','thequint.com',
-  'deccanherald.com','tribuneindia.com','telegraphindia.com',
-  // Tier 3 — India regional (Tamil Nadu)
-  'thehindu.com','newindianexpress.com','dinamalar.com','dtnext.in',
-  'thenewsminute.com','murasoli.net',
-  // Defence & geopolitics specialists
-  'defenseone.com','breakingdefense.com','janes.com','rferl.org',
-  'bellingcat.com','mei.edu','stimson.org','orfonline.org',
-  // Science & health
-  'nature.com','science.org','thelancet.com','who.int','isro.gov.in',
-  'nasa.gov','newscientist.com','sciencedaily.com',
-  // Tech specialists
+  'timesofindia.indiatimes.com','telegraphindia.com',
+  'deccanherald.com','tribuneindia.com','thestatesman.com',
+  'asianage.com','newageislam.com',
+  // Business/Finance nationals
+  'economictimes.indiatimes.com','livemint.com',
+  'business-standard.com','financialexpress.com',
+  'moneycontrol.com','bseindia.com','nseindia.com',
+  'businesstoday.in','cafemutual.com','valueresearchonline.com',
+  // Digital/Investigative nationals
+  'thewire.in','scroll.in','theprint.in','thequint.com',
+  'newslaundry.com','theleaflet.in','barandbench.com',
+  // TV/broadcast nationals
+  'ndtv.com','indiatoday.in','news18.com','wionews.com',
+  'zeenews.india.com','indiatvnews.com','aajtak.in',
+  'republicworld.com','firstpost.com','outlookindia.com',
+  'hindustantimes.com','ibnlive.com','abplive.com',
+  // Government/official India
+  'pib.gov.in','pmindia.gov.in','mea.gov.in','isro.gov.in',
+  'sebi.gov.in','mospi.gov.in',
+
+  // ── TIER 3: India — Regional ──────────────────────────────────
+  // Tamil Nadu specific
+  'newindianexpress.com','dtnext.in','thenewsminute.com',
+  'deccanchronicle.com','thehindu.com',
+  // South India
+  'mathrubhumi.com','manoramaonline.com','daijiworld.com',
+  'mangalorean.com','vijaykarnataka.com',
+
+  // ── TIER 4: Conflict / Geopolitics specialists ────────────────
+  // Middle East
+  'middleeasteye.net','arabnews.com','thenationalnews.com',
+  'haaretz.com','timesofisrael.com','jpost.com','ynetnews.com',
+  'mei.edu','al-monitor.com','asharq.com',
+  // Pakistan/South Asia
+  'dawn.com','geo.tv','thenews.com.pk','arynews.tv',
+  'thedailystar.net','bdnews24.com','dailymirror.lk',
+  'lankaweb.com','colombopage.com',
+  // Ukraine/Russia/Europe conflict
+  'kyivindependent.com','ukrinform.net','ukrinform.ua',
+  'rferl.org','radiosvoboda.org',
+  // Defence/OSINT specialists
+  'defenseone.com','defensenews.com','military.com',
+  'breakingdefense.com','janes.com','sipri.org',
+  'understandingwar.org','acled.com','stimson.org',
+  'bellingcat.com','orfonline.org',
+  // Sanctions/diplomacy
+  'sanctions.io','sanctionsnews.com',
+
+  // ── TIER 4: Health & Science specialists ─────────────────────
+  'who.int','cdc.gov','nih.gov','icmr.gov.in',
+  'nature.com','science.org','thelancet.com',
+  'nejm.org','bmj.com','jamanetwork.com',
+  'sciencedaily.com','newscientist.com','scientificamerican.com',
+  'medscape.com','healthline.com','medicalnewstoday.com',
+  'statnews.com','fiercepharma.com',
+  // Space
+  'nasa.gov','spacenews.com','space.com','universetoday.com',
+
+  // ── TIER 4: Technology specialists ───────────────────────────
   'techcrunch.com','theverge.com','wired.com','arstechnica.com',
-  'mit.edu','ieee.org','venturebeat.com'
+  'venturebeat.com','ieee.org','mit.edu','technologyreview.com',
+  'zdnet.com','cnet.com','engadget.com','gizmodo.com',
+  'semianalysis.com','tomshardware.com','anandtech.com',
+  // Cybersecurity
+  'krebsonsecurity.com','darkreading.com','bleepingcomputer.com',
+  'securityweek.com','threatpost.com',
+  // India tech
+  'inc42.com','yourstory.com','entrackr.com','techcircle.in',
+  'digit.in','gadgets360.com',
+
+  // ── TIER 4: Energy & Commodities specialists ──────────────────
+  'energymonitor.ai','energynews.biz','oilprice.com',
+  'naturalgasworld.com','platts.com','argusmedia.com',
+  'energyintel.com','woodmac.com','rystadenergy.com',
+  'renewableenergyworld.com','pv-tech.org','windpowermonthly.com',
+  'mercom.in','saurenergy.com',
+
+  // ── VERIFIED AGGREGATORS (carry wire content) ─────────────────
+  // These carry Reuters/AP/AFP directly
+  'msn.com','yahoo.com','google.com',
+  'devdiscourse.com','menafn.com','zawya.com'
 ]);
 
 function isTrusted(domain){
   if(!domain) return false;
-  const d = domain.replace(/^www\./,'').toLowerCase();
+  const d = domain.replace(/^www\./,'').replace(/^m\./,'').toLowerCase();
   if(TRUSTED_DOMAINS.has(d)) return true;
-  // Also match subdomains — e.g. m.economictimes.indiatimes.com
   for(const td of TRUSTED_DOMAINS){
-    if(d.endsWith('.'+td) || d === td) return true;
+    if(d.endsWith('.'+td)) return true;
   }
   return false;
 }
@@ -1206,7 +1290,8 @@ function toggleAuto(){
    INIT
 ════════════════════════════════════════ */
 buildNav();
-DBG.info('INIT','MERIDIAN v1.9 · Tab restructure · Source whitelist · Active Conflicts');
+DBG.info('INIT','MERIDIAN v1.9.1 · Expanded whitelist · ~200 trusted domains');
+DBG.info('WHITELIST',`${TRUSTED_DOMAINS.size} domains loaded · T1:wire · T2:intl · T3:india · T4:specialist`);
 DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = close modal');
 loadHome();
 </script>
