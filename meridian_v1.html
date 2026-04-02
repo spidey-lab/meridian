@@ -353,7 +353,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.0</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.1</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -388,7 +388,7 @@
       </div>
       <div class="home-date" id="homeDate"></div>
     </div>
-    <!-- VIX + Market Status widget -->
+    <!-- VIX + Market Status widget — compact glanceable row stays at top -->
     <div class="vix-row" id="vix-row">
       <div class="vix-chip"><div class="vix-chip-lbl">Market Status</div><div class="vix-chip-val" id="mkt-status-val">—</div><div class="vix-chip-sub" id="mkt-status-sub">IST</div></div>
       <div class="vix-chip"><div class="vix-chip-lbl">India VIX</div><div class="vix-chip-val" id="vix-val">—</div><div class="vix-chip-sub" id="vix-sub">Fear gauge</div></div>
@@ -397,7 +397,11 @@
       <div class="vix-chip"><div class="vix-chip-lbl">Crude Oil (USD)</div><div class="vix-chip-val" id="crude-val">—</div><div class="vix-chip-sub" id="crude-sub">WTI</div></div>
       <div class="vix-chip"><div class="vix-chip-lbl">USD / INR</div><div class="vix-chip-val" id="usdinr-val">—</div><div class="vix-chip-sub" id="usdinr-sub">Forex</div></div>
     </div>
-    <!-- Market KPI Cards -->
+    <!-- Top Stories — visible without scrolling -->
+    <div id="home-hero"></div>
+    <div class="art-grid" id="home-grid"></div>
+    <!-- Market KPI Cards — full grid below news -->
+    <div style="height:28px"></div>
     <div class="home-mkt-head">
       <span>// GLOBAL MARKETS · STOOQ · ~15 MIN DELAY</span>
       <span class="home-mkt-badge" id="mkt-stamp">—</span>
@@ -405,8 +409,6 @@
     <div class="mkt-grid" id="home-mkt-grid">
       <!-- populated by loadMarkets() -->
     </div>
-    <div id="home-hero"></div>
-    <div class="art-grid" id="home-grid"></div>
   </div>
 
   <div id="panel-geopolitics" class="panel"></div>
@@ -1065,8 +1067,7 @@ function switchTab(id){
   document.getElementById('panel-'+id).classList.add('active');
   if(!loaded.has(id)&&id!=='search'){
     loaded.add(id);
-    if(id==='markets') loadMarkets();
-    else loadCat(id);
+    loadCat(id);
   }
 }
 
@@ -1302,9 +1303,9 @@ async function fetchGdeltUnfiltered(q, ts, max){
 }
 
 /* ════════════════════════════════════════
-   LOAD CATEGORY
+   LOAD CATEGORY — GENERIC GDELT LOADER
 ════════════════════════════════════════ */
-async function loadCat(id){
+async function loadCatGeneric(id){
   const panel=document.getElementById('panel-'+id);
   const c=cat(id);const gid='g-'+id;
   panel.innerHTML=`
@@ -1503,12 +1504,12 @@ function manualRefresh(){
   const btn=document.getElementById('refreshBtn');
   btn.classList.add('spinning');setTimeout(()=>btn.classList.remove('spinning'),700);
   clearAllCache();Object.keys(artStore).forEach(k=>delete artStore[k]);artCount=0;
-  loadHome();loaded.forEach(id=>{if(id!=='home')loadCat(id);});
+  loadHome();loadMarkets();loaded.forEach(id=>{if(id!=='home')loadCat(id);});
 }
 function toggleAuto(){
   clearInterval(autoTimer);autoTimer=null;
   if(document.getElementById('autoTog').checked){
-    autoTimer=setInterval(()=>{clearAllCache();loadHome();loaded.forEach(id=>{if(id!=='home')loadCat(id);});},CACHE_TTL);
+    autoTimer=setInterval(()=>{clearAllCache();loadHome();loadMarkets();loaded.forEach(id=>{if(id!=='home')loadCat(id);});},CACHE_TTL);
     DBG.info('AUTO','ON — every 15 mins');
   } else DBG.info('AUTO','OFF');
 }
@@ -1524,14 +1525,14 @@ function toggleAuto(){
    Sparkline: fetch last 10 days from https://stooq.com/q/d/l/?s=SYMBOL&i=d
 ════════════════════════════════════════ */
 const TICKERS = [
-  { sym:'^nsei',   name:'Nifty 50',    label:'India',  fmt:'₹', dec:0 },
-  { sym:'^bsesn',  name:'Sensex',      label:'India',  fmt:'₹', dec:0 },
-  { sym:'usdinr',  name:'USD / INR',   label:'Forex',  fmt:'₹', dec:2 },
-  { sym:'xauusd',  name:'Gold',        label:'USD/oz', fmt:'$', dec:1 },
-  { sym:'xagusd',  name:'Silver',      label:'USD/oz', fmt:'$', dec:2 },
-  { sym:'cl.f',    name:'Crude Oil',   label:'WTI USD',fmt:'$', dec:2 },
-  { sym:'^spx',    name:'S&P 500',     label:'US',     fmt:'',  dec:0 },
-  { sym:'^ndq',    name:'Nasdaq 100',  label:'US',     fmt:'',  dec:0 },
+  { sym:'^nsei',   ysym:'^NSEI',    name:'Nifty 50',    label:'India',   fmt:'₹', dec:0 },
+  { sym:'^bsesn',  ysym:'^BSESN',   name:'Sensex',      label:'India',   fmt:'₹', dec:0 },
+  { sym:'usdinr',  ysym:'INR=X',    name:'USD / INR',   label:'Forex',   fmt:'₹', dec:2 },
+  { sym:'xauusd',  ysym:'GC=F',     name:'Gold',        label:'USD/oz',  fmt:'$', dec:1 },
+  { sym:'xagusd',  ysym:'SI=F',     name:'Silver',      label:'USD/oz',  fmt:'$', dec:2 },
+  { sym:'cl.f',    ysym:'CL=F',     name:'Crude Oil',   label:'WTI USD', fmt:'$', dec:2 },
+  { sym:'^spx',    ysym:'^GSPC',    name:'S&P 500',     label:'US',      fmt:'',  dec:0 },
+  { sym:'^ndq',    ysym:'^NDX',     name:'Nasdaq 100',  label:'US',      fmt:'',  dec:0 },
 ];
 const MKT_CACHE_TTL  = 5  * 60 * 1000; // 5 min fresh
 const SPARK_CACHE_TTL= 60 * 60 * 1000; // 1 hr — sparklines change slowly
@@ -1569,6 +1570,46 @@ function sparkCacheGet(sym){
 }
 function sparkCacheSet(sym,closes){
   try{localStorage.setItem(sparkCacheKey(sym),JSON.stringify({closes,ts:Date.now()}));}catch{}
+}
+
+/* ── Yahoo Finance fallback ── */
+async function fetchTickerYahoo(t){
+  if(!t.ysym) return null;
+  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(t.ysym)}?interval=1d&range=2d`;
+  DBG.info('YFIN','Fallback: '+t.ysym);
+  try{
+    const r=await fetch(url,{signal:AbortSignal.timeout(12000)});
+    if(!r.ok) throw new Error(`YFin HTTP ${r.status}`);
+    const d=await r.json();
+    const res=d?.chart?.result?.[0];
+    if(!res) throw new Error('No YFin result');
+    const meta=res.meta;
+    const close=meta.regularMarketPrice??meta.chartPreviousClose;
+    const prev=meta.chartPreviousClose??meta.previousClose;
+    if(!close||!prev) throw new Error('Missing price fields');
+    const change=close-prev;
+    const changePct=(change/prev)*100;
+    const now=new Date();
+    const data={sym:t.sym,close,open:prev,change,changePct,date:now.toISOString().split('T')[0],time:'',stale:false,src:'YFin'};
+    mktCacheSet(t.sym,data);
+    DBG.ok('YFIN',`✓ ${t.ysym} · ${close}`);
+    return data;
+  }catch(e){
+    DBG.warn('YFIN',`${t.ysym} failed: ${e.message}`);
+    return null;
+  }
+}
+
+async function fetchSparklineYahoo(t){
+  if(!t.ysym) return [];
+  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(t.ysym)}?interval=1d&range=14d`;
+  try{
+    const r=await fetch(url,{signal:AbortSignal.timeout(12000)});
+    if(!r.ok) return [];
+    const d=await r.json();
+    const closes=d?.chart?.result?.[0]?.indicators?.quote?.[0]?.close||[];
+    return closes.filter(v=>v!==null&&!isNaN(v)).slice(-10);
+  }catch{return [];}
 }
 
 async function fetchTicker(t){
@@ -1609,7 +1650,9 @@ async function fetchTicker(t){
     return {...stale, stale:true};
   }
 
-  return null;
+  // 4. Yahoo Finance fallback
+  DBG.warn('MKT',`${t.sym} Stooq exhausted · trying Yahoo Finance fallback`);
+  return fetchTickerYahoo(t);
 }
 
 async function fetchSparkline(sym){
@@ -1623,10 +1666,13 @@ async function fetchSparkline(sym){
     const text=await r.text();
     const lines=text.trim().split('\n').slice(1);
     const closes=lines.slice(-10).map(l=>parseFloat(l.split(',')[4])).filter(v=>!isNaN(v));
-    if(closes.length>1) sparkCacheSet(sym,closes);
-    return closes;
+    if(closes.length>1){ sparkCacheSet(sym,closes); return closes; }
+    throw new Error('Stooq spark empty');
   }catch(e){
-    DBG.warn('MKT',`Spark ${sym} failed: ${e.message}`);
+    DBG.warn('MKT',`Spark ${sym} Stooq failed: ${e.message} · trying Yahoo`);
+    // Yahoo fallback
+    const t=TICKERS.find(x=>x.sym===sym);
+    if(t){ const yc=await fetchSparklineYahoo(t); if(yc.length>1){ sparkCacheSet(sym,yc); return yc; } }
     return [];
   }
 }
@@ -1654,10 +1700,23 @@ async function fetchVix(){
       _applyVixUI(v);
       return;
     }catch(e){
-      DBG.warn('VIX',`Attempt ${attempt}/2 failed: ${e.message}`);
+      DBG.warn('VIX',`Stooq attempt ${attempt}/2 failed: ${e.message}`);
       if(attempt<2) await new Promise(r=>setTimeout(r,3000));
     }
   }
+
+  // Yahoo Finance VIX fallback
+  try{
+    const r=await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EINDIAVIX?interval=1d&range=1d',{signal:AbortSignal.timeout(10000)});
+    const d=await r.json();
+    const v=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    if(v&&!isNaN(v)){
+      localStorage.setItem('mer_vix',JSON.stringify({v,ts:Date.now()}));
+      _applyVixUI(v);
+      DBG.ok('VIX',`Yahoo fallback: ${v}`);
+      return;
+    }
+  }catch(e){ DBG.warn('VIX','Yahoo fallback failed: '+e.message); }
 
   // Stale VIX fallback
   try{
@@ -1988,20 +2047,14 @@ async function loadMarketsPanel(){
 }
 
 /* ════════════════════════════════════════
-   OVERRIDE loadCat for special panels
+   LOAD CATEGORY — DISPATCHER
+   Routes to specialised loaders or generic GDELT loader
 ════════════════════════════════════════ */
-const _origLoadCat = loadCat;
 async function loadCat(id){
-  if(id==='disasters'){
-    return loadDisastersPanel(id);
-  }
-  if(id==='conflicts'){
-    return loadConflictsPanel(id);
-  }
-  if(id==='markets'){
-    return loadMarketsPanel();
-  }
-  return _origLoadCat(id);
+  if(id==='disasters') return loadDisastersPanel(id);
+  if(id==='conflicts')  return loadConflictsPanel(id);
+  if(id==='markets')    return loadMarketsPanel();
+  return loadCatGeneric(id);
 }
 
 async function loadDisastersPanel(id){
@@ -2055,12 +2108,12 @@ async function loadConflictsPanel(id){
         <div class="cat-meta" id="cc-${id}"></div>
       </div>
     </div>
-    <div class="section-head"><span>// RELIEFWEB · UN HUMANITARIAN · ONGOING CRISES</span><span class="section-badge">Live data</span></div>
-    <div id="rw-container-${id}">Loading ReliefWeb…</div>
-    <div style="height:24px"></div>
     <div class="section-head"><span>// GDELT · ARMED CONFLICT NEWS</span><span class="section-badge" id="cc-${id}-gdelt"></span></div>
     <div id="hero-${id}"></div>
-    <div class="art-grid" id="g-${id}">${skels(4)}</div>`;
+    <div class="art-grid" id="g-${id}">${skels(4)}</div>
+    <div style="height:28px"></div>
+    <div class="section-head"><span>// RELIEFWEB · UN HUMANITARIAN · ONGOING CRISES</span><span class="section-badge">Live data</span></div>
+    <div id="rw-container-${id}">Loading ReliefWeb…</div>`;
   await Promise.all([
     loadReliefWeb('rw-container-'+id),
     (async()=>{
@@ -2084,8 +2137,8 @@ async function loadConflictsPanel(id){
 }
 
 buildNav();
-DBG.info('INIT','MERIDIAN v2.0 · Markets · USGS · ReliefWeb · VIX widget');
-DBG.info('SOURCES','GDELT + Stooq (markets) + USGS (earthquakes) + ReliefWeb (crises) · All free · No API keys');
+DBG.info('INIT','MERIDIAN v2.1 · Tabs fixed · Yahoo Finance fallback · Layout reordered');
+DBG.info('SOURCES','GDELT + Stooq→Yahoo Finance (markets) + USGS (earthquakes) + ReliefWeb (crises)');
 DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = close modal');
 loadHome();
 loadMarkets(); // Populate home market grid and VIX widget on startup
