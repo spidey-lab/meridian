@@ -374,7 +374,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.2</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.3</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -570,13 +570,7 @@ const LS_PFX    = 'mer18_';
 const LS_READ   = 'mer18_read';
 const LS_THEME  = 'mer18_theme';
 
-/* ── CORS proxies (Stooq can't be fetched directly from GitHub Pages) ── */
-const CORS_PROXIES = [
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`
-];
-
-/* ── Twelve Data (fallback market data, CORS-native) ── */
+/* ── Twelve Data (fallback for confirmed free-tier symbols only) ── */
 const TD_KEY  = 'fde00474a8a5417e8ac285f1ed0e9dd7';
 const TD_BASE = 'https://api.twelvedata.com';
 const TD_SYM  = {
@@ -1644,44 +1638,41 @@ function toggleAuto(){
    INIT
 ════════════════════════════════════════ */
 /* ════════════════════════════════════════
-   MARKET DATA — STOOQ
-   Symbols: Nifty50, Sensex, USDINR, Gold, Silver, Crude, S&P500, Nasdaq100
-   URL: https://stooq.com/q/l/?s=SYMBOL&f=sd2t2ohlcvn&h&e=csv
-   Returns CSV: Symbol,Date,Time,Open,High,Low,Close,Volume,Name
-   Sparkline: fetch last 10 days from https://stooq.com/q/d/l/?s=SYMBOL&i=d
+   MARKET DATA — YAHOO FINANCE (primary)
+   Direct CORS-accessible from GitHub Pages.
+   Endpoint: query1.finance.yahoo.com/v8/finance/chart/SYMBOL
+   Fallback: Twelve Data (XAU/USD + USD/INR only, confirmed free-tier)
+   Batched: Group A fires, 1.5s gap, Group B — prevents Yahoo rate-limit
 ════════════════════════════════════════ */
 const TICKERS = [
-  { sym:'^nsei',   ysym:'^NSEI',    name:'Nifty 50',    label:'India',   fmt:'₹', dec:0 },
-  { sym:'^bsesn',  ysym:'^BSESN',   name:'Sensex',      label:'India',   fmt:'₹', dec:0 },
-  { sym:'usdinr',  ysym:'INR=X',    name:'USD / INR',   label:'Forex',   fmt:'₹', dec:2 },
-  { sym:'xauusd',  ysym:'GC=F',     name:'Gold',        label:'USD/oz',  fmt:'$', dec:1 },
-  { sym:'xagusd',  ysym:'SI=F',     name:'Silver',      label:'USD/oz',  fmt:'$', dec:2 },
-  { sym:'cl.f',    ysym:'CL=F',     name:'Crude Oil',   label:'WTI USD', fmt:'$', dec:2 },
-  { sym:'^spx',    ysym:'^GSPC',    name:'S&P 500',     label:'US',      fmt:'',  dec:0 },
-  { sym:'^ndq',    ysym:'^NDX',     name:'Nasdaq 100',  label:'US',      fmt:'',  dec:0 },
+  // Group A (fires first)
+  { sym:'^nsei',  ysym:'^NSEI',    name:'Nifty 50',    label:'India',   fmt:'₹', dec:0,  grp:'A' },
+  { sym:'^bsesn', ysym:'^BSESN',   name:'Sensex',      label:'India',   fmt:'₹', dec:0,  grp:'A' },
+  { sym:'usdinr', ysym:'INR=X',    name:'USD / INR',   label:'Forex',   fmt:'₹', dec:2,  grp:'A' },
+  { sym:'xauusd', ysym:'GC=F',     name:'Gold',        label:'USD/oz',  fmt:'$', dec:1,  grp:'A' },
+  // Group B (fires after 1.5s gap)
+  { sym:'xagusd', ysym:'SI=F',     name:'Silver',      label:'USD/oz',  fmt:'$', dec:2,  grp:'B' },
+  { sym:'cl.f',   ysym:'CL=F',     name:'Crude Oil',   label:'WTI USD', fmt:'$', dec:2,  grp:'B' },
+  { sym:'^spx',   ysym:'^GSPC',    name:'S&P 500',     label:'US',      fmt:'',  dec:0,  grp:'B' },
+  { sym:'^ndq',   ysym:'^NDX',     name:'Nasdaq 100',  label:'US',      fmt:'',  dec:0,  grp:'B' },
 ];
-const MKT_CACHE_TTL  = 5  * 60 * 1000; // 5 min fresh
-const SPARK_CACHE_TTL= 60 * 60 * 1000; // 1 hr — sparklines change slowly
-const VIX_CACHE_TTL  = 5  * 60 * 1000; // 5 min
-const MKT_RETRY_DELAY= 3000;            // 3s before retry on Stooq failure
-const MKT_MAX_RETRIES= 2;
+const MKT_CACHE_TTL  = 5  * 60 * 1000;
+const SPARK_CACHE_TTL= 60 * 60 * 1000;
+const VIX_CACHE_TTL  = 5  * 60 * 1000;
+
+/* ── Twelve Data — free-tier symbols only (XAU/USD and USD/INR confirmed) ── */
+const TD_FREE_ONLY = new Set(['xauusd','usdinr']);
 
 function mktCacheKey(sym){ return 'mer_mkt_'+sym; }
 function sparkCacheKey(sym){ return 'mer_sp_'+sym; }
 function mktCacheGet(sym,ttl){
   try{
     const r=localStorage.getItem(mktCacheKey(sym));if(!r)return null;
-    const d=JSON.parse(r);
-    if(Date.now()-d.ts>ttl)return null;
-    return d;
+    const d=JSON.parse(r);if(Date.now()-d.ts>ttl)return null;return d;
   }catch{return null;}
 }
 function mktCacheGetStale(sym){
-  // Returns expired cache — used as fallback when fetch fails
-  try{
-    const r=localStorage.getItem(mktCacheKey(sym));if(!r)return null;
-    return JSON.parse(r);
-  }catch{return null;}
+  try{const r=localStorage.getItem(mktCacheKey(sym));if(!r)return null;return JSON.parse(r);}catch{return null;}
 }
 function mktCacheSet(sym,data){
   try{localStorage.setItem(mktCacheKey(sym),JSON.stringify({...data,ts:Date.now()}));}catch{}
@@ -1689,182 +1680,137 @@ function mktCacheSet(sym,data){
 function sparkCacheGet(sym){
   try{
     const r=localStorage.getItem(sparkCacheKey(sym));if(!r)return null;
-    const d=JSON.parse(r);
-    if(Date.now()-d.ts>SPARK_CACHE_TTL)return null;
-    return d.closes;
+    const d=JSON.parse(r);if(Date.now()-d.ts>SPARK_CACHE_TTL)return null;return d.closes;
   }catch{return null;}
 }
 function sparkCacheSet(sym,closes){
   try{localStorage.setItem(sparkCacheKey(sym),JSON.stringify({closes,ts:Date.now()}));}catch{}
 }
 
-/* ════════════════════════════════════════
-   CORS PROXY FETCH — wraps Stooq/Yahoo for GitHub Pages
-════════════════════════════════════════ */
-async function proxyFetch(rawUrl, timeout=12000){
-  for(let i=0;i<CORS_PROXIES.length;i++){
-    const proxied=CORS_PROXIES[i](rawUrl);
-    const tag=i===0?'PROXY1':'PROXY2';
-    DBG.info('PROXY',`[${i+1}/${CORS_PROXIES.length}] ${rawUrl.slice(0,50)}…`);
-    try{
-      const t0=Date.now();
-      const r=await fetch(proxied,{signal:AbortSignal.timeout(timeout)});
-      const elapsed=((Date.now()-t0)/1000).toFixed(1);
-      if(!r.ok) throw new Error(`HTTP ${r.status}`);
-      const text=await r.text();
-      if(!text||text.trim().length<5) throw new Error('Empty response');
-      DBG.ok('PROXY',`[${i+1}] ✓ ${(text.length/1024).toFixed(1)}KB · ${elapsed}s`);
-      DBG.stats.proxy++;DBG._st();
-      return text;
-    }catch(e){
-      const isCors=e.message==='Failed to fetch';
-      DBG.warn('PROXY',`[${i+1}] ${isCors?'CORS BLOCK':e.message}`);
-    }
-  }
-  throw new Error('All CORS proxies failed');
-}
-
-/* ── Twelve Data (CORS-native fallback) ── */
-async function fetchTickerTwelveData(t){
-  const sym=TD_SYM[t.sym];
-  if(!sym) return null;
-  const url=`${TD_BASE}/quote?symbol=${encodeURIComponent(sym)}&apikey=${TD_KEY}`;
-  DBG.info('TDAPI',`Querying: ${sym}`);
+/* ── Yahoo Finance — primary source, CORS-native from GitHub Pages ── */
+async function fetchTickerYahoo(t){
+  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(t.ysym)}?interval=1d&range=2d`;
+  DBG.info('YFIN',`Fetching ${t.ysym}`);
   const t0=Date.now();
   try{
-    const r=await fetch(url,{signal:AbortSignal.timeout(15000)});
+    const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
     const elapsed=((Date.now()-t0)/1000).toFixed(1);
     if(!r.ok) throw new Error(`HTTP ${r.status} · ${elapsed}s`);
     const d=await r.json();
-    if(d.status==='error') throw new Error(d.message||'TwelveData error');
-    const close=parseFloat(d.close);
-    const prev=parseFloat(d.previous_close);
-    if(isNaN(close)||isNaN(prev)) throw new Error('Invalid price fields');
+    const res=d?.chart?.result?.[0];
+    if(!res) throw new Error('No result object');
+    const meta=res.meta;
+    const close=meta.regularMarketPrice??meta.chartPreviousClose;
+    const prev=meta.chartPreviousClose??meta.previousClose;
+    if(!close||!prev||isNaN(close)||isNaN(prev)) throw new Error('Missing price fields');
     const change=close-prev;
     const changePct=(change/prev)*100;
+    const data={sym:t.sym,close,open:prev,change,changePct,
+      date:new Date(meta.regularMarketTime*1000).toISOString().slice(0,10),
+      time:'',stale:false,src:'Yahoo'};
+    mktCacheSet(t.sym,data);
+    DBG.ok('YFIN',`✓ ${t.ysym} · ${close} · ${elapsed}s`);
+    return data;
+  }catch(e){
+    const isCors=e.message==='Failed to fetch';
+    if(isCors) DBG.cors('YFIN',url);
+    else DBG.warn('YFIN',`${t.ysym} failed: ${e.message}`);
+    return null;
+  }
+}
+
+async function fetchSparklineYahoo(t){
+  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(t.ysym)}?interval=1d&range=14d`;
+  try{
+    const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
+    if(!r.ok) return [];
+    const d=await r.json();
+    const closes=d?.chart?.result?.[0]?.indicators?.quote?.[0]?.close||[];
+    return closes.filter(v=>v!==null&&!isNaN(v)).slice(-12);
+  }catch{ return []; }
+}
+
+/* ── Twelve Data — fallback for free-tier symbols only ── */
+async function fetchTickerTwelveData(t){
+  const sym=TD_SYM[t.sym];
+  if(!sym||!TD_FREE_ONLY.has(t.sym)) return null;
+  const url=`${TD_BASE}/quote?symbol=${encodeURIComponent(sym)}&apikey=${TD_KEY}`;
+  DBG.info('TDAPI',`Fallback: ${sym}`);
+  const t0=Date.now();
+  try{
+    const r=await fetch(url,{signal:AbortSignal.timeout(10000)});
+    const elapsed=((Date.now()-t0)/1000).toFixed(1);
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    if(d.status==='error') throw new Error(d.message?.slice(0,80)||'TwelveData error');
+    const close=parseFloat(d.close);const prev=parseFloat(d.previous_close);
+    if(isNaN(close)||isNaN(prev)) throw new Error('Invalid price fields');
+    const change=close-prev;const changePct=(change/prev)*100;
     const data={sym:t.sym,close,open:prev,change,changePct,date:d.datetime?.slice(0,10)||'',time:'',stale:false,src:'TwelveData'};
     mktCacheSet(t.sym,data);
     DBG.ok('TDAPI',`✓ ${sym} · ${close} · ${elapsed}s`);
     DBG.stats.tdapi++;DBG._st();
     return data;
   }catch(e){
-    const isCors=e.message==='Failed to fetch';
-    if(isCors) DBG.cors('TDAPI',url);
-    else DBG.warn('TDAPI',`${sym} failed: ${e.message}`);
+    DBG.warn('TDAPI',`${sym} failed: ${e.message}`);
     return null;
   }
 }
 
-async function fetchSparklineTwelveData(t){
-  const sym=TD_SYM[t.sym];
-  if(!sym) return [];
-  const url=`${TD_BASE}/time_series?symbol=${encodeURIComponent(sym)}&interval=1day&outputsize=12&apikey=${TD_KEY}`;
-  try{
-    const r=await fetch(url,{signal:AbortSignal.timeout(15000)});
-    if(!r.ok) return [];
-    const d=await r.json();
-    const vals=d?.values||[];
-    return vals.slice(0,10).reverse().map(v=>parseFloat(v.close)).filter(v=>!isNaN(v));
-  }catch{return [];}
-}
-
+/* ── Main ticker fetch: Yahoo → TwelveData (free only) → stale cache ── */
 async function fetchTicker(t){
   // 1. Fresh cache
   const cached=mktCacheGet(t.sym,MKT_CACHE_TTL);
-  if(cached){ DBG.ok('MKT',`Cache hit: ${t.sym} · ${Math.floor((Date.now()-cached.ts)/60000)}m old`); return cached; }
+  if(cached){ DBG.ok('MKT',`Cache: ${t.sym} · ${Math.floor((Date.now()-cached.ts)/60000)}m`); return cached; }
 
-  // 2. Stooq via CORS proxy
-  const stooqUrl=`https://stooq.com/q/l/?s=${encodeURIComponent(t.sym)}&f=sd2t2ohlcvn&h&e=csv`;
-  for(let attempt=1;attempt<=MKT_MAX_RETRIES;attempt++){
-    try{
-      const text=await proxyFetch(stooqUrl,12000);
-      const lines=text.trim().split('\n');
-      if(lines.length<2) throw new Error('Stooq: empty CSV');
-      const vals=lines[1].split(',');
-      const close=parseFloat(vals[6]);const open=parseFloat(vals[3]);
-      if(isNaN(close)||isNaN(open)) throw new Error('Stooq: invalid price');
-      const change=close-open;const changePct=(change/open)*100;
-      const data={sym:t.sym,close,open,change,changePct,date:vals[1],time:vals[2]||'',stale:false,src:'Stooq'};
-      mktCacheSet(t.sym,data);
-      DBG.ok('MKT',`✓ ${t.sym} Stooq proxy · ${close}`);
-      return data;
-    }catch(e){
-      DBG.warn('MKT',`${t.sym} Stooq attempt ${attempt}/${MKT_MAX_RETRIES}: ${e.message}`);
-      if(attempt<MKT_MAX_RETRIES) await new Promise(r=>setTimeout(r,MKT_RETRY_DELAY));
-    }
+  // 2. Yahoo Finance (primary — CORS-native, no proxy)
+  const yData=await fetchTickerYahoo(t);
+  if(yData) return yData;
+
+  // 3. Twelve Data (free-tier confirmed: XAU/USD, USD/INR only)
+  if(TD_FREE_ONLY.has(t.sym)){
+    DBG.warn('MKT',`${t.sym} Yahoo failed · trying Twelve Data`);
+    const tdData=await fetchTickerTwelveData(t);
+    if(tdData) return tdData;
   }
-
-  // 3. Twelve Data (CORS-native, no proxy needed)
-  DBG.warn('MKT',`${t.sym} Stooq exhausted · trying Twelve Data`);
-  const tdData=await fetchTickerTwelveData(t);
-  if(tdData) return tdData;
 
   // 4. Stale cache
   const stale=mktCacheGetStale(t.sym);
   if(stale){
-    const ageMin=Math.floor((Date.now()-stale.ts)/60000);
-    DBG.warn('MKT',`${t.sym} stale cache · ${ageMin}m old`);
+    const age=Math.floor((Date.now()-stale.ts)/60000);
+    DBG.warn('MKT',`${t.sym} stale cache · ${age}m old`);
     return{...stale,stale:true};
   }
 
-  DBG.err('MKT',`${t.sym} all sources failed — no data`);
+  DBG.err('MKT',`${t.sym} all sources failed`);
   return null;
 }
 
+/* ── Sparkline fetch: Yahoo → TwelveData (free only) → empty ── */
 async function fetchSparkline(sym){
   const cached=sparkCacheGet(sym);
-  if(cached){ DBG.ok('MKT',`Spark cache: ${sym}`); return cached; }
-
-  // Stooq sparkline via proxy
-  const url=`https://stooq.com/q/d/l/?s=${encodeURIComponent(sym)}&i=d`;
-  try{
-    const text=await proxyFetch(url,12000);
-    const lines=text.trim().split('\n').slice(1);
-    const closes=lines.slice(-12).map(l=>parseFloat(l.split(',')[4])).filter(v=>!isNaN(v));
-    if(closes.length>1){ sparkCacheSet(sym,closes); return closes; }
-    throw new Error('Stooq spark: empty');
-  }catch(e){
-    DBG.warn('MKT',`Spark ${sym} Stooq failed: ${e.message} · trying TwelveData`);
-    const t=TICKERS.find(x=>x.sym===sym);
-    if(t){
-      const yc=await fetchSparklineTwelveData(t);
-      if(yc.length>1){ sparkCacheSet(sym,yc); return yc; }
-    }
-    return [];
-  }
-}
-
-async function fetchVix(){
-  try{
-    const cached=JSON.parse(localStorage.getItem('mer_vix')||'null');
-    if(cached&&Date.now()-cached.ts<VIX_CACHE_TTL){ _applyVixUI(cached.v); return; }
-  }catch{}
-
-  // Stooq via CORS proxy
-  for(let attempt=1;attempt<=2;attempt++){
-    try{
-      const url='https://stooq.com/q/l/?s=%5Eindiavix&f=sd2t2ohlcvn&h&e=csv';
-      const text=await proxyFetch(url,10000);
-      const vals=text.trim().split('\n')[1]?.split(',');
-      if(!vals) throw new Error('No VIX row');
-      const v=parseFloat(vals[6]);
-      if(isNaN(v)) throw new Error('Invalid VIX value');
-      localStorage.setItem('mer_vix',JSON.stringify({v,ts:Date.now()}));
-      _applyVixUI(v);
-      DBG.ok('VIX',`✓ ${v} via proxy attempt ${attempt}`);
-      return;
-    }catch(e){
-      DBG.warn('VIX',`Proxy attempt ${attempt}/2: ${e.message}`);
-      if(attempt<2) await new Promise(r=>setTimeout(r,3000));
+  if(cached){ return cached; }
+  const t=TICKERS.find(x=>x.sym===sym);
+  if(!t) return [];
+  // Yahoo sparkline
+  const yc=await fetchSparklineYahoo(t);
+  if(yc.length>1){ sparkCacheSet(sym,yc); return yc; }
+  // TwelveData sparkline (free-tier only)
+  if(TD_FREE_ONLY.has(sym)){
+    const tdsym=TD_SYM[sym];
+    if(tdsym){
+      try{
+        const url=`${TD_BASE}/time_series?symbol=${encodeURIComponent(tdsym)}&interval=1day&outputsize=14&apikey=${TD_KEY}`;
+        const r=await fetch(url,{signal:AbortSignal.timeout(10000)});
+        if(r.ok){
+          const d=await r.json();
+          const vals=(d?.values||[]).slice(0,12).reverse().map(v=>parseFloat(v.close)).filter(v=>!isNaN(v));
+          if(vals.length>1){ sparkCacheSet(sym,vals); return vals; }
+        }
+      }catch{}
     }
   }
-
-  // Stale fallback
-  try{
-    const s=JSON.parse(localStorage.getItem('mer_vix')||'null');
-    if(s){ DBG.warn('VIX','Using stale cache'); _applyVixUI(s.v,true); return; }
-  }catch{}
-  DBG.err('VIX','All sources failed — VIX unavailable');
+  return [];
 }
 
 function _applyVixUI(v, stale=false){
@@ -1910,7 +1856,7 @@ function mktCardHTML(t,data,sparkline){
   const chgAbs=`${data.change>=0?'+':''}${data.change.toFixed(t.dec)}`;
   const spark=buildSparkSVG(sparkline,cls);
   const staleTag=data.stale?`<span style="font-size:9px;color:#D4A843;opacity:.7"> STALE</span>`:'';
-  const srcTag=data.src&&data.src!=='Stooq'?`<span style="font-size:8px;color:var(--text-muted);opacity:.6"> ${data.src}</span>`:'';
+  const srcTag=data.src&&data.src!=='Yahoo'?`<span style="font-size:8px;color:var(--text-muted);opacity:.6"> ${data.src}</span>`:'';
   return`<div class="mkt-card ${cls}">
     <div class="mkt-label">${esc(t.label)}</div>
     <div class="mkt-name">${esc(t.name)}</div>
@@ -1921,51 +1867,115 @@ function mktCardHTML(t,data,sparkline){
   </div>`;
 }
 
+async function fetchVix(){
+  try{
+    const cached=JSON.parse(localStorage.getItem('mer_vix')||'null');
+    if(cached&&Date.now()-cached.ts<VIX_CACHE_TTL){ _applyVixUI(cached.v); return; }
+  }catch{}
+
+  // Yahoo Finance — direct, CORS-native
+  DBG.info('VIX','Fetching ^INDIAVIX via Yahoo Finance');
+  try{
+    const r=await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EINDIAVIX?interval=1d&range=2d',
+      {signal:AbortSignal.timeout(8000)});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    const v=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    if(!v||isNaN(v)) throw new Error('No VIX price in response');
+    localStorage.setItem('mer_vix',JSON.stringify({v,ts:Date.now()}));
+    _applyVixUI(v);
+    DBG.ok('VIX',`✓ ${v.toFixed(2)} via Yahoo`);
+    return;
+  }catch(e){
+    const isCors=e.message==='Failed to fetch';
+    if(isCors) DBG.cors('VIX','https://query1.finance.yahoo.com/...');
+    else DBG.warn('VIX',`Yahoo failed: ${e.message}`);
+  }
+
+  // Stale fallback
+  try{
+    const s=JSON.parse(localStorage.getItem('mer_vix')||'null');
+    if(s){ DBG.warn('VIX',`Stale fallback · ${Math.floor((Date.now()-s.ts)/60000)}m old`); _applyVixUI(s.v,true); return; }
+  }catch{}
+  DBG.err('VIX','All sources failed');
+}
+
 async function loadMarkets(targetId){
-  // Can target home-mkt-grid or panel-markets
   const grids=[];
   if(document.getElementById('home-mkt-grid')) grids.push('home-mkt-grid');
   if(targetId&&document.getElementById(targetId)) grids.push(targetId);
 
+  // Skeleton loading state
   grids.forEach(gid=>{
     const g=document.getElementById(gid);
-    if(g) g.innerHTML=TICKERS.map(()=>`<div class="mkt-card na"><div class="mkt-label">Loading…</div><div class="mkt-price">—</div></div>`).join('');
+    if(g) g.innerHTML=TICKERS.map(()=>
+      `<div class="mkt-card na na-compact"><div><div class="mkt-label" style="animation:none">Loading…</div></div></div>`
+    ).join('');
   });
 
-  // Fetch all tickers and sparklines in parallel (Stooq has no known rate limit)
-  const results=await Promise.allSettled(TICKERS.map(async t=>{
+  // Batched fetch: Group A first, 1.5s gap, then Group B — prevents Yahoo rate-limit
+  const groupA=TICKERS.filter(t=>t.grp==='A');
+  const groupB=TICKERS.filter(t=>t.grp==='B');
+
+  DBG.info('MKT',`Fetching Group A (${groupA.map(t=>t.ysym).join(', ')})`);
+  const resA=await Promise.allSettled(groupA.map(async t=>{
     const data=await fetchTicker(t);
     const spark=data?await fetchSparkline(t.sym):[];
     return{t,data,spark};
   }));
 
-  const cards=results.map(r=>r.status==='fulfilled'?mktCardHTML(r.value.t,r.value.data,r.value.spark):`<div class="mkt-card na"><div class="mkt-name">—</div><div class="mkt-price">Error</div></div>`).join('');
+  // Partial render of Group A immediately so user sees something fast
+  _renderMktCards([...resA], grids, groupA);
+  updateVixWidgetFromResults(resA);
 
-  grids.forEach(gid=>{
-    const g=document.getElementById(gid);
-    if(g) g.innerHTML=cards;
-  });
+  // 1.5s gap before Group B
+  await new Promise(r=>setTimeout(r,1500));
 
-  // Update stamp
+  DBG.info('MKT',`Fetching Group B (${groupB.map(t=>t.ysym).join(', ')})`);
+  const resB=await Promise.allSettled(groupB.map(async t=>{
+    const data=await fetchTicker(t);
+    const spark=data?await fetchSparkline(t.sym):[];
+    return{t,data,spark};
+  }));
+
+  // Full render with all 8 tickers
+  const allResults=[...resA,...resB];
+  _renderMktCards(allResults, grids, TICKERS);
+
   const stamp=document.getElementById('mkt-stamp');
   if(stamp) stamp.textContent='Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 
-  // Update VIX widget from Nifty data and VIX ticker
-  updateVixWidget(results);
+  updateVixWidgetFromResults(allResults);
+  fetchVix();
 
-  // If markets panel targeted, build full panel
-  if(targetId){
-    const panel=document.getElementById(targetId);
-    if(panel&&!panel.querySelector('.mkt-grid')){
-      // Already rendered via grids array above
-    }
-  }
-
-  DBG.ok('MKT',`Loaded ${TICKERS.length} tickers`);
+  const loaded=allResults.filter(r=>r.status==='fulfilled'&&r.value.data).length;
+  DBG.ok('MKT',`${loaded}/${TICKERS.length} tickers loaded`);
 }
 
-async function updateVixWidget(results){
-  // Update Nifty chip from results
+function _renderMktCards(results, grids, tickerSubset){
+  // Renders cards for the given subset, preserving other positions
+  const allCards=TICKERS.map(t=>{
+    const r=results.find(x=>x.status==='fulfilled'&&x.value.t.sym===t.sym);
+    if(!r) return null; // Not yet fetched — keep skeleton
+    return mktCardHTML(r.value.t, r.value.data, r.value.spark);
+  });
+  grids.forEach(gid=>{
+    const g=document.getElementById(gid);
+    if(!g) return;
+    const existing=g.querySelectorAll('.mkt-card');
+    allCards.forEach((html,i)=>{
+      if(html===null) return; // Not yet ready
+      if(existing[i]) existing[i].outerHTML=html;
+      // If grid was re-rendered fresh, rebuild whole grid
+    });
+    // If existing count doesn't match (fresh render), do full rebuild
+    if(existing.length!==TICKERS.length){
+      g.innerHTML=allCards.map(h=>h||`<div class="mkt-card na na-compact"><div><div class="mkt-label">Loading…</div></div></div>`).join('');
+    }
+  });
+}
+
+async function updateVixWidgetFromResults(results){
   const niftyR=results.find(r=>r.status==='fulfilled'&&r.value.t.sym==='^nsei');
   if(niftyR?.value?.data){
     const d=niftyR.value.data;
@@ -1973,30 +1983,24 @@ async function updateVixWidget(results){
     document.getElementById('nifty-val').textContent=d.close.toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:0});
     document.getElementById('nifty-sub').innerHTML=`<span class="${cls}">${d.changePct>=0?'▲':'▼'} ${Math.abs(d.changePct).toFixed(2)}%</span>`;
   }
-  // Gold chip
   const goldR=results.find(r=>r.status==='fulfilled'&&r.value.t.sym==='xauusd');
   if(goldR?.value?.data){
     const d=goldR.value.data;
     document.getElementById('gold-val').textContent='$'+d.close.toFixed(0);
     document.getElementById('gold-sub').textContent=(d.changePct>=0?'▲ ':'▼ ')+Math.abs(d.changePct).toFixed(2)+'%';
   }
-  // Crude chip
   const crudeR=results.find(r=>r.status==='fulfilled'&&r.value.t.sym==='cl.f');
   if(crudeR?.value?.data){
     const d=crudeR.value.data;
     document.getElementById('crude-val').textContent='$'+d.close.toFixed(2);
     document.getElementById('crude-sub').textContent=(d.changePct>=0?'▲ ':'▼ ')+Math.abs(d.changePct).toFixed(2)+'%';
   }
-  // USDINR chip
   const fxR=results.find(r=>r.status==='fulfilled'&&r.value.t.sym==='usdinr');
   if(fxR?.value?.data){
     const d=fxR.value.data;
     document.getElementById('usdinr-val').textContent='₹'+d.close.toFixed(2);
     document.getElementById('usdinr-sub').textContent=(d.changePct>=0?'▲ ':'▼ ')+Math.abs(d.changePct).toFixed(2)+'%';
   }
-  // VIX — separate fetch
-  fetchVix();
-  // Market status
   updateMarketStatus();
 }
 
@@ -2327,9 +2331,9 @@ async function loadConflictsPanel(id){
 }
 
 buildNav();
-DBG.info('INIT','MERIDIAN v2.2 · Proxy chain · TwelveData · GDELT cooldown · US market status');
-DBG.info('SOURCES','GDELT · Stooq→[allorigins|corsproxy]→TwelveData · USGS · ReliefWeb');
-DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = close modal · ⎘ copy log');
+DBG.info('INIT','MERIDIAN v2.3 · Yahoo Finance (primary) · TwelveData (XAU+INR fallback) · GDELT cooldown');
+DBG.info('SOURCES','GDELT · Yahoo Finance→TwelveData (markets+VIX) · USGS · ReliefWeb');
+DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = modal · ⎘ copy log');
 loadHome();
 loadMarkets();
 </script>
