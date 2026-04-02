@@ -232,29 +232,29 @@
     /* ── ATTR ── */
     .attr{margin-top:44px;padding-top:16px;border-top:0.5px solid var(--border-sub);text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
 
-    /* ── MARKET KPI CARDS ── */
-    .mkt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
-    .mkt-card{background:var(--bg-card);border:0.5px solid var(--border);border-top:3px solid var(--border);border-radius:var(--r);padding:14px 16px;transition:background var(--t)}
-    .mkt-card.up{border-top-color:var(--pos)}
-    .mkt-card.dn{border-top-color:var(--neg)}
-    .mkt-card.na{border-top-color:var(--text-muted)}
-    .mkt-card:hover{background:var(--bg-card-h)}
-    .mkt-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-bottom:4px;text-transform:uppercase}
-    .mkt-name{font-size:11px;color:var(--text-sub);margin-bottom:8px;font-weight:500}
-    .mkt-price{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:500;color:var(--text);margin-bottom:5px;line-height:1}
-    .mkt-change{font-family:'JetBrains Mono',monospace;font-size:11px;display:flex;align-items:center;gap:6px;margin-bottom:10px}
-    .mkt-change.up{color:var(--pos)}
-    .mkt-change.dn{color:var(--neg)}
-    .mkt-change.na{color:var(--text-muted)}
-    .mkt-spark{width:100%;height:36px;display:block}
-    .mkt-spark path{fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-    .mkt-spark.up path{stroke:var(--pos)}
-    .mkt-spark.dn path{stroke:var(--neg)}
-    .mkt-spark.na path{stroke:var(--text-muted)}
-    .mkt-spark .spark-fill{fill-opacity:.08}
-    .mkt-spark.up .spark-fill{fill:var(--pos)}
-    .mkt-spark.dn .spark-fill{fill:var(--neg)}
-    .mkt-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:4px}
+    /* ── MARKET GRID (home) — responsive auto-fill, no horizontal scroll ── */
+    .mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:24px}
+
+    /* ── TV WIDGET CONTAINERS ── */
+    .tv-card-wrap{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;min-height:190px;transition:background var(--t),box-shadow var(--t)}
+    .tv-card-wrap:hover{background:var(--bg-card-h);box-shadow:var(--shadow)}
+    .tv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:24px}
+
+    /* ── CHART EXPLORER ── */
+    .chart-explorer-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+    .tv-select{flex:2;min-width:200px;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;outline:none;cursor:pointer;transition:border-color var(--t)}
+    .tv-select:focus{border-color:#7A8FA6}
+    .tv-input{flex:1;min-width:130px;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 12px;outline:none;transition:border-color var(--t);text-transform:uppercase}
+    .tv-input::placeholder{color:var(--text-muted);text-transform:none}
+    .tv-input:focus{border-color:#7A8FA6}
+    .btn-chart{background:var(--text);color:var(--bg);border:none;border-radius:var(--r-sm);padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity var(--t);flex-shrink:0}
+    .btn-chart:hover{opacity:.85}
+    #tv-chart-area{border-radius:var(--r);overflow:hidden;transition:height .3s ease;min-height:0}
+
+    /* Retained for Nifty/Gold chip text if Twelve Data succeeds ── */
+    .mkt-status-open{color:var(--pos)}
+    .mkt-status-closed{color:var(--neg)}
+    .mkt-status-pre{color:#D4A843}
 
     /* ── HOME MARKET SECTION ── */
     .home-mkt-head{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);letter-spacing:2px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
@@ -266,9 +266,6 @@
     .vix-chip-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
     .vix-chip-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;color:var(--text)}
     .vix-chip-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
-    .mkt-status-open{color:var(--pos)}
-    .mkt-status-closed{color:var(--neg)}
-    .mkt-status-pre{color:#D4A843}
 
     /* ── USGS EARTHQUAKE CARDS ── */
     .quake-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:24px}
@@ -339,8 +336,7 @@
     .ndc-ico{font-size:13px;opacity:.45;flex-shrink:0}
     .ndc-msg{flex:1;line-height:1.5}
     .ndc-link{color:var(--text-sub);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:10px}
-    .mkt-card.na-compact{padding:10px 14px;display:flex;align-items:center;gap:10px;border-top-color:var(--border)}
-    .mkt-card.na-compact .mkt-name{margin-bottom:0;font-size:10px}
+    /* mkt-card.na-compact removed — TV widgets handle all display */
 
     /* ── DEBUG improvements ── */
     .dl-src{font-family:'JetBrains Mono',monospace;font-size:9px;padding:1px 5px;border-radius:3px;flex-shrink:0;font-weight:600}
@@ -374,7 +370,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.4</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.5</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -422,10 +418,10 @@
     <!-- Top Stories — visible without scrolling -->
     <div id="home-hero"></div>
     <div class="art-grid" id="home-grid"></div>
-    <!-- Market KPI Cards — full grid below news -->
+    <!-- Market KPI Cards — full grid below news (TradingView) -->
     <div style="height:28px"></div>
     <div class="home-mkt-head">
-      <span>// GLOBAL MARKETS · STOOQ · ~15 MIN DELAY</span>
+      <span>// GLOBAL MARKETS · TRADINGVIEW · LIVE</span>
       <span class="home-mkt-badge" id="mkt-stamp">—</span>
     </div>
     <div class="mkt-grid" id="home-mkt-grid">
@@ -570,14 +566,9 @@ const LS_PFX    = 'mer18_';
 const LS_READ   = 'mer18_read';
 const LS_THEME  = 'mer18_theme';
 
-/* ── Twelve Data (fallback for confirmed free-tier symbols only) ── */
+/* ── Twelve Data — chip values only (XAU/USD + USD/INR free-tier confirmed) ── */
 const TD_KEY  = 'fde00474a8a5417e8ac285f1ed0e9dd7';
 const TD_BASE = 'https://api.twelvedata.com';
-const TD_SYM  = {
-  '^nsei':'NIFTY50', '^bsesn':'SENSEX', 'usdinr':'USD/INR',
-  'xauusd':'XAU/USD', 'xagusd':'XAG/USD', 'cl.f':'WTI/USD',
-  '^spx':'SPX', '^ndq':'NDX'
-};
 
 /* ════════════════════════════════════════
    GDELT COOLDOWN TRACKER
@@ -1638,25 +1629,36 @@ function toggleAuto(){
    INIT
 ════════════════════════════════════════ */
 /* ════════════════════════════════════════
-   MARKET DATA — TWELVE DATA (sole source)
-   CORS-native · 800 credits/day free tier
-   Free-tier coverage confirmed from live testing:
-     ✅ Forex pairs (USD/INR)
-     ✅ Spot metals (XAU/USD)
-     ✅ NSE/BSE indices (with exchange param)
-     ❌ XAG/USD, WTI/USD, SPX, NDX → paid plan (Grow+)
+   MARKET DATA — TRADINGVIEW (display) + TWELVE DATA (chip values only)
+   All 8 market grid cards use TradingView widgets — no CORS, no API key.
+   Twelve Data still fetches XAU/USD and USD/INR for the numeric chips.
 ════════════════════════════════════════ */
 const TICKERS = [
-  // Free tier — Twelve Data with correct symbol + exchange
-  { sym:'^nsei',  tdSym:'NIFTY50', tdEx:'NSE', name:'Nifty 50',    label:'India',   fmt:'₹', dec:0, tier:'free' },
-  { sym:'^bsesn', tdSym:'SENSEX',  tdEx:'BSE', name:'Sensex',      label:'India',   fmt:'₹', dec:0, tier:'free' },
-  { sym:'usdinr', tdSym:'USD/INR', tdEx:null,  name:'USD / INR',   label:'Forex',   fmt:'₹', dec:2, tier:'free' },
-  { sym:'xauusd', tdSym:'XAU/USD', tdEx:null,  name:'Gold',        label:'USD/oz',  fmt:'$', dec:1, tier:'free' },
-  // Paid tier — no fetch, show honest unavailable card
-  { sym:'xagusd', tdSym:null,      tdEx:null,  name:'Silver',      label:'USD/oz',  fmt:'$', dec:2, tier:'paid' },
-  { sym:'cl.f',   tdSym:null,      tdEx:null,  name:'Crude Oil',   label:'WTI USD', fmt:'$', dec:2, tier:'paid' },
-  { sym:'^spx',   tdSym:null,      tdEx:null,  name:'S&P 500',     label:'US',      fmt:'',  dec:0, tier:'paid' },
-  { sym:'^ndq',   tdSym:null,      tdEx:null,  name:'Nasdaq 100',  label:'US',      fmt:'',  dec:0, tier:'paid' },
+  { sym:'^nsei',  tdSym:null,      tdEx:null,  tvSym:'NSE:NIFTY',      name:'Nifty 50',    label:'India',   fmt:'₹', dec:0 },
+  { sym:'^bsesn', tdSym:null,      tdEx:null,  tvSym:'BSE:SENSEX',     name:'Sensex',      label:'India',   fmt:'₹', dec:0 },
+  { sym:'usdinr', tdSym:'USD/INR', tdEx:null,  tvSym:'OANDA:USDINR',   name:'USD / INR',   label:'Forex',   fmt:'₹', dec:2 },
+  { sym:'xauusd', tdSym:'XAU/USD', tdEx:null,  tvSym:'TVC:GOLD',       name:'Gold',        label:'USD/oz',  fmt:'$', dec:1 },
+  { sym:'xagusd', tdSym:null,      tdEx:null,  tvSym:'TVC:SILVER',     name:'Silver',      label:'USD/oz',  fmt:'$', dec:2 },
+  { sym:'cl.f',   tdSym:null,      tdEx:null,  tvSym:'NYMEX:CL1!',     name:'Crude Oil',   label:'WTI USD', fmt:'$', dec:2 },
+  { sym:'^spx',   tdSym:null,      tdEx:null,  tvSym:'SP:SPX',         name:'S&P 500',     label:'US',      fmt:'',  dec:0 },
+  { sym:'^ndq',   tdSym:null,      tdEx:null,  tvSym:'NASDAQ:NDX',     name:'Nasdaq 100',  label:'US',      fmt:'',  dec:0 },
+];
+
+/* Market tab — Indian Indices group (5) + Global Markets group (6) */
+const TV_INDICES = [
+  // ── Indian Indices ────────────────────────────────────────────
+  { tvSym:'NSE:NIFTY',      name:'Nifty 50',       group:'india' },
+  { tvSym:'BSE:SENSEX',     name:'Sensex',          group:'india' },
+  { tvSym:'NSE:BANKNIFTY',  name:'Bank Nifty',      group:'india' },
+  { tvSym:'NSE:NIFTYNXT50', name:'Nifty Next 50',   group:'india' },
+  { tvSym:'NSE:INDIAVIX',   name:'India VIX',       group:'india' },
+  // ── Global Markets ───────────────────────────────────────────
+  { tvSym:'SP:SPX',         name:'S&P 500',         group:'global' },
+  { tvSym:'NASDAQ:NDX',     name:'Nasdaq 100',      group:'global' },
+  { tvSym:'TVC:GOLD',       name:'Gold',            group:'global' },
+  { tvSym:'TVC:SILVER',     name:'Silver',          group:'global' },
+  { tvSym:'NYMEX:CL1!',     name:'Crude Oil (WTI)', group:'global' },
+  { tvSym:'OANDA:USDINR',   name:'USD / INR',       group:'global' },
 ];
 const MKT_CACHE_TTL  = 5  * 60 * 1000;
 const SPARK_CACHE_TTL= 60 * 60 * 1000;
@@ -1722,9 +1724,62 @@ async function fetchSparklineTwelveData(t){
   }catch{return [];}
 }
 
-/* ── Main ticker fetch ── */
+/* ════════════════════════════════════════
+   TRADINGVIEW WIDGET INJECTION
+   Dynamically creates <script> elements so TV widgets load in
+   dynamically generated HTML (innerHTML scripts don't execute).
+   Using the iframe-based embed — proven, reliable, no CORS issues.
+════════════════════════════════════════ */
+function tvTheme(){
+  return document.documentElement.getAttribute('data-theme')==='light'?'light':'dark';
+}
+
+function injectTVWidget(el, tvSym, height=200){
+  if(!el) return;
+  el.innerHTML='';
+  el.style.height=height+'px';
+  const script=document.createElement('script');
+  script.type='text/javascript';
+  script.src='https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
+  script.async=true;
+  script.textContent=JSON.stringify({
+    symbol:tvSym, width:'100%', height:height,
+    locale:'en', dateRange:'1D',
+    colorTheme:tvTheme(), isTransparent:true, autosize:false
+  });
+  el.appendChild(script);
+  DBG.info('MKT',`TV widget: ${tvSym} · ${height}px · ${tvTheme()}`);
+}
+
+function openChartExplorer(){
+  const sel=document.getElementById('tv-sym-select');
+  const inp=document.getElementById('tv-sym-input');
+  let sym=(inp?.value.trim().toUpperCase())||sel?.value||'NSE:NIFTY';
+  // Auto-prefix exchange if user just typed a ticker
+  if(sym&&!sym.includes(':')) sym='NSE:'+sym;
+  const area=document.getElementById('tv-chart-area');
+  if(!area) return;
+  area.style.height='520px';
+  area.innerHTML='';
+  const script=document.createElement('script');
+  script.type='text/javascript';
+  script.src='https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.async=true;
+  script.textContent=JSON.stringify({
+    symbol:sym, width:'100%', height:500,
+    locale:'en', interval:'D',
+    timezone:'Asia/Kolkata', theme:tvTheme(),
+    style:'1', hide_top_toolbar:false,
+    save_image:false, calendar:false, hide_volume:false
+  });
+  area.appendChild(script);
+  DBG.ok('MKT',`Chart Explorer: ${sym}`);
+  setTimeout(()=>area.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+/* ── Main ticker fetch (Twelve Data — chip values only) ── */
 async function fetchTicker(t){
-  if(t.tier==='paid') return null; // Known unavailable — skip entirely
+  if(!t.tdSym) return null; // No Twelve Data symbol — TV handles display only
 
   const cached=mktCacheGet(t.sym,MKT_CACHE_TTL);
   if(cached){ DBG.ok('MKT',`Cache: ${t.sym} · ${Math.floor((Date.now()-cached.ts)/60000)}m`); return cached; }
@@ -1748,11 +1803,13 @@ async function fetchSparkline(sym){
   const cached=sparkCacheGet(sym);
   if(cached) return cached;
   const t=TICKERS.find(x=>x.sym===sym);
-  if(!t||t.tier==='paid') return [];
+  if(!t||!t.tdSym) return [];
   const closes=await fetchSparklineTwelveData(t);
   if(closes.length>1) sparkCacheSet(sym,closes);
   return closes;
 }
+
+/* ─────────────────────────────────────── */
 
 function _applyVixUI(v, stale=false){
   const el=document.getElementById('vix-val');
@@ -1763,56 +1820,6 @@ function _applyVixUI(v, stale=false){
     const col=v<13?'var(--pos)':v<18?'var(--text-sub)':v<25?'#D4A843':'var(--neg)';
     sub.innerHTML=`<span style="color:${col}">${mood}${stale?' (stale)':''}</span>`;
   }
-}
-
-function buildSparkSVG(closes,cls){
-  if(!closes||closes.length<2)return`<svg class="mkt-spark ${cls}" viewBox="0 0 80 36"></svg>`;
-  const min=Math.min(...closes),max=Math.max(...closes);
-  const range=max-min||1;
-  const w=80,h=36,pad=3;
-  const pts=closes.map((v,i)=>{
-    const x=pad+(i/(closes.length-1))*(w-pad*2);
-    const y=h-pad-(v-min)/range*(h-pad*2);
-    return[x,y];
-  });
-  const line=pts.map((p,i)=>(i===0?`M${p[0].toFixed(1)},${p[1].toFixed(1)}`:`L${p[0].toFixed(1)},${p[1].toFixed(1)}`)).join(' ');
-  const fill=`${line} L${pts[pts.length-1][0]},${h} L${pts[0][0]},${h} Z`;
-  return`<svg class="mkt-spark ${cls}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
-    <path class="spark-fill" d="${fill}"/>
-    <path d="${line}"/>
-  </svg>`;
-}
-
-function mktCardHTML(t,data,sparkline){
-  // Known paid-tier symbols — show honest message, no spinner
-  if(t.tier==='paid'){
-    return`<div class="mkt-card na na-compact">
-      <div><div class="mkt-label">${esc(t.label)}</div><div class="mkt-name">${esc(t.name)}</div></div>
-      <div style="flex:1;text-align:right;font-size:9px;color:var(--text-muted);line-height:1.5">Unavailable<br>API plan limit</div>
-    </div>`;
-  }
-  // Free-tier symbol but no data returned
-  if(!data){
-    return`<div class="mkt-card na na-compact">
-      <div><div class="mkt-label">${esc(t.label)}</div><div class="mkt-name">${esc(t.name)}</div></div>
-      <div style="flex:1;text-align:right;font-size:10px;color:var(--text-muted)">No data available</div>
-    </div>`;
-  }
-  const cls=data.changePct>0?'up':'dn';
-  const arrow=data.changePct>0?'▲':'▼';
-  const price=`${t.fmt}${data.close.toLocaleString('en-IN',{minimumFractionDigits:t.dec,maximumFractionDigits:t.dec})}`;
-  const chg=`${arrow} ${Math.abs(data.changePct).toFixed(2)}%`;
-  const chgAbs=`${data.change>=0?'+':''}${data.change.toFixed(t.dec)}`;
-  const spark=buildSparkSVG(sparkline,cls);
-  const staleTag=data.stale?`<span style="font-size:9px;color:#D4A843;opacity:.7"> STALE</span>`:'';
-  return`<div class="mkt-card ${cls}">
-    <div class="mkt-label">${esc(t.label)}</div>
-    <div class="mkt-name">${esc(t.name)}</div>
-    <div class="mkt-price">${price}${staleTag}</div>
-    <div class="mkt-change ${cls}">${chg} <span style="opacity:.6;font-size:10px">${chgAbs}</span></div>
-    ${spark}
-    <div class="mkt-time">${data.date}</div>
-  </div>`;
 }
 
 async function fetchVix(){
@@ -1855,66 +1862,43 @@ async function loadMarkets(targetId){
   if(document.getElementById('home-mkt-grid')) grids.push('home-mkt-grid');
   if(targetId&&document.getElementById(targetId)) grids.push(targetId);
 
-  // Immediate render: paid-tier cards show "unavailable" instantly; free-tier show loading skeleton
+  // Render TV widget containers immediately (no async wait)
   grids.forEach(gid=>{
     const g=document.getElementById(gid);
-    if(g) g.innerHTML=TICKERS.map(t=>
-      t.tier==='paid'
-        ? mktCardHTML(t,null,[])
-        : `<div class="mkt-card na na-compact"><div><div class="mkt-label">Loading…</div></div></div>`
-    ).join('');
-  });
-
-  // Fetch 4 free-tier tickers + their sparklines in parallel
-  const freeTickers=TICKERS.filter(t=>t.tier==='free');
-  DBG.info('MKT',`Fetching ${freeTickers.length} free-tier tickers via Twelve Data`);
-  const results=await Promise.allSettled(TICKERS.map(async t=>{
-    if(t.tier==='paid') return{t,data:null,spark:[]};
-    const data=await fetchTicker(t);
-    const spark=data?await fetchSparkline(t.sym):[];
-    return{t,data,spark};
-  }));
-
-  const cards=results.map(r=>
-    r.status==='fulfilled'
-      ? mktCardHTML(r.value.t,r.value.data,r.value.spark)
-      : mktCardHTML(TICKERS[results.indexOf(r)],null,[])
-  ).join('');
-
-  grids.forEach(gid=>{
-    const g=document.getElementById(gid);
-    if(g) g.innerHTML=cards;
+    if(!g) return;
+    g.innerHTML=TICKERS.map((_,i)=>`<div id="${gid}-tv-${i}" class="tv-card-wrap"></div>`).join('');
+    TICKERS.forEach((t,i)=>injectTVWidget(document.getElementById(`${gid}-tv-${i}`),t.tvSym,200));
   });
 
   const stamp=document.getElementById('mkt-stamp');
-  if(stamp) stamp.textContent='Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  if(stamp) stamp.textContent='TradingView · '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 
-  updateVixWidgetFromResults(results);
+  // Fetch chip values (Gold + USD/INR) from Twelve Data in background
+  const chipTickers=TICKERS.filter(t=>t.tdSym);
+  const chipRes=await Promise.allSettled(chipTickers.map(async t=>{
+    const data=await fetchTicker(t);
+    return{t,data};
+  }));
+  chipRes.forEach(r=>{
+    if(r.status!=='fulfilled'||!r.value.data) return;
+    const {t,data}=r.value;
+    if(t.sym==='xauusd'){
+      const el=document.getElementById('gold-val');
+      const sub=document.getElementById('gold-sub');
+      if(el) el.textContent='$'+data.close.toFixed(0);
+      if(sub) sub.textContent=(data.changePct>=0?'▲ ':'▼ ')+Math.abs(data.changePct).toFixed(2)+'%';
+    }
+    if(t.sym==='usdinr'){
+      const el=document.getElementById('usdinr-val');
+      const sub=document.getElementById('usdinr-sub');
+      if(el) el.textContent='₹'+data.close.toFixed(2);
+      if(sub) sub.textContent=(data.changePct>=0?'▲ ':'▼ ')+Math.abs(data.changePct).toFixed(2)+'%';
+    }
+  });
+
   fetchVix();
-
-  const loaded=results.filter(r=>r.status==='fulfilled'&&r.value.data).length;
-  DBG.ok('MKT',`${loaded}/${freeTickers.length} free-tier tickers loaded`);
-}
-
-function updateVixWidgetFromResults(results){
-  const get=sym=>results.find(r=>r.status==='fulfilled'&&r.value.t.sym===sym)?.value?.data;
-  const nifty=get('^nsei');
-  if(nifty){
-    const cls=nifty.changePct>=0?'mkt-status-open':'mkt-status-closed';
-    document.getElementById('nifty-val').textContent=nifty.close.toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:0});
-    document.getElementById('nifty-sub').innerHTML=`<span class="${cls}">${nifty.changePct>=0?'▲':'▼'} ${Math.abs(nifty.changePct).toFixed(2)}%</span>`;
-  }
-  const gold=get('xauusd');
-  if(gold){
-    document.getElementById('gold-val').textContent='$'+gold.close.toFixed(0);
-    document.getElementById('gold-sub').textContent=(gold.changePct>=0?'▲ ':'▼ ')+Math.abs(gold.changePct).toFixed(2)+'%';
-  }
-  const fx=get('usdinr');
-  if(fx){
-    document.getElementById('usdinr-val').textContent='₹'+fx.close.toFixed(2);
-    document.getElementById('usdinr-sub').textContent=(fx.changePct>=0?'▲ ':'▼ ')+Math.abs(fx.changePct).toFixed(2)+'%';
-  }
   updateMarketStatus();
+  DBG.ok('MKT',`TV widgets rendered · ${chipTickers.length} chips fetched via Twelve Data`);
 }
 
 function isDST(date){
@@ -2134,10 +2118,15 @@ async function loadReliefWeb(containerId){
 }
 
 /* ════════════════════════════════════════
-   FULL MARKETS PANEL
+   FULL MARKETS PANEL — TradingView powered
+   Indian Indices · Global Markets · Chart Explorer
 ════════════════════════════════════════ */
-async function loadMarketsPanel(){
+function loadMarketsPanel(){
   const panel=document.getElementById('panel-markets');if(!panel)return;
+
+  const indiaGroup=TV_INDICES.filter(x=>x.group==='india');
+  const globalGroup=TV_INDICES.filter(x=>x.group==='global');
+
   panel.innerHTML=`
     <div class="cat-head">
       <div class="cat-head-row">
@@ -2145,12 +2134,100 @@ async function loadMarketsPanel(){
           <div class="cat-pip" style="background:#3DB88A"></div>
           <div class="cat-name">Markets</div>
         </div>
-        <div class="cat-meta"><span style="font-family:var(--font-mono,monospace);font-size:9px;color:var(--text-muted)">Stooq · ~15 min delay · No API key</span></div>
+        <div class="cat-meta"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)">TradingView · Live data · No API key</span></div>
       </div>
     </div>
-    <div class="home-mkt-head">// GLOBAL INDICES &amp; COMMODITIES</div>
-    <div class="mkt-grid" id="panel-mkt-grid"></div>`;
-  await loadMarkets('panel-mkt-grid');
+
+    <div class="section-head">
+      <span>// INDIAN INDICES · NSE / BSE</span>
+      <span class="section-badge">${indiaGroup.length} instruments</span>
+    </div>
+    <div class="tv-grid" id="tv-india-grid">
+      ${indiaGroup.map((_,i)=>`<div id="tvi-${i}" class="tv-card-wrap"></div>`).join('')}
+    </div>
+
+    <div class="section-head">
+      <span>// GLOBAL MARKETS · INDICES · COMMODITIES · FOREX</span>
+      <span class="section-badge">${globalGroup.length} instruments</span>
+    </div>
+    <div class="tv-grid" id="tv-global-grid">
+      ${globalGroup.map((_,i)=>`<div id="tvg-${i}" class="tv-card-wrap"></div>`).join('')}
+    </div>
+
+    <div class="section-head"><span>// CHART EXPLORER · SEARCH ANY SYMBOL</span></div>
+    <div class="chart-explorer-bar">
+      <select id="tv-sym-select" class="tv-select">
+        <optgroup label="▪ Indian Indices">
+          <option value="NSE:NIFTY">Nifty 50</option>
+          <option value="BSE:SENSEX">Sensex</option>
+          <option value="NSE:BANKNIFTY">Bank Nifty</option>
+          <option value="NSE:NIFTYNXT50">Nifty Next 50</option>
+          <option value="NSE:INDIAVIX">India VIX</option>
+          <option value="NSE:NIFTY_FIN_SERVICE">Nifty Financial Services</option>
+          <option value="NSE:NIFTYIT">Nifty IT</option>
+        </optgroup>
+        <optgroup label="▪ Top NSE Stocks">
+          <option value="NSE:RELIANCE">Reliance Industries</option>
+          <option value="NSE:TCS">TCS</option>
+          <option value="NSE:HDFCBANK">HDFC Bank</option>
+          <option value="NSE:INFY">Infosys</option>
+          <option value="NSE:ICICIBANK">ICICI Bank</option>
+          <option value="NSE:KOTAKBANK">Kotak Bank</option>
+          <option value="NSE:AXISBANK">Axis Bank</option>
+          <option value="NSE:HINDUNILVR">HUL</option>
+          <option value="NSE:ITC">ITC</option>
+          <option value="NSE:WIPRO">Wipro</option>
+          <option value="NSE:HCLTECH">HCL Tech</option>
+          <option value="NSE:BAJFINANCE">Bajaj Finance</option>
+          <option value="NSE:COALINDIA">Coal India</option>
+          <option value="NSE:HINDCOPPER">Hindustan Copper</option>
+          <option value="NSE:UJJIVANSFB">Ujjivan SFB</option>
+        </optgroup>
+        <optgroup label="▪ ETFs (NSE)">
+          <option value="NSE:NIFTYBEES">NIFTYBEES</option>
+          <option value="NSE:NEXT50IETF">NEXT50IETF</option>
+          <option value="NSE:MON100">MON100</option>
+          <option value="NSE:MOMOMENTUM">MOMOMENTUM</option>
+          <option value="NSE:GOLDBEES">GOLDBEES</option>
+          <option value="NSE:SILVERBEES">SILVERBEES</option>
+          <option value="NSE:PPFCF">PPFCF</option>
+          <option value="NSE:GROWW">GROWW</option>
+        </optgroup>
+        <optgroup label="▪ Global Indices">
+          <option value="SP:SPX">S&amp;P 500</option>
+          <option value="NASDAQ:NDX">Nasdaq 100</option>
+          <option value="DJ:DJI">Dow Jones</option>
+          <option value="TVC:DXY">US Dollar Index (DXY)</option>
+          <option value="INDEX:VIX">CBOE VIX</option>
+        </optgroup>
+        <optgroup label="▪ Commodities">
+          <option value="TVC:GOLD">Gold (XAU/USD)</option>
+          <option value="TVC:SILVER">Silver (XAG/USD)</option>
+          <option value="NYMEX:CL1!">Crude Oil WTI</option>
+          <option value="NYMEX:NG1!">Natural Gas</option>
+        </optgroup>
+        <optgroup label="▪ Forex">
+          <option value="OANDA:USDINR">USD/INR</option>
+          <option value="FX:EURUSD">EUR/USD</option>
+          <option value="FX:GBPUSD">GBP/USD</option>
+          <option value="FX:USDJPY">USD/JPY</option>
+        </optgroup>
+        <optgroup label="▪ Your US Holdings">
+          <option value="NASDAQ:NVDA">NVIDIA (NVDA)</option>
+          <option value="NASDAQ:PLTR">Palantir (PLTR)</option>
+          <option value="NYSE:ANET">Arista Networks (ANET)</option>
+        </optgroup>
+      </select>
+      <input id="tv-sym-input" class="tv-input" placeholder="Custom: NSE:INFY, NASDAQ:AAPL…" maxlength="30"
+             onkeydown="if(event.key==='Enter')openChartExplorer()">
+      <button class="btn-chart" onclick="openChartExplorer()">View Chart →</button>
+    </div>
+    <div id="tv-chart-area"></div>`;
+
+  // Inject all widgets
+  indiaGroup.forEach((item,i)=>injectTVWidget(document.getElementById(`tvi-${i}`),item.tvSym,220));
+  globalGroup.forEach((item,i)=>injectTVWidget(document.getElementById(`tvg-${i}`),item.tvSym,220));
+  DBG.ok('MKT',`Markets panel: ${indiaGroup.length} India + ${globalGroup.length} Global TV widgets`);
 }
 
 /* ════════════════════════════════════════
@@ -2244,8 +2321,8 @@ async function loadConflictsPanel(id){
 }
 
 buildNav();
-DBG.info('INIT','MERIDIAN v2.4 · TwelveData sole market source · NIFTY50:NSE + SENSEX:BSE + XAU/USD + USD/INR');
-DBG.info('SOURCES','GDELT · TwelveData (markets+VIX) · USGS · ReliefWeb · CORS-clean');
+DBG.info('INIT','MERIDIAN v2.5 · TradingView market grid · Chart Explorer · 11 instruments on Market tab');
+DBG.info('SOURCES','GDELT · TradingView (all market display) · TwelveData (Gold+INR chips only) · USGS · ReliefWeb');
 DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = modal · ⎘ copy log');
 loadHome();
 loadMarkets();
