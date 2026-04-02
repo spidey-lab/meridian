@@ -235,46 +235,182 @@
     /* ── MARKET GRID ── */
     .mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:24px}
 
-    /* ── TV WIDGET CONTAINERS (kept for TVC:GOLD / TVC:SILVER global cards) ── */
-    .tv-card-wrap{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;min-height:190px;transition:background var(--t)}
-    .tv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:24px}
-
     /* ── GOOGLE SHEETS MARKET CARDS ── */
-    .gs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:28px}
-    .gs-card{background:var(--bg-card);border:0.5px solid var(--border);border-top:3px solid var(--border);border-radius:var(--r);padding:16px 18px;transition:background var(--t),box-shadow var(--t)}
+    .gs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:28px}
+    .gs-card{background:var(--bg-card);border:0.5px solid var(--border);border-top:3px solid var(--text-muted);border-radius:var(--r);padding:16px 18px;transition:background var(--t),box-shadow var(--t)}
     .gs-card:hover{background:var(--bg-card-h);box-shadow:var(--shadow)}
-    .gs-card.up{border-top-color:var(--pos)}
-    .gs-card.dn{border-top-color:var(--neg)}
+    .gs-card.up{border-top-color:var(--pos);box-shadow:0 0 0 0.5px rgba(29,158,117,.12)}
+    .gs-card.dn{border-top-color:var(--neg);box-shadow:0 0 0 0.5px rgba(226,75,74,.10)}
     .gs-card.na{border-top-color:var(--text-muted)}
-    .gs-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px}
-    .gs-name{font-size:12px;font-weight:600;color:var(--text-sub);margin-bottom:10px}
-    .gs-price-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+    .gs-name{font-size:11px;font-weight:600;color:var(--text-sub);margin-bottom:8px;letter-spacing:.3px}
+    .gs-price-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:12px;flex-wrap:wrap}
     .gs-price{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;color:var(--text);line-height:1}
-    .gs-badge{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;align-self:center}
+    .gs-badge{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;align-self:center;letter-spacing:.3px}
     .gs-badge.up{background:rgba(29,158,117,.15);color:var(--pos)}
     .gs-badge.dn{background:rgba(226,75,74,.12);color:var(--neg)}
     .gs-badge.na{background:var(--bg-surf);color:var(--text-muted)}
-    .gs-ranges{margin-bottom:10px;display:flex;flex-direction:column;gap:7px}
-    .gs-range-row{display:flex;flex-direction:column;gap:3px}
-    .gs-range-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;display:flex;justify-content:space-between}
-    .gs-bar-track{height:4px;border-radius:2px;background:var(--border);position:relative}
-    .gs-bar-fill{position:absolute;top:0;left:0;height:100%;border-radius:2px;min-width:4px}
+    .gs-ranges{margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+    .gs-range-group{display:flex;flex-direction:column;gap:5px}
+    .gs-range-lbl-head{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase}
+    .gs-range-row{display:flex;flex-direction:column;gap:4px}
+    .gs-range-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);display:flex;justify-content:space-between}
+    .gs-bar-track{height:5px;border-radius:3px;background:var(--border);position:relative}
+    .gs-bar-fill{position:absolute;top:0;left:0;height:100%;border-radius:3px;opacity:.35}
     .gs-bar-fill.up{background:var(--pos)}
     .gs-bar-fill.dn{background:var(--neg)}
     .gs-bar-fill.na{background:var(--text-muted)}
-    .gs-bar-dot{position:absolute;top:50%;width:8px;height:8px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid var(--bg-card)}
+    .gs-bar-dot{position:absolute;top:50%;width:9px;height:9px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid var(--bg-card);z-index:1}
     .gs-bar-dot.up{background:var(--pos)}
     .gs-bar-dot.dn{background:var(--neg)}
-    .gs-meta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+    .gs-bar-dot.na{background:var(--text-muted)}
+    .gs-meta{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px}
     .gs-meta-item{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
     .gs-meta-item span{color:var(--text-sub);font-size:10px}
-    .gs-footer{display:flex;align-items:center;justify-content:space-between;border-top:0.5px solid var(--border-sub);padding-top:8px}
+    .gs-footer{display:flex;align-items:center;justify-content:space-between;border-top:0.5px solid var(--border-sub);padding-top:8px;margin-top:4px}
     .gs-src{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted)}
-    .gs-link{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub);text-decoration:none;border:0.5px solid var(--border);border-radius:3px;padding:2px 6px;transition:var(--t)}
+    .gs-link{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub);text-decoration:none;border:0.5px solid var(--border);border-radius:3px;padding:2px 7px;transition:var(--t)}
     .gs-link:hover{border-color:var(--gold);color:var(--gold)}
 
+    /* ── HERO CARD (Top Mover) ── */
+    .gs-hero-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:10px}
+    .gs-hero{background:var(--bg-card);border:0.5px solid var(--border);border-top:3px solid var(--text-muted);border-radius:var(--r);padding:18px 20px;transition:background var(--t),box-shadow var(--t);position:relative}
+    .gs-hero:hover{background:var(--bg-card-h)}
+    .gs-hero.up{border-top-color:var(--pos);box-shadow:0 0 0 1px rgba(29,158,117,.14),inset 0 0 32px rgba(29,158,117,.03)}
+    .gs-hero.dn{border-top-color:var(--neg);box-shadow:0 0 0 1px rgba(226,75,74,.13),inset 0 0 32px rgba(226,75,74,.03)}
+    .gs-hero.na{border-top-color:var(--text-muted)}
+    .gs-hero-tag{position:absolute;top:10px;right:12px;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase}
+    .gs-hero-name{font-size:11px;font-weight:600;color:var(--text-sub);margin-bottom:6px;letter-spacing:.3px}
+    .gs-hero-price{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500;color:var(--text);margin-bottom:6px;line-height:1}
+    .gs-hero-badge{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;margin-bottom:14px;letter-spacing:-.3px}
+    .gs-hero-badge.up{color:var(--pos)}
+    .gs-hero-badge.dn{color:var(--neg)}
+    .gs-hero-badge.na{color:var(--text-muted)}
+    .gs-hero-bar-track{height:7px;border-radius:4px;background:var(--border);position:relative;margin-bottom:5px}
+    .gs-hero-bar-fill{position:absolute;top:0;left:0;height:100%;border-radius:4px;opacity:.3}
+    .gs-hero-bar-fill.up{background:var(--pos)}
+    .gs-hero-bar-fill.dn{background:var(--neg)}
+    .gs-hero-bar-fill.na{background:var(--text-muted)}
+    .gs-hero-bar-dot{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;transform:translate(-50%,-50%);border:2.5px solid var(--bg-card);z-index:1}
+    .gs-hero-bar-dot.up{background:var(--pos)}
+    .gs-hero-bar-dot.dn{background:var(--neg)}
+    .gs-hero-bar-dot.na{background:var(--text-muted)}
+    .gs-hero-range-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);display:flex;justify-content:space-between;margin-bottom:10px}
+    .gs-hero-meta{display:flex;gap:14px;flex-wrap:wrap;border-top:0.5px solid var(--border-sub);padding-top:8px;margin-top:2px}
+    .gs-hero-meta-item{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
+    .gs-hero-meta-item span{color:var(--text-sub)}
+    .gs-hero-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+    .gs-hero-src{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted)}
+
+    /* ── COMPACT CARD ── */
+    .gs-compact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:20px}
+    .gs-compact{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--text-muted);border-radius:var(--r-sm);padding:10px 12px;transition:background var(--t)}
+    .gs-compact:hover{background:var(--bg-card-h)}
+    .gs-compact.up{border-left-color:var(--pos)}
+    .gs-compact.dn{border-left-color:var(--neg)}
+    .gs-compact.na{border-left-color:var(--text-muted)}
+    .gs-compact-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;gap:6px}
+    .gs-compact-name{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px}
+    .gs-compact-pct{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;flex-shrink:0}
+    .gs-compact-pct.up{color:var(--pos)}
+    .gs-compact-pct.dn{color:var(--neg)}
+    .gs-compact-pct.na{color:var(--text-muted)}
+    .gs-compact-price{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--text);line-height:1;margin-bottom:8px}
+    .gs-compact-bar-track{height:3px;border-radius:2px;background:var(--border);position:relative;margin-bottom:4px}
+    .gs-compact-bar-fill{position:absolute;top:0;left:0;height:100%;border-radius:2px;opacity:.3}
+    .gs-compact-bar-fill.up{background:var(--pos)}
+    .gs-compact-bar-fill.dn{background:var(--neg)}
+    .gs-compact-bar-dot{position:absolute;top:50%;width:7px;height:7px;border-radius:50%;transform:translate(-50%,-50%);border:1.5px solid var(--bg-card);z-index:1}
+    .gs-compact-bar-dot.up{background:var(--pos)}
+    .gs-compact-bar-dot.dn{background:var(--neg)}
+    .gs-compact-bar-dot.na{background:var(--text-muted)}
+    .gs-compact-range{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);display:flex;justify-content:space-between}
+    .gs-compact-tag{font-family:'JetBrains Mono',monospace;font-size:7px;padding:1px 4px;border-radius:2px;font-weight:700;letter-spacing:.5px;border:0.5px solid;flex-shrink:0}
+    .gs-compact-tag.high{color:#D4A843;border-color:rgba(212,168,67,.3);background:rgba(212,168,67,.08)}
+    .gs-compact-tag.low{color:var(--neg);border-color:rgba(226,75,74,.3);background:rgba(226,75,74,.08)}
+    .gs-compact-tag.mid{color:var(--text-muted);border-color:var(--border);background:transparent}
+    .gs-compact-tag.vol{color:#9B6FE8;border-color:rgba(155,111,232,.3);background:rgba(155,111,232,.08)}
+
+    /* ── Context tag (IN / US / CMD / FX) ── */
+    .gs-ctx-tag{font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;letter-spacing:.5px;padding:1px 4px;border-radius:2px;background:var(--bg-surf);border:0.5px solid var(--border);color:var(--text-muted);flex-shrink:0}
+
+    /* ── 3-col hero grid ── */
+    .gs-hero-grid-3{grid-template-columns:repeat(3,1fr);margin-bottom:18px}
+    @media(max-width:860px){.gs-hero-grid-3{grid-template-columns:1fr}}
+
+    /* ── Compact grid 4+ cols on wide screens ── */
+    .gs-compact-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+    @media(max-width:520px){.gs-compact-grid{grid-template-columns:1fr}}
+
+    /* ── Compact header + sort bar ── */
+    .gs-compact-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+    .gs-sort-bar{display:flex;gap:4px}
+    .gs-sort-btn{background:none;border:0.5px solid var(--border);border-radius:3px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 10px;cursor:pointer;transition:var(--t)}
+    .gs-sort-btn:hover{border-color:var(--text-sub);color:var(--text-sub)}
+    .gs-sort-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,.07)}
+
+    /* ── v2.7 ADAPTIVE UI ── */
+    /* Filter chips */
+    .gs-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+    .gs-filter-chip{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;padding:4px 10px;border-radius:12px;border:0.5px solid var(--border);background:none;color:var(--text-muted);cursor:pointer;transition:var(--t);letter-spacing:.3px}
+    .gs-filter-chip:hover{border-color:var(--text-sub);color:var(--text-sub)}
+    .gs-filter-chip.active{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,.08)}
+    /* Search input */
+    .gs-search-wrap{position:relative;margin-bottom:12px}
+    .gs-search-input{width:100%;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 12px 8px 32px;outline:none;transition:border-color var(--t);box-sizing:border-box}
+    .gs-search-input:focus{border-color:#7A8FA6}
+    .gs-search-input::placeholder{color:var(--text-muted)}
+    .gs-search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-muted);pointer-events:none}
+    /* Show more */
+    .gs-show-more-wrap{text-align:center;margin:10px 0 4px}
+    .gs-show-more-btn{background:none;border:0.5px solid var(--border);border-radius:var(--r-sm);color:var(--text-sub);font-family:'JetBrains Mono',monospace;font-size:10px;padding:7px 24px;cursor:pointer;transition:var(--t);width:100%}
+    .gs-show-more-btn:hover{border-color:var(--gold);color:var(--gold)}
+    /* Large dataset split: sticky heroes left, scrollable list right */
+    .gs-split-layout{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start}
+    .gs-sticky-movers{position:sticky;top:96px;display:flex;flex-direction:column;gap:12px}
+    .gs-scroll-list{display:flex;flex-direction:column;gap:0;max-height:calc(100vh - 180px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;border:0.5px solid var(--border);border-radius:var(--r)}
+    .gs-list-row{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:10px;padding:10px 14px;border-bottom:0.5px solid var(--border-sub);transition:background var(--t);cursor:default}
+    .gs-list-row:last-child{border-bottom:none}
+    .gs-list-row:hover{background:var(--bg-card-h)}
+    .gs-list-row.up{border-left:3px solid var(--pos)}
+    .gs-list-row.dn{border-left:3px solid var(--neg)}
+    .gs-list-row.na{border-left:3px solid var(--border)}
+    .gs-list-ctx{font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;padding:1px 4px;border-radius:2px;background:var(--bg-surf);border:0.5px solid var(--border);color:var(--text-muted);flex-shrink:0}
+    .gs-list-name{font-size:11px;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .gs-list-price{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);text-align:right;white-space:nowrap}
+    .gs-list-pct{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;text-align:right;white-space:nowrap;min-width:64px}
+    .gs-list-pct.up{color:var(--pos)}
+    .gs-list-pct.dn{color:var(--neg)}
+    .gs-list-pct.na{color:var(--text-muted)}
+    @media(max-width:860px){
+      .gs-split-layout{grid-template-columns:1fr}
+      .gs-sticky-movers{position:static}
+      .gs-scroll-list{max-height:none}
+    }
+
+    /* ── SUMMARY STRIP ── */
+    .mkt-summary-strip{display:flex;gap:0;margin-bottom:14px;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;flex-wrap:wrap}
+    .mkt-summary-cell{flex:1;min-width:140px;padding:10px 16px;border-right:0.5px solid var(--border);display:flex;flex-direction:column;gap:3px}
+    .mkt-summary-cell:last-child{border-right:none}
+    .mss-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase}
+    .mss-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .mss-val.up{color:var(--pos)}
+    .mss-val.dn{color:var(--neg)}
+    .mss-val.warn{color:#D4A843}
+
+    /* ── TICKER TAPE ── */
+    .ticker-wrap{overflow:hidden;background:var(--bg-surf);border:0.5px solid var(--border);border-radius:var(--r-sm);margin-bottom:16px;padding:6px 0;white-space:nowrap}
+    .ticker-track{display:inline-flex;gap:0;animation:tickerScroll 40s linear infinite}
+    .ticker-track:hover{animation-play-state:paused}
+    .ticker-item{display:inline-flex;align-items:center;gap:6px;padding:0 22px;border-right:0.5px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;white-space:nowrap}
+    .ticker-item:last-child{border-right:none}
+    .ticker-name{color:var(--text-sub);font-weight:600;letter-spacing:.5px}
+    .ticker-val.up{color:var(--pos)}
+    .ticker-val.dn{color:var(--neg)}
+    .ticker-val.na{color:var(--text-muted)}
+    @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
     /* ── MARKET STATUS ROW ── */
-    .mkt-status-row{display:flex;align-items:stretch;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+    .mkt-status-row{display:flex;align-items:stretch;gap:10px;margin-bottom:14px;flex-wrap:wrap}
     .mkt-status-chip{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r-sm);padding:10px 16px;display:flex;flex-direction:column;gap:4px;flex:1;min-width:130px;max-width:220px}
     .msc-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
     .msc-val{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:500}
@@ -285,7 +421,7 @@
 
     /* ── MARKET REFRESH BAR ── */
     .mkt-ctrl-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-    .mkt-stamp-txt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);flex:1}
+    .mkt-stamp-txt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);flex:1;min-width:200px}
     .btn-mkt-refresh{background:none;border:0.5px solid var(--border);color:var(--text-sub);padding:5px 14px;border-radius:var(--r-sm);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:var(--t)}
     .btn-mkt-refresh:hover{border-color:var(--gold);color:var(--gold)}
     .mkt-auto-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);cursor:pointer}
@@ -396,7 +532,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.5</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.7</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -1684,16 +1820,19 @@ async function fetchGSheet(){
   }
 }
 
-function rangeBarHTML(price,low,high,cls){
+function rangeBarHTML(price,low,high,cls,label){
   if(!low||!high||high<=low) return '';
   const pct=Math.min(100,Math.max(0,((price-low)/(high-low))*100));
   const lo=low.toLocaleString('en-IN',{maximumFractionDigits:2});
   const hi=high.toLocaleString('en-IN',{maximumFractionDigits:2});
-  return`<div class="gs-range-row">
-    <div class="gs-range-lbl"><span>${lo}</span><span>${hi}</span></div>
-    <div class="gs-bar-track">
-      <div class="gs-bar-fill ${cls}" style="width:${pct.toFixed(1)}%"></div>
-      <div class="gs-bar-dot ${cls}" style="left:${pct.toFixed(1)}%"></div>
+  return`<div class="gs-range-group">
+    <div class="gs-range-lbl-head">${label||''}</div>
+    <div class="gs-range-row">
+      <div class="gs-bar-track">
+        <div class="gs-bar-fill ${cls}" style="width:${pct.toFixed(1)}%"></div>
+        <div class="gs-bar-dot ${cls}" style="left:${pct.toFixed(1)}%"></div>
+      </div>
+      <div class="gs-range-lbl"><span>${lo}</span><span>${hi}</span></div>
     </div>
   </div>`;
 }
@@ -1703,22 +1842,20 @@ function gsCardHTML(item){
   const arrow=item.trend==='UP'?'▲':item.trend==='DOWN'?'▼':'';
   const pct=item.changePercent?`${arrow} ${Math.abs(item.changePercent).toFixed(2)}%`:'—';
   const priceStr=item.price?item.price.toLocaleString('en-IN',{maximumFractionDigits:2}):'—';
-  const dayBar=item.dayHigh>0?rangeBarHTML(item.price,item.dayLow,item.dayHigh,cls):'';
-  const wkBar=item.high52>0?rangeBarHTML(item.price,item.low52,item.high52,cls):'';
+  const dayBar=item.dayHigh>0?rangeBarHTML(item.price,item.dayLow,item.dayHigh,cls,'Day Range'):'';
+  const wkBar=item.high52>0?rangeBarHTML(item.price,item.low52,item.high52,cls,'52W Range'):'';
   const gfUrl=gFinanceUrl(item.ticker);
+  const hasValidMeta=(item.open>0||item.prevClose>0);
   return`<div class="gs-card ${cls}">
     <div class="gs-name">${esc(item.name)}</div>
     <div class="gs-price-row">
       <div class="gs-price">${priceStr}</div>
       <div class="gs-badge ${cls}">${pct}</div>
     </div>
-    ${dayBar||wkBar?`<div class="gs-ranges">
-      ${dayBar?`<div class="gs-range-group"><div class="gs-range-lbl-head">Day Range</div>${dayBar}</div>`:''}
-      ${wkBar?`<div class="gs-range-group"><div class="gs-range-lbl-head">52W Range</div>${wkBar}</div>`:''}
-    </div>`:''}
-    ${item.open||item.prevClose?`<div class="gs-meta">
-      ${item.open?`<div class="gs-meta-item">Open <span>${item.open.toLocaleString('en-IN',{maximumFractionDigits:2})}</span></div>`:''}
-      ${item.prevClose?`<div class="gs-meta-item">Prev <span>${item.prevClose.toLocaleString('en-IN',{maximumFractionDigits:2})}</span></div>`:''}
+    ${dayBar||wkBar?`<div class="gs-ranges">${dayBar}${wkBar}</div>`:''}
+    ${hasValidMeta?`<div class="gs-meta">
+      ${item.open>0?`<div class="gs-meta-item">Open <span>${item.open.toLocaleString('en-IN',{maximumFractionDigits:2})}</span></div>`:''}
+      ${item.prevClose>0?`<div class="gs-meta-item">Prev <span>${item.prevClose.toLocaleString('en-IN',{maximumFractionDigits:2})}</span></div>`:''}
     </div>`:''}
     <div class="gs-footer">
       <span class="gs-src">Google Finance</span>
@@ -1726,6 +1863,430 @@ function gsCardHTML(item){
     </div>
   </div>`;
 }
+
+/* ── Summary strip computation ── */
+function summaryStripHTML(items){
+  const valid=items.filter(x=>x.changePercent&&Math.abs(x.changePercent)>0.0001&&x.trend);
+  const upCount=valid.filter(x=>x.trend==='UP').length;
+  const dnCount=valid.filter(x=>x.trend==='DOWN').length;
+  const gainer=valid.reduce((a,b)=>b.changePercent>a.changePercent?b:a,{changePercent:-Infinity,name:'—'});
+  const loser =valid.reduce((a,b)=>b.changePercent<a.changePercent?b:a,{changePercent:Infinity,name:'—'});
+  const vix=items.find(x=>x.name==='India VIX');
+  const breadthCls=upCount>=dnCount?'up':'dn';
+  const gainerCls=gainer.changePercent>0?'up':'dn';
+  const loserCls=loser.changePercent<0?'dn':'up';
+  const vixCls=vix?(vix.price>=25?'dn':vix.price>=18?'warn':vix.price<13?'up':'na'):'na';
+  return`<div class="mkt-summary-strip">
+    <div class="mkt-summary-cell">
+      <div class="mss-lbl">Market Breadth</div>
+      <div class="mss-val ${breadthCls}">${upCount}↑ &nbsp;/&nbsp; ${dnCount}↓</div>
+    </div>
+    <div class="mkt-summary-cell">
+      <div class="mss-lbl">Top Gainer</div>
+      <div class="mss-val ${gainerCls}" title="${esc(gainer.name)}">${esc((gainer.name||'—').split(' ').slice(0,2).join(' '))} ${gainer.changePercent!=-Infinity?'(+'+gainer.changePercent.toFixed(2)+'%)':''}</div>
+    </div>
+    <div class="mkt-summary-cell">
+      <div class="mss-lbl">Top Loser</div>
+      <div class="mss-val ${loserCls}" title="${esc(loser.name)}">${esc((loser.name||'—').split(' ').slice(0,2).join(' '))} ${loser.changePercent!=Infinity?'('+loser.changePercent.toFixed(2)+'%)':''}</div>
+    </div>
+    <div class="mkt-summary-cell">
+      <div class="mss-lbl">Volatility · VIX</div>
+      <div class="mss-val ${vixCls}">${vix?`${vix.price.toFixed(2)} (${vix.changePercent>0?'+':''}${vix.changePercent.toFixed(2)}%)`:'—'}</div>
+    </div>
+  </div>`;
+}
+
+/* ── Ticker tape ── */
+function tickerTapeHTML(items){
+  const valid=items.filter(x=>x.price>0);
+  const tapeItems=valid.map(x=>{
+    const cls=x.trend==='UP'?'up':x.trend==='DOWN'?'dn':'na';
+    const arrow=x.trend==='UP'?'▲':x.trend==='DOWN'?'▼':'';
+    const pctStr=x.changePercent?`${arrow} ${x.changePercent>0?'+':''}${x.changePercent.toFixed(2)}%`:'—';
+    return`<span class="ticker-item"><span class="ticker-name">${esc(x.name.split(' ').slice(0,2).join(' ').toUpperCase())}</span><span class="ticker-val ${cls}">${pctStr}</span></span>`;
+  }).join('');
+  // Duplicate for seamless infinite loop
+  return`<div class="ticker-wrap"><div class="ticker-track">${tapeItems}${tapeItems}</div></div>`;
+}
+
+/* ── Hero card (Top Mover) ── */
+function gsHeroCardHTML(item){
+  const cls=item.trend==='UP'?'up':item.trend==='DOWN'?'dn':'na';
+  const arrow=item.trend==='UP'?'▲':item.trend==='DOWN'?'▼':'';
+  const pct=item.changePercent?`${arrow} ${item.changePercent>0?'+':''}${item.changePercent.toFixed(2)}%`:'—';
+  const priceStr=item.price?item.price.toLocaleString('en-IN',{maximumFractionDigits:2}):'—';
+  const gfUrl=gFinanceUrl(item.ticker);
+  let barHTML='';
+  if(item.dayHigh>0&&item.dayHigh>item.dayLow){
+    const pct2=Math.min(100,Math.max(0,((item.price-item.dayLow)/(item.dayHigh-item.dayLow))*100));
+    const lo=item.dayLow.toLocaleString('en-IN',{maximumFractionDigits:2});
+    const hi=item.dayHigh.toLocaleString('en-IN',{maximumFractionDigits:2});
+    barHTML=`<div class="gs-hero-bar-track">
+      <div class="gs-hero-bar-fill ${cls}" style="width:${pct2.toFixed(1)}%"></div>
+      <div class="gs-hero-bar-dot ${cls}" style="left:${pct2.toFixed(1)}%"></div>
+    </div>
+    <div class="gs-hero-range-lbl"><span>${lo}</span><span>${hi}</span></div>`;
+  }
+  const hasValidMeta=item.open>0||item.prevClose>0;
+  return`<div class="gs-hero ${cls}">
+    <div class="gs-hero-tag">TOP MOVER</div>
+    <div class="gs-hero-name">${esc(item.name)}</div>
+    <div class="gs-hero-price">${priceStr}</div>
+    <div class="gs-hero-badge ${cls}">${pct}</div>
+    ${barHTML}
+    ${hasValidMeta?`<div class="gs-hero-meta">
+      ${item.open>0?`<div class="gs-hero-meta-item">Open <span>${item.open.toLocaleString('en-IN',{maximumFractionDigits:2})}</span></div>`:''}
+      ${item.prevClose>0?`<div class="gs-hero-meta-item">Prev <span>${item.prevClose.toLocaleString('en-IN',{maximumFractionDigits:2})}</span></div>`:''}
+    </div>`:''}
+    <div class="gs-hero-footer">
+      <span class="gs-hero-src">Google Finance</span>
+      <a class="gs-link" href="${gfUrl}" target="_blank" rel="noopener">View →</a>
+    </div>
+  </div>`;
+}
+
+/* ── Context tag from ticker ── */
+function contextTag(ticker){
+  if(!ticker) return'';
+  const t=ticker.toUpperCase();
+  if(t.startsWith('INDEXNSE')||t.startsWith('NSE:')) return'IN';
+  if(t.startsWith('INDEXBOM')||t.startsWith('BSE:')) return'IN';
+  if(t.startsWith('INDEXSP')||t.startsWith('INDEXNASDAQ')) return'US';
+  if(t.includes('BEES')||t.startsWith('COMMODITY')) return'CMD';
+  if(t.startsWith('CURRENCY')) return'FX';
+  return'';
+}
+
+/* ── Compact card ── */
+function gsCompactCardHTML(item){
+  const cls=item.trend==='UP'?'up':item.trend==='DOWN'?'dn':'na';
+  const arrow=item.trend==='UP'?'▲':item.trend==='DOWN'?'▼':'';
+  const pct=item.changePercent?`${arrow}${Math.abs(item.changePercent).toFixed(2)}%`:'—';
+  const priceStr=item.price?item.price.toLocaleString('en-IN',{maximumFractionDigits:2}):'—';
+  const ctxTag=contextTag(item.ticker);
+  let barHTML='';
+  if(item.dayHigh>0&&item.dayHigh>item.dayLow){
+    const pct2=Math.min(100,Math.max(0,((item.price-item.dayLow)/(item.dayHigh-item.dayLow))*100));
+    const lo=item.dayLow.toLocaleString('en-IN',{maximumFractionDigits:2});
+    const hi=item.dayHigh.toLocaleString('en-IN',{maximumFractionDigits:2});
+    barHTML=`<div class="gs-compact-bar-track">
+      <div class="gs-compact-bar-fill ${cls}" style="width:${pct2.toFixed(1)}%"></div>
+      <div class="gs-compact-bar-dot ${cls}" style="left:${pct2.toFixed(1)}%"></div>
+    </div>
+    <div class="gs-compact-range"><span>${lo}</span><span>${hi}</span></div>`;
+  }
+  return`<div class="gs-compact ${cls}">
+    <div class="gs-compact-top">
+      <div style="display:flex;align-items:center;gap:5px;min-width:0">
+        ${ctxTag?`<span class="gs-ctx-tag">${ctxTag}</span>`:''}
+        <span class="gs-compact-name">${esc(item.name.toUpperCase())}</span>
+      </div>
+      <span class="gs-compact-pct ${cls}">${pct}</span>
+    </div>
+    <div class="gs-compact-price">${priceStr}</div>
+    ${barHTML}
+  </div>`;
+}
+
+/* ════════════════════════════════════════
+   MARKET DATA PROCESSING — v2.7 Adaptive
+════════════════════════════════════════ */
+
+/* ── Step 1: Data processing layer ── */
+function processMarketData(apiResponse){
+  const items=apiResponse.data;
+  const validItems=items.filter(item=>item.price&&item.price!==0);
+  const sorted=[...validItems].sort((a,b)=>Math.abs(b.changePercent||0)-Math.abs(a.changePercent||0));
+  const count=sorted.length;
+  let topMovers=[],visibleItems=[],hiddenItems=[];
+  if(count<=12){
+    topMovers=sorted.slice(0,3);
+    visibleItems=sorted.slice(3);
+  } else if(count<=30){
+    topMovers=sorted.slice(0,3);
+    visibleItems=sorted.slice(3,15);
+    hiddenItems=sorted.slice(15);
+  } else {
+    topMovers=sorted.slice(0,3);
+    visibleItems=sorted.slice(3,20);
+    hiddenItems=sorted.slice(20);
+  }
+  return{topMovers,visibleItems,hiddenItems,total:count};
+}
+
+/* ── Step 2: Context tag ── */
+function contextTag(ticker){
+  if(!ticker) return'OTH';
+  const t=ticker.toUpperCase();
+  if(t.includes('NSE')||t.includes('BOM')) return'IN';
+  if(t.includes('INDEXSP')||t.includes('NASDAQ')) return'US';
+  if(t.includes('COMMODITY')||t.includes('BEES')) return'CMD';
+  if(t.includes('CURRENCY')) return'FX';
+  return'OTH';
+}
+
+/* ── Sort helpers ── */
+function sortByMover(arr){return[...arr].sort((a,b)=>Math.abs(b.changePercent||0)-Math.abs(a.changePercent||0));}
+function sortByName(arr){return[...arr].sort((a,b)=>a.name.localeCompare(b.name));}
+
+/* ── State ── */
+let _gsProcessed=null;
+let _gsSort='movers';
+let _gsFilter='ALL';
+let _gsExpanded=false;
+let _gsSearchQ='';
+
+/* ── Filter items by tag and search ── */
+function _applyFilters(items){
+  let out=items;
+  if(_gsFilter!=='ALL') out=out.filter(x=>contextTag(x.ticker)===_gsFilter);
+  if(_gsSearchQ) out=out.filter(x=>x.name.toLowerCase().includes(_gsSearchQ));
+  if(_gsSort==='az') out=sortByName(out);
+  return out;
+}
+
+/* ── Hero card ── */
+function gsHeroCardHTML(item){
+  const cls=item.trend==='UP'?'up':item.trend==='DOWN'?'dn':'na';
+  const arrow=item.trend==='UP'?'▲':item.trend==='DOWN'?'▼':'';
+  const pct=item.changePercent?`${arrow} ${item.changePercent>0?'+':''}${item.changePercent.toFixed(2)}%`:'—';
+  const priceStr=item.price?item.price.toLocaleString('en-IN',{maximumFractionDigits:2}):'—';
+  const gfUrl=gFinanceUrl(item.ticker);
+  let barHTML='';
+  if(item.dayHigh>0&&item.dayHigh>item.dayLow){
+    const p=Math.min(100,Math.max(0,((item.price-item.dayLow)/(item.dayHigh-item.dayLow))*100));
+    const lo=item.dayLow.toLocaleString('en-IN',{maximumFractionDigits:2});
+    const hi=item.dayHigh.toLocaleString('en-IN',{maximumFractionDigits:2});
+    barHTML=`<div class="gs-hero-bar-track">
+      <div class="gs-hero-bar-fill ${cls}" style="width:${p.toFixed(1)}%"></div>
+      <div class="gs-hero-bar-dot ${cls}" style="left:${p.toFixed(1)}%"></div>
+    </div>
+    <div class="gs-hero-range-lbl"><span>${lo}</span><span>${hi}</span></div>`;
+  }
+  const ctx=contextTag(item.ticker);
+  return`<div class="gs-hero ${cls}">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span class="gs-ctx-tag">${ctx}</span>
+      <span class="gs-hero-tag">TOP MOVER</span>
+    </div>
+    <div class="gs-hero-name">${esc(item.name)}</div>
+    <div class="gs-hero-badge ${cls}">${pct}</div>
+    <div class="gs-hero-price">${priceStr}</div>
+    ${barHTML}
+    <div class="gs-hero-footer" style="margin-top:10px">
+      <span class="gs-hero-src">Google Finance</span>
+      <a class="gs-link" href="${gfUrl}" target="_blank" rel="noopener">View →</a>
+    </div>
+  </div>`;
+}
+
+/* ── Compact card (grid) ── */
+function gsCompactCardHTML(item){
+  const cls=item.trend==='UP'?'up':item.trend==='DOWN'?'dn':'na';
+  const arrow=item.trend==='UP'?'▲':item.trend==='DOWN'?'▼':'';
+  const pct=item.changePercent?`${arrow}${Math.abs(item.changePercent).toFixed(2)}%`:'—';
+  const priceStr=item.price?item.price.toLocaleString('en-IN',{maximumFractionDigits:2}):'—';
+  const ctx=contextTag(item.ticker);
+  let barHTML='';
+  if(item.dayHigh>0&&item.dayHigh>item.dayLow){
+    const p=Math.min(100,Math.max(0,((item.price-item.dayLow)/(item.dayHigh-item.dayLow))*100));
+    const lo=item.dayLow.toLocaleString('en-IN',{maximumFractionDigits:2});
+    const hi=item.dayHigh.toLocaleString('en-IN',{maximumFractionDigits:2});
+    barHTML=`<div class="gs-compact-bar-track">
+      <div class="gs-compact-bar-fill ${cls}" style="width:${p.toFixed(1)}%"></div>
+      <div class="gs-compact-bar-dot ${cls}" style="left:${p.toFixed(1)}%"></div>
+    </div>
+    <div class="gs-compact-range"><span>${lo}</span><span>${hi}</span></div>`;
+  }
+  return`<div class="gs-compact ${cls}">
+    <div class="gs-compact-top">
+      <div style="display:flex;align-items:center;gap:5px;min-width:0;overflow:hidden">
+        <span class="gs-ctx-tag">${ctx}</span>
+        <span class="gs-compact-name">${esc(item.name.toUpperCase())}</span>
+      </div>
+      <span class="gs-compact-pct ${cls}">${pct}</span>
+    </div>
+    <div class="gs-compact-price">${priceStr}</div>
+    ${barHTML}
+  </div>`;
+}
+
+/* ── List row (large dataset) ── */
+function gsListRowHTML(item){
+  const cls=item.trend==='UP'?'up':item.trend==='DOWN'?'dn':'na';
+  const arrow=item.trend==='UP'?'▲':item.trend==='DOWN'?'▼':'';
+  const pct=item.changePercent?`${arrow}${item.changePercent>0?'+':''}${Math.abs(item.changePercent).toFixed(2)}%`:'—';
+  const priceStr=item.price?item.price.toLocaleString('en-IN',{maximumFractionDigits:2}):'—';
+  const ctx=contextTag(item.ticker);
+  return`<div class="gs-list-row ${cls}">
+    <span class="gs-list-ctx">${ctx}</span>
+    <span class="gs-list-name">${esc(item.name)}</span>
+    <span class="gs-list-price">${priceStr}</span>
+    <span class="gs-list-pct ${cls}">${pct}</span>
+  </div>`;
+}
+
+/* ── Sort toggle (small/medium) ── */
+function applySortUI(sort){
+  _gsSort=sort;
+  ['movers','az'].forEach(s=>{
+    const el=document.getElementById('gs-sort-'+s);
+    if(el) el.classList.toggle('active',s===sort);
+  });
+  _rerenderCompact();
+}
+
+/* ── Filter chip ── */
+function applyFilter(tag){
+  _gsFilter=tag;
+  document.querySelectorAll('.gs-filter-chip').forEach(el=>{
+    el.classList.toggle('active',el.dataset.tag===tag);
+  });
+  _gsExpanded=false;
+  _rerenderCompact();
+}
+
+/* ── Show more toggle ── */
+function toggleShowMore(){
+  _gsExpanded=!_gsExpanded;
+  _rerenderCompact();
+}
+
+/* ── Search handler ── */
+function onGsSearch(q){
+  _gsSearchQ=q.toLowerCase();
+  _rerenderCompact();
+}
+
+/* ── Re-render compact area without refetch ── */
+function _rerenderCompact(){
+  if(!_gsProcessed) return;
+  const allRest=[..._gsProcessed.visibleItems,...(_gsExpanded?_gsProcessed.hiddenItems:[])];
+  const filtered=_applyFilters(allRest);
+  const count=_gsProcessed.total;
+
+  if(count>30){
+    // Large: update list rows only
+    const listEl=document.getElementById('gs-list-body');
+    if(listEl){
+      const all=[..._gsProcessed.visibleItems,..._gsProcessed.hiddenItems];
+      const sorted=_gsSort==='az'?sortByName(all):sortByMover(all);
+      const searchFiltered=_gsSearchQ?sorted.filter(x=>x.name.toLowerCase().includes(_gsSearchQ)):sorted;
+      listEl.innerHTML=searchFiltered.map(gsListRowHTML).join('');
+    }
+    return;
+  }
+
+  // Small/medium: update compact grid + show-more
+  const gridEl=document.getElementById('gs-compact-wrap');
+  if(gridEl) gridEl.innerHTML=filtered.map(gsCompactCardHTML).join('');
+
+  const smWrap=document.getElementById('gs-show-more-wrap');
+  if(smWrap){
+    if(!_gsExpanded&&_gsProcessed.hiddenItems.length>0){
+      const remaining=_applyFilters(_gsProcessed.hiddenItems).length;
+      smWrap.innerHTML=`<button class="gs-show-more-btn" onclick="toggleShowMore()">Show ${remaining} more ▾</button>`;
+    } else if(_gsExpanded&&_gsProcessed.hiddenItems.length>0){
+      smWrap.innerHTML=`<button class="gs-show-more-btn" onclick="toggleShowMore()">Show less ▴</button>`;
+    } else {
+      smWrap.innerHTML='';
+    }
+  }
+}
+
+/* ── Case 1: Small ≤12 ── */
+function _renderSmall(processed,allData){
+  return`
+    ${summaryStripHTML(allData)}
+    ${tickerTapeHTML(allData)}
+    <div class="section-head" style="margin-top:4px"><span>// TOP MOVERS</span><span class="section-badge">${processed.total} instruments</span></div>
+    <div class="gs-hero-grid gs-hero-grid-3">${processed.topMovers.map(gsHeroCardHTML).join('')}</div>
+    <div class="gs-compact-header">
+      <span class="section-head" style="margin:0;border:none;padding:0;font-size:9px">// ALL MARKETS</span>
+      <div class="gs-sort-bar">
+        <button id="gs-sort-movers" class="gs-sort-btn active" onclick="applySortUI('movers')">Movers</button>
+        <button id="gs-sort-az" class="gs-sort-btn" onclick="applySortUI('az')">A–Z</button>
+      </div>
+    </div>
+    <div class="gs-compact-grid" id="gs-compact-wrap">${processed.visibleItems.map(gsCompactCardHTML).join('')}</div>
+    <div id="gs-show-more-wrap"></div>`;
+}
+
+/* ── Case 2: Medium 13–30 ── */
+function _renderMedium(processed,allData){
+  const TAGS=['ALL','IN','US','CMD','FX'];
+  const chips=TAGS.map(t=>`<button class="gs-filter-chip${t==='ALL'?' active':''}" data-tag="${t}" onclick="applyFilter('${t}')">${t}</button>`).join('');
+  const hidden=processed.hiddenItems.length;
+  return`
+    ${summaryStripHTML(allData)}
+    ${tickerTapeHTML(allData)}
+    <div class="section-head" style="margin-top:4px"><span>// TOP MOVERS</span><span class="section-badge">${processed.total} instruments</span></div>
+    <div class="gs-hero-grid gs-hero-grid-3">${processed.topMovers.map(gsHeroCardHTML).join('')}</div>
+    <div class="gs-compact-header">
+      <span class="section-head" style="margin:0;border:none;padding:0;font-size:9px">// ALL MARKETS</span>
+      <div class="gs-sort-bar">
+        <button id="gs-sort-movers" class="gs-sort-btn active" onclick="applySortUI('movers')">Movers</button>
+        <button id="gs-sort-az" class="gs-sort-btn" onclick="applySortUI('az')">A–Z</button>
+      </div>
+    </div>
+    <div class="gs-filter-bar">${chips}</div>
+    <div class="gs-compact-grid" id="gs-compact-wrap">${processed.visibleItems.map(gsCompactCardHTML).join('')}</div>
+    <div id="gs-show-more-wrap">${hidden>0?`<button class="gs-show-more-btn" onclick="toggleShowMore()">Show ${hidden} more ▾</button>`:''}</div>`;
+}
+
+/* ── Case 3: Large >30 ── */
+function _renderLarge(processed,allData){
+  const allRest=[...processed.visibleItems,...processed.hiddenItems];
+  return`
+    ${summaryStripHTML(allData)}
+    ${tickerTapeHTML(allData)}
+    <div class="gs-split-layout">
+      <div class="gs-sticky-movers">
+        <div class="section-head" style="margin:0 0 10px;padding-bottom:8px"><span>// TOP MOVERS</span></div>
+        ${processed.topMovers.map(gsHeroCardHTML).join('')}
+      </div>
+      <div>
+        <div class="gs-compact-header" style="margin-bottom:10px">
+          <span class="section-head" style="margin:0;border:none;padding:0;font-size:9px">// ALL MARKETS · ${processed.total} instruments</span>
+          <div class="gs-sort-bar">
+            <button id="gs-sort-movers" class="gs-sort-btn active" onclick="applySortUI('movers')">Movers</button>
+            <button id="gs-sort-az" class="gs-sort-btn" onclick="applySortUI('az')">A–Z</button>
+          </div>
+        </div>
+        <div class="gs-search-wrap">
+          <span class="gs-search-ico">⌕</span>
+          <input class="gs-search-input" id="gs-search" placeholder="Search instruments…" oninput="onGsSearch(this.value)">
+        </div>
+        <div class="gs-scroll-list" id="gs-list-body">${allRest.map(gsListRowHTML).join('')}</div>
+      </div>
+    </div>`;
+}
+
+/* ── Main render ── */
+async function _renderGSCards(){
+  const wrap=document.getElementById('gs-cards-wrap');if(!wrap)return;
+  const d=await fetchGSheet();
+  if(!d||!d.data?.length){
+    wrap.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Market data unavailable · <a class="ndc-link" href="https://www.google.com/finance" target="_blank" rel="noopener">Open Google Finance →</a></div></div>`;
+    return;
+  }
+  const stamp=document.getElementById('gs-stamp');
+  if(stamp){
+    const upd=new Date(d.lastUpdated);
+    stamp.textContent=`Updated ${upd.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})} · ${d.count} instruments · Google Finance`;
+  }
+
+  // Reset state on fresh render
+  _gsExpanded=false; _gsFilter='ALL'; _gsSearchQ=''; _gsSort='movers';
+
+  _gsProcessed=processMarketData(d);
+  const count=_gsProcessed.total;
+
+  if(count<=12)      wrap.innerHTML=_renderSmall(_gsProcessed,d.data);
+  else if(count<=30) wrap.innerHTML=_renderMedium(_gsProcessed,d.data);
+  else               wrap.innerHTML=_renderLarge(_gsProcessed,d.data);
+}
+
 
 function isDST(date){
   const y=date.getFullYear();
@@ -1795,30 +2356,6 @@ async function refreshMarketsPanel(){
   const statusRow=document.getElementById('mkt-status-row');
   if(statusRow) statusRow.innerHTML=marketStatusHTML();
   if(btn){btn.textContent='↻ Refresh';btn.disabled=false;}
-}
-
-async function _renderGSCards(){
-  const wrap=document.getElementById('gs-cards-wrap');if(!wrap)return;
-  const d=await fetchGSheet();
-  if(!d||!d.data?.length){
-    wrap.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Market data unavailable · <a class="ndc-link" href="https://www.google.com/finance" target="_blank" rel="noopener">Open Google Finance →</a></div></div>`;
-    return;
-  }
-  const stamp=document.getElementById('gs-stamp');
-  if(stamp){
-    const upd=new Date(d.lastUpdated);
-    stamp.textContent=`Updated ${upd.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'})} · ${d.count} instruments · Google Finance`;
-  }
-  const indiaItems=d.data.filter(x=>GS_GROUPS[x.ticker]?.group==='india');
-  const etfItems  =d.data.filter(x=>GS_GROUPS[x.ticker]?.group==='etf');
-  const globalItems=d.data.filter(x=>GS_GROUPS[x.ticker]?.group==='global');
-  wrap.innerHTML=`
-    <div class="section-head"><span>// INDIAN INDICES</span><span class="section-badge">${indiaItems.length} instruments</span></div>
-    <div class="gs-grid">${indiaItems.map(gsCardHTML).join('')}</div>
-    ${etfItems.length?`<div class="section-head"><span>// INDIAN ETFs · NSE</span><span class="section-badge">${etfItems.length} instruments</span></div>
-    <div class="gs-grid">${etfItems.map(gsCardHTML).join('')}</div>`:''}
-    <div class="section-head"><span>// GLOBAL MARKETS</span><span class="section-badge">${globalItems.length} instruments</span></div>
-    <div class="gs-grid">${globalItems.map(gsCardHTML).join('')}</div>`;
 }
 
 function toggleGSAuto(){
@@ -1924,7 +2461,8 @@ async function loadConflictsPanel(id){
 }
 
 buildNav();
-DBG.info('INIT','MERIDIAN v2.5 · Google Sheets market data · Real NSE/BSE prices · GDELT news');
+DBG.info('INIT','MERIDIAN v2.7 · Adaptive Markets (Small/Medium/Large) · Filter · Search · Show More');
+DBG.info('SOURCES','GDELT · Google Sheets (GOOGLEFINANCE) · USGS · ReliefWeb');
 DBG.info('SOURCES','GDELT · Google Sheets (GOOGLEFINANCE) · USGS · ReliefWeb');
 DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = modal · ⎘ copy log');
 loadHome();
