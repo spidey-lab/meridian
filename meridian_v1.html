@@ -334,6 +334,27 @@
     .dbg-stats{padding:7px 14px;border-top:1px solid #1A2038;flex-shrink:0;display:flex;gap:12px;flex-wrap:wrap;font-size:10px}
     .ds{color:#3A4A6A}.ds span{color:#5A7AA0}
 
+    /* ── COMPACT NO-DATA STATE ── */
+    .no-data-compact{display:flex;align-items:center;gap:10px;padding:11px 16px;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);margin-bottom:8px}
+    .ndc-ico{font-size:13px;opacity:.45;flex-shrink:0}
+    .ndc-msg{flex:1;line-height:1.5}
+    .ndc-link{color:var(--text-sub);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:10px}
+    .mkt-card.na-compact{padding:10px 14px;display:flex;align-items:center;gap:10px;border-top-color:var(--border)}
+    .mkt-card.na-compact .mkt-name{margin-bottom:0;font-size:10px}
+
+    /* ── DEBUG improvements ── */
+    .dl-src{font-family:'JetBrains Mono',monospace;font-size:9px;padding:1px 5px;border-radius:3px;flex-shrink:0;font-weight:600}
+    .dl-src.gdelt{background:rgba(75,142,240,.15);color:#4B8EF0}
+    .dl-src.mkt{background:rgba(61,184,138,.12);color:#3DB88A}
+    .dl-src.proxy{background:rgba(155,111,232,.15);color:#9B6FE8}
+    .dl-src.tdapi{background:rgba(212,168,67,.15);color:#D4A843}
+    .dl-src.yfin{background:rgba(43,191,204,.15);color:#2BBFCC}
+    .dl-src.vix{background:rgba(240,131,58,.15);color:#F0833A}
+    .dl-src.usgs{background:rgba(226,75,74,.15);color:#E24B4A}
+    .dl-src.rw{background:rgba(90,106,138,.2);color:#5A6A8A}
+    .dl-src.srch{background:rgba(212,79,168,.15);color:#D44FA8}
+    .dbg-cooldown{display:none;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:3px;background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);animation:blink 1s infinite}
+
     /* ── RESPONSIVE ── */
     @media(max-width:860px){
       .hdr{padding:0 14px}.tagline{display:none}
@@ -353,7 +374,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.1</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.2</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -390,7 +411,8 @@
     </div>
     <!-- VIX + Market Status widget — compact glanceable row stays at top -->
     <div class="vix-row" id="vix-row">
-      <div class="vix-chip"><div class="vix-chip-lbl">Market Status</div><div class="vix-chip-val" id="mkt-status-val">—</div><div class="vix-chip-sub" id="mkt-status-sub">IST</div></div>
+      <div class="vix-chip"><div class="vix-chip-lbl">🇮🇳 India Market</div><div class="vix-chip-val" id="mkt-status-val">—</div><div class="vix-chip-sub" id="mkt-status-sub">IST</div></div>
+      <div class="vix-chip"><div class="vix-chip-lbl">🇺🇸 US Market</div><div class="vix-chip-val" id="us-mkt-status-val">—</div><div class="vix-chip-sub" id="us-mkt-status-sub">ET</div></div>
       <div class="vix-chip"><div class="vix-chip-lbl">India VIX</div><div class="vix-chip-val" id="vix-val">—</div><div class="vix-chip-sub" id="vix-sub">Fear gauge</div></div>
       <div class="vix-chip"><div class="vix-chip-lbl">Nifty 50</div><div class="vix-chip-val" id="nifty-val">—</div><div class="vix-chip-sub" id="nifty-sub">NSE</div></div>
       <div class="vix-chip"><div class="vix-chip-lbl">Gold (USD/oz)</div><div class="vix-chip-val" id="gold-val">—</div><div class="vix-chip-sub" id="gold-sub">Spot</div></div>
@@ -513,10 +535,14 @@
 <button id="dbg-btn" onclick="toggleDbg()"><span id="dbg-pip"></span> DEBUG</button>
 <div id="dbg-panel">
   <div class="dbg-hdr">
-    <span class="dbg-hdr-l">// MERIDIAN v1.8 · Direct GDELT · localStorage</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="dbg-hdr-l">// MERIDIAN v2.1 · GDELT + Proxy + TwelveData</span>
+      <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
+    </div>
     <div class="dbg-btns">
       <button class="dbg-btn" onclick="testDirect()">⚡ Test</button>
       <button class="dbg-btn" onclick="showCacheInfo()">◎ Cache</button>
+      <button class="dbg-btn" onclick="copyLog()">⎘ Copy</button>
       <button class="dbg-btn" onclick="clearAllCache()">⊘ Clear</button>
       <button class="dbg-btn" onclick="clearLog()">✕</button>
     </div>
@@ -528,6 +554,8 @@
     <span class="ds">FETCHES <span id="ds-fetch">0</span></span>
     <span class="ds">FAILED <span id="ds-err">0</span></span>
     <span class="ds">ARTS <span id="ds-art">0</span></span>
+    <span class="ds">PROXY <span id="ds-proxy">0</span></span>
+    <span class="ds">TDAPI <span id="ds-tdapi">0</span></span>
   </div>
 </div>
 
@@ -541,6 +569,56 @@ const CACHE_TTL = 15 * 60 * 1000;
 const LS_PFX    = 'mer18_';
 const LS_READ   = 'mer18_read';
 const LS_THEME  = 'mer18_theme';
+
+/* ── CORS proxies (Stooq can't be fetched directly from GitHub Pages) ── */
+const CORS_PROXIES = [
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`
+];
+
+/* ── Twelve Data (fallback market data, CORS-native) ── */
+const TD_KEY  = 'fde00474a8a5417e8ac285f1ed0e9dd7';
+const TD_BASE = 'https://api.twelvedata.com';
+const TD_SYM  = {
+  '^nsei':'NIFTY50', '^bsesn':'SENSEX', 'usdinr':'USD/INR',
+  'xauusd':'XAU/USD', 'xagusd':'XAG/USD', 'cl.f':'WTI/USD',
+  '^spx':'SPX', '^ndq':'NDX'
+};
+
+/* ════════════════════════════════════════
+   GDELT COOLDOWN TRACKER
+   Prevents burst fetches after rate-limit HTML response
+════════════════════════════════════════ */
+let _gdeltCooldownUntil = 0;
+let _gdeltCooldownTimer = null;
+
+function setGdeltCooldown(secs=90){
+  _gdeltCooldownUntil = Date.now() + secs*1000;
+  const retryAt = new Date(_gdeltCooldownUntil).toTimeString().slice(0,8);
+  DBG.warn('GDELT',`⏸ Rate-limited · ${secs}s cooldown · Retry at ${retryAt}`);
+  const chip = document.getElementById('dbg-cooldown');
+  if(chip) chip.style.display='inline-flex';
+  clearInterval(_gdeltCooldownTimer);
+  _gdeltCooldownTimer = setInterval(()=>{
+    const rem = Math.ceil((_gdeltCooldownUntil - Date.now())/1000);
+    if(rem<=0){
+      clearInterval(_gdeltCooldownTimer);
+      if(chip){ chip.style.display='none'; }
+      DBG.ok('GDELT','✓ Cooldown expired · Ready');
+      return;
+    }
+    if(chip) chip.textContent = `GDELT COOLING · ${rem}s`;
+  }, 1000);
+}
+
+function gdeltReady(){
+  if(Date.now() < _gdeltCooldownUntil){
+    const rem = Math.ceil((_gdeltCooldownUntil - Date.now())/1000);
+    DBG.warn('GDELT',`⏸ Cooling · ${rem}s remaining — request skipped`);
+    return false;
+  }
+  return true;
+}
 
 /* ════════════════════════════════════════
    THEME
@@ -817,18 +895,28 @@ async function _drainQueue(){
 /* ════════════════════════════════════════
    DEBUG
 ════════════════════════════════════════ */
+const SRC_CHIPS = {
+  GDELT:'gdelt',CACHE:'gdelt',FALLBACK:'gdelt',FILTER:'gdelt',T5:'gdelt',
+  MKT:'mkt',PROXY:'proxy',PROXY1:'proxy',PROXY2:'proxy',
+  TDAPI:'tdapi',YFIN:'yfin',VIX:'vix',
+  USGS:'usgs',RW:'rw',SRCH:'srch',
+  HOME:'gdelt',CAT:'gdelt',AUTO:'gdelt',INIT:'',SOURCES:'',KEYS:''
+};
 const DBG = {
-  visible:false, stats:{req:0,hit:0,fetch:0,err:0,art:0},
+  visible:false, stats:{req:0,hit:0,fetch:0,err:0,art:0,proxy:0,tdapi:0},
   log(type,tag,msg){
     const el=document.getElementById('dbg-log');if(!el)return;
     const ts=new Date().toTimeString().slice(0,8);
+    const srcCls=SRC_CHIPS[tag]||'';
+    const srcChip=srcCls?`<span class="dl-src ${srcCls}">${tag}</span>`:'';
     const row=document.createElement('div');row.className='dl '+type;
-    row.innerHTML=`<span class="dl-ts">${ts}</span><span class="dl-tag">${esc(tag)}</span><span class="dl-msg">${esc(String(msg))}</span>`;
+    row.innerHTML=`<span class="dl-ts">${ts}</span>${srcChip}<span class="dl-msg">${esc(String(msg))}</span>`;
     el.appendChild(row);el.scrollTop=el.scrollHeight;this._pip(type);this._st();
   },
   info:(t,m)=>DBG.log('info',t,m),ok:(t,m)=>DBG.log('ok',t,m),
   warn:(t,m)=>DBG.log('warn',t,m),err:(t,m)=>DBG.log('err',t,m),
   data:(t,m)=>DBG.log('data',t,m),
+  cors(tag,url){ DBG.err(tag,`CORS BLOCK · "Failed to fetch" · URL: ${url.slice(0,60)}`); },
   _lastErr:0,
   _pip(type){
     const p=document.getElementById('dbg-pip');if(!p)return;
@@ -837,7 +925,7 @@ const DBG = {
     else if(type==='ok'&&Date.now()-this._lastErr>4000)p.className='ok';
   },
   _st(){
-    ['req','hit','fetch','err','art'].forEach(k=>{
+    ['req','hit','fetch','err','art','proxy','tdapi'].forEach(k=>{
       const el=document.getElementById('ds-'+k);if(el)el.textContent=this.stats[k];
     });
   }
@@ -845,20 +933,30 @@ const DBG = {
 function toggleDbg(){
   DBG.visible=!DBG.visible;
   document.getElementById('dbg-panel').classList.toggle('open',DBG.visible);
-  if(DBG.visible&&!document.getElementById('dbg-log').children.length){
-    DBG.info('INIT','MERIDIAN v1.8 · Direct GDELT · No proxy');
-    DBG.info('FEAT','Hero card · Tone bar · Theme toggle · Search fixed');
-  }
 }
-function clearLog(){document.getElementById('dbg-log').innerHTML='';DBG.stats={req:0,hit:0,fetch:0,err:0,art:0};DBG._st();document.getElementById('dbg-pip').className='';}
+function clearLog(){
+  document.getElementById('dbg-log').innerHTML='';
+  DBG.stats={req:0,hit:0,fetch:0,err:0,art:0,proxy:0,tdapi:0};
+  DBG._st();document.getElementById('dbg-pip').className='';
+}
+function copyLog(){
+  const rows=[...document.querySelectorAll('#dbg-log .dl')];
+  const txt=rows.map(r=>{
+    const ts=r.querySelector('.dl-ts')?.textContent||'';
+    const tag=r.querySelector('.dl-src')?.textContent||'';
+    const msg=r.querySelector('.dl-msg')?.textContent||'';
+    return `${ts} [${tag}] ${msg}`;
+  }).join('\n');
+  navigator.clipboard.writeText(txt).then(()=>DBG.ok('DBG','Log copied to clipboard')).catch(()=>DBG.warn('DBG','Clipboard copy failed'));
+}
 async function testDirect(){
-  DBG.info('TEST','─── GDELT Direct Test ───');
+  DBG.info('INIT','─── Direct GDELT Test ───');
   try{
     const {arts,status}=await fetchGdelt('(India OR war OR economy) sourcelang:english','6H',3,'DateDesc');
-    DBG.ok('TEST',`✓ ${arts.length} · ${status}`);
-    arts.forEach((a,i)=>DBG.data('ART'+i,`"${(a.title||'').slice(0,55)}" | tone:${a.tone??'n/a'} | ${a.domain}`));
-  }catch(e){DBG.err('TEST','✗ '+e.message);}
-  DBG.info('TEST','─── Done ───');
+    DBG.ok('GDELT',`✓ ${arts.length} arts · ${status}`);
+    arts.forEach((a,i)=>DBG.data('GDELT',`${i}: "${(a.title||'').slice(0,55)}" · tone:${a.tone??'n/a'} · ${a.domain}`));
+  }catch(e){DBG.err('GDELT','✗ '+e.message);}
+  DBG.info('INIT','─── Done ───');
 }
 
 /* ════════════════════════════════════════
@@ -904,6 +1002,7 @@ async function fetchGdelt(q,ts='24H',max=15,sort='DateDesc'){
 }
 
 async function _gdeltFetch(q,ts,max,sort){
+  if(!gdeltReady()) throw new Error('GDELT cooling down — retry later');
   const params=new URLSearchParams({query:q,mode:'artlist',maxrecords:String(max),timespan:ts,sort,format:'json'});
   const url=GDELT+'?'+params.toString();
   DBG.info('GDELT',`q="${q.slice(0,60)}…" ts=${ts} max=${max}`);
@@ -911,26 +1010,32 @@ async function _gdeltFetch(q,ts,max,sort){
   const t0=Date.now();
   try{
     const r=await fetch(url,{signal:AbortSignal.timeout(30000)});
-    if(!r.ok)throw new Error(`GDELT HTTP ${r.status}`);
+    const elapsed=((Date.now()-t0)/1000).toFixed(1);
+    if(!r.ok) throw new Error(`HTTP ${r.status} · ${elapsed}s`);
     const text=await r.text();
-    if(!text.trim().startsWith('{'))throw new Error('GDELT returned non-JSON response');
+    if(!text.trim().startsWith('{')){
+      const preview=text.slice(0,120).replace(/\s+/g,' ').trim();
+      DBG.err('GDELT',`Non-JSON response · ${elapsed}s · preview: "${preview}"`);
+      setGdeltCooldown(90);
+      throw new Error('GDELT rate-limited (HTML response)');
+    }
     const d=JSON.parse(text);
     const raw=Array.isArray(d.articles)?d.articles:[];
-    // Filter 1: English language only
     const englishOnly=raw.filter(a=>!a.language||a.language.toLowerCase()==='english');
-    // Filter 2: Trusted domain whitelist (Tier 1/2/3 sources only)
     const arts=englishOnly.filter(a=>isTrusted(a.domain));
     const filteredLang=raw.length-englishOnly.length;
     const filteredDomain=englishOnly.length-arts.length;
     if(filteredLang>0)DBG.info('FILTER',`Removed ${filteredLang} non-English of ${raw.length}`);
-    if(filteredDomain>0)DBG.info('FILTER',`Removed ${filteredDomain} untrusted domains · ${arts.length} trusted remain`);
-    const elapsed=((Date.now()-t0)/1000).toFixed(1);
-    DBG.ok('GDELT',`✓ ${arts.length} English arts · ${elapsed}s`);
+    if(filteredDomain>0)DBG.info('FILTER',`Removed ${filteredDomain} untrusted · ${arts.length} remain`);
+    DBG.ok('GDELT',`✓ ${arts.length} arts · ${elapsed}s`);
     DBG.stats.art+=arts.length;DBG._st();
     cacheSet(q,ts,max,{...d,articles:arts});
     return{arts,status:'LIVE',ageMs:0,elapsed};
   }catch(e){
-    DBG.err('GDELT',e.message);DBG.stats.err++;DBG._st();
+    const isCors=e.message==='Failed to fetch';
+    if(isCors) DBG.cors('GDELT',url);
+    else DBG.err('GDELT',e.message);
+    DBG.stats.err++;DBG._st();
     const stale=cacheStale(q,ts,max);
     if(stale){
       const staleArts=(stale.data.articles||[])
@@ -1285,19 +1390,25 @@ async function fetchWithFallback(q, baseTs, max){
 
 // Tier 5 fetch — bypasses domain whitelist, fetches raw GDELT
 async function fetchGdeltUnfiltered(q, ts, max){
-  // Use the internal _gdeltFetch directly — bypasses isTrusted filter
-  // We reimplement a minimal fetch here to avoid touching _gdeltFetch's filter path
+  if(!gdeltReady()) throw new Error('GDELT cooling down — retry later');
   const params = new URLSearchParams({query:q,mode:'artlist',maxrecords:String(max),timespan:ts,sort:'DateDesc',format:'json'});
   const url = GDELT+'?'+params.toString();
-  DBG.info('T5','Fetching unfiltered: ts='+ts+' max='+max);
+  DBG.info('T5',`Fetching unfiltered: ts=${ts} max=${max}`);
   return queueFetch(async ()=>{
+    const t0=Date.now();
     const r = await fetch(url,{signal:AbortSignal.timeout(30000)});
-    if(!r.ok) throw new Error(`T5 HTTP ${r.status}`);
+    const elapsed=((Date.now()-t0)/1000).toFixed(1);
+    if(!r.ok) throw new Error(`HTTP ${r.status} · ${elapsed}s`);
     const text = await r.text();
-    if(!text.trim().startsWith('{')) throw new Error('T5 non-JSON response');
+    if(!text.trim().startsWith('{')){
+      const preview=text.slice(0,120).replace(/\s+/g,' ').trim();
+      DBG.err('T5',`Non-JSON · ${elapsed}s · preview: "${preview}"`);
+      setGdeltCooldown(90);
+      throw new Error('GDELT rate-limited (HTML response)');
+    }
+    DBG.ok('T5',`✓ ${elapsed}s`);
     const d = JSON.parse(text);
     const raw = Array.isArray(d.articles)?d.articles:[];
-    // English filter only — no domain filter
     return raw.filter(a=>!a.language||a.language.toLowerCase()==='english');
   });
 }
@@ -1414,7 +1525,7 @@ function handleOvClick(e){if(e.target===document.getElementById('overlay'))close
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 /* ════════════════════════════════════════
-   SEARCH — FIXED
+   SEARCH
 ════════════════════════════════════════ */
 async function doSearch(){
   const q=document.getElementById('sInput').value.trim();
@@ -1425,60 +1536,75 @@ async function doSearch(){
   const src=document.getElementById('sSrc').value;
   const res=document.getElementById('s-results');
 
-  // Search uses NO domain whitelist — user-typed queries should return all relevant results
-  // Wrap user input in parens, add language + optional filters
   const query=`(${q}) sourcelang:english${tone}${src}`;
   DBG.info('SRCH',`query="${query}" ts=${ts} sort=${sort}`);
-  DBG.info('SRCH','Note: search bypasses domain whitelist — shows all English sources');
+
+  // Check cooldown before even starting
+  if(!gdeltReady()){
+    const rem=Math.ceil((_gdeltCooldownUntil-Date.now())/1000);
+    _renderSearchCooldown(res,rem,q);
+    return;
+  }
 
   res.innerHTML=`<div class="art-grid">${skels(2)}</div>`;
 
-  // Cascade: try requested timespan first, widen if needed
   const timespans=[ts];
   if(ts==='6H')  timespans.push('24H','48H');
   if(ts==='24H') timespans.push('48H','7D');
   if(ts==='48H') timespans.push('7D');
 
   let arts=[];
-  for(const span of timespans){
+  for(let i=0;i<timespans.length;i++){
+    const span=timespans[i];
+    if(i>0) await new Promise(r=>setTimeout(r,2000)); // 2s gap between cascade retries
     try{
       DBG.info('SRCH',`Trying ts=${span}…`);
-      arts = await fetchGdeltUnfiltered(query, span, 15);
-      if(arts.length>=3){
-        DBG.ok('SRCH',`${arts.length} results · ts=${span}`);
-        break;
-      }
+      arts=await fetchGdeltUnfiltered(query,span,15);
+      if(arts.length>=3){ DBG.ok('SRCH',`${arts.length} results · ts=${span}`); break; }
       DBG.warn('SRCH',`ts=${span} returned ${arts.length} — widening`);
     }catch(e){
       DBG.err('SRCH',`ts=${span} failed: ${e.message}`);
+      if(e.message.includes('cooling')||e.message.includes('rate-limited')){
+        const rem=Math.ceil((_gdeltCooldownUntil-Date.now())/1000);
+        _renderSearchCooldown(res,rem,q);
+        return;
+      }
     }
   }
 
   if(!arts.length){
-    res.innerHTML=`<div class="empty"><div class="empty-ico">◎</div>
-      <div class="empty-txt">No results for "${esc(q)}".</div>
-      <div class="empty-hint">Try different keywords, remove filters, or widen the timespan.</div></div>`;
+    res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No results found for <strong>"${esc(q)}"</strong> · Try different keywords, remove filters, or widen the timespan.</div></div>`;
     return;
   }
 
-  // Sort by date
   arts.sort((a,b)=>parseGdeltDate(b.seendate)-parseGdeltDate(a.seendate));
-
-  // Render hero + grid
   const heroWrap=document.createElement('div');
   heroWrap.innerHTML=heroCardHTML(arts[0],'#7A8FA6');
   const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
   if(hid)lazyHeroDesc(hid);
-
   res.innerHTML='';
   res.appendChild(heroWrap);
   if(arts.length>1){
-    const g=document.createElement('div');
-    g.className='art-grid';
+    const g=document.createElement('div');g.className='art-grid';
     g.innerHTML=arts.slice(1).map(a=>cardHTML(a,'#7A8FA6')).join('');
     res.appendChild(g);
   }
   DBG.ok('SRCH',`Showing ${arts.length} results for "${q}"`);
+}
+
+function _renderSearchCooldown(res,rem,q){
+  res.innerHTML=`<div class="no-data-compact" id="srch-cooldown-box">
+    <span class="ndc-ico">⏸</span>
+    <div class="ndc-msg">GDELT is rate-limited · Auto-retry in <strong id="srch-cd">${rem}s</strong></div>
+    <button class="btn-retry" onclick="doSearch()">↻ Retry now</button>
+  </div>`;
+  const cdTimer=setInterval(()=>{
+    const r2=Math.ceil((_gdeltCooldownUntil-Date.now())/1000);
+    const el=document.getElementById('srch-cd');
+    if(!el){clearInterval(cdTimer);return;}
+    if(r2<=0){clearInterval(cdTimer);doSearch();}
+    else el.textContent=r2+'s';
+  },1000);
 }
 
 /* ════════════════════════════════════════
@@ -1572,43 +1698,73 @@ function sparkCacheSet(sym,closes){
   try{localStorage.setItem(sparkCacheKey(sym),JSON.stringify({closes,ts:Date.now()}));}catch{}
 }
 
-/* ── Yahoo Finance fallback ── */
-async function fetchTickerYahoo(t){
-  if(!t.ysym) return null;
-  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(t.ysym)}?interval=1d&range=2d`;
-  DBG.info('YFIN','Fallback: '+t.ysym);
+/* ════════════════════════════════════════
+   CORS PROXY FETCH — wraps Stooq/Yahoo for GitHub Pages
+════════════════════════════════════════ */
+async function proxyFetch(rawUrl, timeout=12000){
+  for(let i=0;i<CORS_PROXIES.length;i++){
+    const proxied=CORS_PROXIES[i](rawUrl);
+    const tag=i===0?'PROXY1':'PROXY2';
+    DBG.info('PROXY',`[${i+1}/${CORS_PROXIES.length}] ${rawUrl.slice(0,50)}…`);
+    try{
+      const t0=Date.now();
+      const r=await fetch(proxied,{signal:AbortSignal.timeout(timeout)});
+      const elapsed=((Date.now()-t0)/1000).toFixed(1);
+      if(!r.ok) throw new Error(`HTTP ${r.status}`);
+      const text=await r.text();
+      if(!text||text.trim().length<5) throw new Error('Empty response');
+      DBG.ok('PROXY',`[${i+1}] ✓ ${(text.length/1024).toFixed(1)}KB · ${elapsed}s`);
+      DBG.stats.proxy++;DBG._st();
+      return text;
+    }catch(e){
+      const isCors=e.message==='Failed to fetch';
+      DBG.warn('PROXY',`[${i+1}] ${isCors?'CORS BLOCK':e.message}`);
+    }
+  }
+  throw new Error('All CORS proxies failed');
+}
+
+/* ── Twelve Data (CORS-native fallback) ── */
+async function fetchTickerTwelveData(t){
+  const sym=TD_SYM[t.sym];
+  if(!sym) return null;
+  const url=`${TD_BASE}/quote?symbol=${encodeURIComponent(sym)}&apikey=${TD_KEY}`;
+  DBG.info('TDAPI',`Querying: ${sym}`);
+  const t0=Date.now();
   try{
-    const r=await fetch(url,{signal:AbortSignal.timeout(12000)});
-    if(!r.ok) throw new Error(`YFin HTTP ${r.status}`);
+    const r=await fetch(url,{signal:AbortSignal.timeout(15000)});
+    const elapsed=((Date.now()-t0)/1000).toFixed(1);
+    if(!r.ok) throw new Error(`HTTP ${r.status} · ${elapsed}s`);
     const d=await r.json();
-    const res=d?.chart?.result?.[0];
-    if(!res) throw new Error('No YFin result');
-    const meta=res.meta;
-    const close=meta.regularMarketPrice??meta.chartPreviousClose;
-    const prev=meta.chartPreviousClose??meta.previousClose;
-    if(!close||!prev) throw new Error('Missing price fields');
+    if(d.status==='error') throw new Error(d.message||'TwelveData error');
+    const close=parseFloat(d.close);
+    const prev=parseFloat(d.previous_close);
+    if(isNaN(close)||isNaN(prev)) throw new Error('Invalid price fields');
     const change=close-prev;
     const changePct=(change/prev)*100;
-    const now=new Date();
-    const data={sym:t.sym,close,open:prev,change,changePct,date:now.toISOString().split('T')[0],time:'',stale:false,src:'YFin'};
+    const data={sym:t.sym,close,open:prev,change,changePct,date:d.datetime?.slice(0,10)||'',time:'',stale:false,src:'TwelveData'};
     mktCacheSet(t.sym,data);
-    DBG.ok('YFIN',`✓ ${t.ysym} · ${close}`);
+    DBG.ok('TDAPI',`✓ ${sym} · ${close} · ${elapsed}s`);
+    DBG.stats.tdapi++;DBG._st();
     return data;
   }catch(e){
-    DBG.warn('YFIN',`${t.ysym} failed: ${e.message}`);
+    const isCors=e.message==='Failed to fetch';
+    if(isCors) DBG.cors('TDAPI',url);
+    else DBG.warn('TDAPI',`${sym} failed: ${e.message}`);
     return null;
   }
 }
 
-async function fetchSparklineYahoo(t){
-  if(!t.ysym) return [];
-  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(t.ysym)}?interval=1d&range=14d`;
+async function fetchSparklineTwelveData(t){
+  const sym=TD_SYM[t.sym];
+  if(!sym) return [];
+  const url=`${TD_BASE}/time_series?symbol=${encodeURIComponent(sym)}&interval=1day&outputsize=12&apikey=${TD_KEY}`;
   try{
-    const r=await fetch(url,{signal:AbortSignal.timeout(12000)});
+    const r=await fetch(url,{signal:AbortSignal.timeout(15000)});
     if(!r.ok) return [];
     const d=await r.json();
-    const closes=d?.chart?.result?.[0]?.indicators?.quote?.[0]?.close||[];
-    return closes.filter(v=>v!==null&&!isNaN(v)).slice(-10);
+    const vals=d?.values||[];
+    return vals.slice(0,10).reverse().map(v=>parseFloat(v.close)).filter(v=>!isNaN(v));
   }catch{return [];}
 }
 
@@ -1617,112 +1773,98 @@ async function fetchTicker(t){
   const cached=mktCacheGet(t.sym,MKT_CACHE_TTL);
   if(cached){ DBG.ok('MKT',`Cache hit: ${t.sym} · ${Math.floor((Date.now()-cached.ts)/60000)}m old`); return cached; }
 
-  const url=`https://stooq.com/q/l/?s=${encodeURIComponent(t.sym)}&f=sd2t2ohlcvn&h&e=csv`;
-  DBG.info('MKT','Fetching: '+t.sym);
-
-  // 2. Fetch with retry
-  for(let attempt=1; attempt<=MKT_MAX_RETRIES; attempt++){
+  // 2. Stooq via CORS proxy
+  const stooqUrl=`https://stooq.com/q/l/?s=${encodeURIComponent(t.sym)}&f=sd2t2ohlcvn&h&e=csv`;
+  for(let attempt=1;attempt<=MKT_MAX_RETRIES;attempt++){
     try{
-      const r=await fetch(url,{signal:AbortSignal.timeout(12000)});
-      const text=await r.text();
+      const text=await proxyFetch(stooqUrl,12000);
       const lines=text.trim().split('\n');
-      if(lines.length<2) throw new Error('Empty response');
+      if(lines.length<2) throw new Error('Stooq: empty CSV');
       const vals=lines[1].split(',');
-      const close=parseFloat(vals[6]);
-      const open=parseFloat(vals[3]);
-      if(isNaN(close)||isNaN(open)) throw new Error('Invalid price data');
-      const change=close-open;
-      const changePct=(change/open)*100;
-      const data={sym:t.sym,close,open,change,changePct,date:vals[1],time:vals[2],stale:false};
+      const close=parseFloat(vals[6]);const open=parseFloat(vals[3]);
+      if(isNaN(close)||isNaN(open)) throw new Error('Stooq: invalid price');
+      const change=close-open;const changePct=(change/open)*100;
+      const data={sym:t.sym,close,open,change,changePct,date:vals[1],time:vals[2]||'',stale:false,src:'Stooq'};
       mktCacheSet(t.sym,data);
+      DBG.ok('MKT',`✓ ${t.sym} Stooq proxy · ${close}`);
       return data;
     }catch(e){
-      DBG.warn('MKT',`${t.sym} attempt ${attempt}/${MKT_MAX_RETRIES} failed: ${e.message}`);
+      DBG.warn('MKT',`${t.sym} Stooq attempt ${attempt}/${MKT_MAX_RETRIES}: ${e.message}`);
       if(attempt<MKT_MAX_RETRIES) await new Promise(r=>setTimeout(r,MKT_RETRY_DELAY));
     }
   }
 
-  // 3. Stale cache fallback — show last known price with stale flag
+  // 3. Twelve Data (CORS-native, no proxy needed)
+  DBG.warn('MKT',`${t.sym} Stooq exhausted · trying Twelve Data`);
+  const tdData=await fetchTickerTwelveData(t);
+  if(tdData) return tdData;
+
+  // 4. Stale cache
   const stale=mktCacheGetStale(t.sym);
   if(stale){
     const ageMin=Math.floor((Date.now()-stale.ts)/60000);
-    DBG.warn('MKT',`${t.sym} using stale data · ${ageMin}m old`);
-    return {...stale, stale:true};
+    DBG.warn('MKT',`${t.sym} stale cache · ${ageMin}m old`);
+    return{...stale,stale:true};
   }
 
-  // 4. Yahoo Finance fallback
-  DBG.warn('MKT',`${t.sym} Stooq exhausted · trying Yahoo Finance fallback`);
-  return fetchTickerYahoo(t);
+  DBG.err('MKT',`${t.sym} all sources failed — no data`);
+  return null;
 }
 
 async function fetchSparkline(sym){
-  // 1. Cached sparklines (1hr TTL — they don't change that fast)
   const cached=sparkCacheGet(sym);
-  if(cached){ DBG.ok('MKT',`Spark cache hit: ${sym}`); return cached; }
+  if(cached){ DBG.ok('MKT',`Spark cache: ${sym}`); return cached; }
 
+  // Stooq sparkline via proxy
   const url=`https://stooq.com/q/d/l/?s=${encodeURIComponent(sym)}&i=d`;
   try{
-    const r=await fetch(url,{signal:AbortSignal.timeout(12000)});
-    const text=await r.text();
+    const text=await proxyFetch(url,12000);
     const lines=text.trim().split('\n').slice(1);
-    const closes=lines.slice(-10).map(l=>parseFloat(l.split(',')[4])).filter(v=>!isNaN(v));
+    const closes=lines.slice(-12).map(l=>parseFloat(l.split(',')[4])).filter(v=>!isNaN(v));
     if(closes.length>1){ sparkCacheSet(sym,closes); return closes; }
-    throw new Error('Stooq spark empty');
+    throw new Error('Stooq spark: empty');
   }catch(e){
-    DBG.warn('MKT',`Spark ${sym} Stooq failed: ${e.message} · trying Yahoo`);
-    // Yahoo fallback
+    DBG.warn('MKT',`Spark ${sym} Stooq failed: ${e.message} · trying TwelveData`);
     const t=TICKERS.find(x=>x.sym===sym);
-    if(t){ const yc=await fetchSparklineYahoo(t); if(yc.length>1){ sparkCacheSet(sym,yc); return yc; } }
+    if(t){
+      const yc=await fetchSparklineTwelveData(t);
+      if(yc.length>1){ sparkCacheSet(sym,yc); return yc; }
+    }
     return [];
   }
 }
 
 async function fetchVix(){
-  // 1. VIX cache
   try{
     const cached=JSON.parse(localStorage.getItem('mer_vix')||'null');
-    if(cached&&Date.now()-cached.ts<VIX_CACHE_TTL){
-      _applyVixUI(cached.v);
-      return;
-    }
+    if(cached&&Date.now()-cached.ts<VIX_CACHE_TTL){ _applyVixUI(cached.v); return; }
   }catch{}
 
-  for(let attempt=1; attempt<=2; attempt++){
+  // Stooq via CORS proxy
+  for(let attempt=1;attempt<=2;attempt++){
     try{
       const url='https://stooq.com/q/l/?s=%5Eindiavix&f=sd2t2ohlcvn&h&e=csv';
-      const r=await fetch(url,{signal:AbortSignal.timeout(10000)});
-      const text=await r.text();
+      const text=await proxyFetch(url,10000);
       const vals=text.trim().split('\n')[1]?.split(',');
-      if(!vals) throw new Error('No VIX data');
+      if(!vals) throw new Error('No VIX row');
       const v=parseFloat(vals[6]);
       if(isNaN(v)) throw new Error('Invalid VIX value');
       localStorage.setItem('mer_vix',JSON.stringify({v,ts:Date.now()}));
       _applyVixUI(v);
+      DBG.ok('VIX',`✓ ${v} via proxy attempt ${attempt}`);
       return;
     }catch(e){
-      DBG.warn('VIX',`Stooq attempt ${attempt}/2 failed: ${e.message}`);
+      DBG.warn('VIX',`Proxy attempt ${attempt}/2: ${e.message}`);
       if(attempt<2) await new Promise(r=>setTimeout(r,3000));
     }
   }
 
-  // Yahoo Finance VIX fallback
-  try{
-    const r=await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EINDIAVIX?interval=1d&range=1d',{signal:AbortSignal.timeout(10000)});
-    const d=await r.json();
-    const v=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
-    if(v&&!isNaN(v)){
-      localStorage.setItem('mer_vix',JSON.stringify({v,ts:Date.now()}));
-      _applyVixUI(v);
-      DBG.ok('VIX',`Yahoo fallback: ${v}`);
-      return;
-    }
-  }catch(e){ DBG.warn('VIX','Yahoo fallback failed: '+e.message); }
-
-  // Stale VIX fallback
+  // Stale fallback
   try{
     const s=JSON.parse(localStorage.getItem('mer_vix')||'null');
-    if(s){ _applyVixUI(s.v,true); }
+    if(s){ DBG.warn('VIX','Using stale cache'); _applyVixUI(s.v,true); return; }
   }catch{}
+  DBG.err('VIX','All sources failed — VIX unavailable');
 }
 
 function _applyVixUI(v, stale=false){
@@ -1755,20 +1897,27 @@ function buildSparkSVG(closes,cls){
 }
 
 function mktCardHTML(t,data,sparkline){
-  const cls=!data?'na':data.changePct>0?'up':'dn';
-  const arrow=!data?'—':data.changePct>0?'▲':'▼';
-  const price=data?`${t.fmt}${data.close.toLocaleString('en-IN',{minimumFractionDigits:t.dec,maximumFractionDigits:t.dec})}`:'—';
-  const chg=data?`${arrow} ${Math.abs(data.changePct).toFixed(2)}%`:'—';
-  const chgAbs=data?`${data.change>=0?'+':''}${data.change.toFixed(t.dec)}`:'';
+  if(!data){
+    return`<div class="mkt-card na na-compact">
+      <div><div class="mkt-label">${esc(t.label)}</div><div class="mkt-name">${esc(t.name)}</div></div>
+      <div style="flex:1;text-align:right;font-size:10px;color:var(--text-muted)">No data available</div>
+    </div>`;
+  }
+  const cls=data.changePct>0?'up':'dn';
+  const arrow=data.changePct>0?'▲':'▼';
+  const price=`${t.fmt}${data.close.toLocaleString('en-IN',{minimumFractionDigits:t.dec,maximumFractionDigits:t.dec})}`;
+  const chg=`${arrow} ${Math.abs(data.changePct).toFixed(2)}%`;
+  const chgAbs=`${data.change>=0?'+':''}${data.change.toFixed(t.dec)}`;
   const spark=buildSparkSVG(sparkline,cls);
-  const staleTag=data?.stale?`<span style="font-family:var(--font-mono,monospace);font-size:9px;color:#D4A843;opacity:.7"> STALE</span>`:'';
+  const staleTag=data.stale?`<span style="font-size:9px;color:#D4A843;opacity:.7"> STALE</span>`:'';
+  const srcTag=data.src&&data.src!=='Stooq'?`<span style="font-size:8px;color:var(--text-muted);opacity:.6"> ${data.src}</span>`:'';
   return`<div class="mkt-card ${cls}">
     <div class="mkt-label">${esc(t.label)}</div>
     <div class="mkt-name">${esc(t.name)}</div>
-    <div class="mkt-price">${price}${staleTag}</div>
+    <div class="mkt-price">${price}${staleTag}${srcTag}</div>
     <div class="mkt-change ${cls}">${chg} <span style="opacity:.6;font-size:10px">${chgAbs}</span></div>
     ${spark}
-    <div class="mkt-time">${data?`${data.date} ${data.time||''}`:'—'}</div>
+    <div class="mkt-time">${data.date} ${data.time||''}</div>
   </div>`;
 }
 
@@ -1851,27 +2000,63 @@ async function updateVixWidget(results){
   updateMarketStatus();
 }
 
+function isDST(date){
+  // US DST: 2nd Sunday of March → 1st Sunday of November
+  const y=date.getFullYear();
+  const march=new Date(y,2,1);
+  march.setDate(march.getDate()+(14-march.getDay())%7); // 2nd Sunday March
+  const nov=new Date(y,10,1);
+  nov.setDate(nov.getDate()+(7-nov.getDay())%7);         // 1st Sunday November
+  return date>=march&&date<nov;
+}
+
 function updateMarketStatus(){
   const now=new Date();
-  // Convert to IST (UTC+5:30)
+  // ── India (IST = UTC+5:30) ──
   const ist=new Date(now.getTime()+((5.5*60+now.getTimezoneOffset())*60000));
-  const h=ist.getHours(),m=ist.getMinutes(),day=ist.getDay();
-  const mins=h*60+m;
+  const ih=ist.getHours(),im=ist.getMinutes(),iday=ist.getDay();
+  const imins=ih*60+im;
   const el=document.getElementById('mkt-status-val');
   const sub=document.getElementById('mkt-status-sub');
-  if(!el)return;
-  if(day===0||day===6){
-    el.innerHTML=`<span class="mkt-status-closed">CLOSED</span>`;
-    if(sub) sub.textContent='Weekend';
-  } else if(mins>=555&&mins<930){// 9:15–15:30 IST
-    el.innerHTML=`<span class="mkt-status-open">OPEN</span>`;
-    if(sub) sub.textContent=`NSE/BSE`;
-  } else if(mins>=540&&mins<555){// 9:00–9:15 pre-open
-    el.innerHTML=`<span class="mkt-status-pre">PRE-OPEN</span>`;
-    if(sub) sub.textContent='9:00–9:15 IST';
-  } else {
-    el.innerHTML=`<span class="mkt-status-closed">CLOSED</span>`;
-    if(sub) sub.textContent='Opens 9:15 IST';
+  if(el){
+    if(iday===0||iday===6){
+      el.innerHTML=`<span class="mkt-status-closed">CLOSED</span>`;
+      if(sub) sub.textContent='Weekend · NSE';
+    } else if(imins>=555&&imins<930){
+      el.innerHTML=`<span class="mkt-status-open">OPEN</span>`;
+      if(sub) sub.textContent='NSE / BSE';
+    } else if(imins>=540&&imins<555){
+      el.innerHTML=`<span class="mkt-status-pre">PRE-OPEN</span>`;
+      if(sub) sub.textContent='9:00–9:15 IST';
+    } else {
+      el.innerHTML=`<span class="mkt-status-closed">CLOSED</span>`;
+      if(sub) sub.textContent='Opens 9:15 IST';
+    }
+  }
+  // ── US (ET = UTC-5 standard, UTC-4 DST) ──
+  const etOffset=isDST(now)?-4:-5;
+  const et=new Date(now.getTime()+(etOffset*60-now.getTimezoneOffset())*60000);
+  const eh=et.getHours(),em=et.getMinutes(),eday=et.getDay();
+  const emins=eh*60+em;
+  const usEl=document.getElementById('us-mkt-status-val');
+  const usSub=document.getElementById('us-mkt-status-sub');
+  if(usEl){
+    if(eday===0||eday===6){
+      usEl.innerHTML=`<span class="mkt-status-closed">CLOSED</span>`;
+      if(usSub) usSub.textContent='Weekend · NYSE';
+    } else if(emins>=570&&emins<960){   // 9:30 AM–4:00 PM ET
+      usEl.innerHTML=`<span class="mkt-status-open">OPEN</span>`;
+      if(usSub) usSub.textContent='NYSE / NASDAQ';
+    } else if(emins>=240&&emins<570){   // 4:00 AM–9:30 AM pre-market
+      usEl.innerHTML=`<span class="mkt-status-pre">PRE-MKT</span>`;
+      if(usSub) usSub.textContent=`Pre-market · ET`;
+    } else if(emins>=960&&emins<1200){  // 4:00 PM–8:00 PM after-hours
+      usEl.innerHTML=`<span class="mkt-status-pre">AFTER-HRS</span>`;
+      if(usSub) usSub.textContent=`After-hours · ET`;
+    } else {
+      usEl.innerHTML=`<span class="mkt-status-closed">CLOSED</span>`;
+      if(usSub) usSub.textContent='Opens 9:30 ET';
+    }
   }
 }
 
@@ -1942,8 +2127,8 @@ function quakeCardHTML(f){
 
 async function loadUSGS(containerId){
   const el=document.getElementById(containerId);if(!el)return;
-  el.innerHTML=`<div class="quake-grid">${Array(4).fill(`<div class="sk-card" style="height:120px"></div>`).join('')}</div>`;
-  DBG.info('USGS','Fetching today\'s earthquakes…');
+  el.innerHTML=`<div class="quake-grid">${Array(3).fill(`<div class="sk-card" style="height:110px"></div>`).join('')}</div>`;
+  DBG.info('USGS','Fetching earthquakes…');
   let data=await fetchUSGS(USGS_DAY);
   let features=data?.features||[];
   if(features.length<3){
@@ -1951,7 +2136,10 @@ async function loadUSGS(containerId){
     data=await fetchUSGS(USGS_WEEK);
     features=data?.features||[];
   }
-  // Sort by time desc, take top 8
+  if(!features.length){
+    el.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No M2.5+ earthquakes in the current window · <a class="ndc-link" href="https://earthquake.usgs.gov/earthquakes/map/" target="_blank" rel="noopener">View USGS map →</a></div></div>`;
+    return;
+  }
   features.sort((a,b)=>b.properties.time-a.properties.time);
   const top=features.slice(0,8);
   DBG.ok('USGS',`${top.length} earthquakes loaded`);
@@ -2014,13 +2202,15 @@ function crisisCardHTML(item){
 
 async function loadReliefWeb(containerId){
   const el=document.getElementById(containerId);if(!el)return;
-  el.innerHTML=Array(4).fill(`<div class="sk-card" style="height:100px"></div>`).join('');
+  el.innerHTML=Array(3).fill(`<div class="sk-card" style="height:80px"></div>`).join('');
   DBG.info('RW','Fetching ReliefWeb ongoing crises…');
-  const data=await fetchReliefWeb();
+  let data=null;
+  try{ data=await fetchReliefWeb(); }catch(e){ DBG.err('RW',e.message); }
   const items=data?.data||[];
   DBG.ok('RW',`${items.length} active crises loaded`);
   if(!items.length){
-    el.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No active crises from ReliefWeb.</div></div>`;
+    const reason=data===null?'Unable to reach ReliefWeb':'No active crises on record';
+    el.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">${reason} · <a class="ndc-link" href="https://reliefweb.int/disasters" target="_blank" rel="noopener">View on ReliefWeb →</a></div></div>`;
     return;
   }
   el.innerHTML=`<div class="crisis-grid">${items.map(i=>crisisCardHTML(i)).join('')}</div>`;
@@ -2137,11 +2327,11 @@ async function loadConflictsPanel(id){
 }
 
 buildNav();
-DBG.info('INIT','MERIDIAN v2.1 · Tabs fixed · Yahoo Finance fallback · Layout reordered');
-DBG.info('SOURCES','GDELT + Stooq→Yahoo Finance (markets) + USGS (earthquakes) + ReliefWeb (crises)');
-DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = close modal');
+DBG.info('INIT','MERIDIAN v2.2 · Proxy chain · TwelveData · GDELT cooldown · US market status');
+DBG.info('SOURCES','GDELT · Stooq→[allorigins|corsproxy]→TwelveData · USGS · ReliefWeb');
+DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = close modal · ⎘ copy log');
 loadHome();
-loadMarkets(); // Populate home market grid and VIX widget on startup
+loadMarkets();
 </script>
 </body>
 </html>
