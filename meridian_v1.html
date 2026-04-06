@@ -429,7 +429,114 @@
     .mkt-status-closed{color:var(--neg)}
     .mkt-status-pre{color:#D4A843}
 
-    /* ── USGS EARTHQUAKE CARDS ── */
+    /* ── MARKET SUB-TABS ── */
+    .mkt-subtab-nav{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+    .mkt-subtab{background:none;border:none;border-bottom:2px solid transparent;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:.5px;padding:10px 20px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:color var(--t),border-color var(--t);white-space:nowrap}
+    .mkt-subtab:hover{color:var(--text-sub)}
+    .mkt-subtab.active{color:var(--pos);border-bottom-color:var(--pos)}
+    .mkt-subtab-ico{font-size:10px;opacity:.8}
+    .mkt-sub{display:none;animation:fadeIn .2s ease}
+    .mkt-sub.active{display:block}
+
+    /* ── NIFTY 50 PERFORMANCE ── */
+    /* Controls bar */
+    .n50-ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;padding:12px 16px;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r)}
+    .n50-sel{background:var(--bg-surf);border:0.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 10px;outline:none;cursor:pointer;transition:border-color var(--t)}
+    .n50-sel:focus{border-color:#7A8FA6}
+    .n50-sort-bar{display:flex;gap:4px;margin-left:auto}
+    .n50-sort-btn{background:none;border:0.5px solid var(--border);border-radius:3px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:9px;padding:5px 12px;cursor:pointer;transition:var(--t)}
+    .n50-sort-btn:hover{border-color:var(--text-sub);color:var(--text-sub)}
+    .n50-sort-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,.07)}
+    .n50-stamp{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
+
+    /* Top 5 hero cards */
+    .n50-top5-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text-sub);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .n50-top5-label::after{content:'';flex:1;height:0.5px;background:var(--border)}
+    .n50-heroes{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:28px}
+    .n50-hero{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;transition:background var(--t),box-shadow var(--t)}
+    .n50-hero:hover{background:var(--bg-card-h);box-shadow:var(--shadow)}
+    .n50-hero.rank-1{border-top:3px solid var(--gold);box-shadow:0 0 0 1px rgba(212,168,67,.15)}
+    .n50-hero.rank-2{border-top:3px solid #A8B8C8}
+    .n50-hero.rank-3{border-top:3px solid #C8935A}
+    .n50-hero.rank-4,.n50-hero.rank-5{border-top:3px solid var(--border)}
+    .n50-hero.pos{box-shadow:0 0 0 0.5px rgba(29,158,117,.12)}
+    .n50-hero.neg{box-shadow:0 0 0 0.5px rgba(226,75,74,.10)}
+    .n50-rank-badge{position:absolute;top:10px;right:12px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--text-muted)}
+    .n50-rank-badge.r1{color:var(--gold)}
+    .n50-rank-badge.r2{color:#A8B8C8}
+    .n50-rank-badge.r3{color:#C8935A}
+    .n50-hero-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px;padding-right:28px;line-height:1.3}
+    .n50-hero-ticker{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);margin-bottom:10px}
+    .n50-hero-ret{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;line-height:1;margin-bottom:4px}
+    .n50-hero-ret.pos{color:var(--pos)}
+    .n50-hero-ret.neg{color:var(--neg)}
+    .n50-hero-rel{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
+    .n50-hero-rel.pos{color:var(--pos)}
+    .n50-hero-rel.neg{color:var(--neg)}
+
+    /* Historical leaderboard */
+    .n50-hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:28px}
+    .n50-hist-card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--border);border-radius:var(--r);padding:12px 14px;transition:background var(--t)}
+    .n50-hist-card:hover{background:var(--bg-card-h)}
+    .n50-hist-card.pos{border-left-color:var(--pos)}
+    .n50-hist-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .n50-hist-rank{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--text-muted)}
+    .n50-hist-wins{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--pos);background:rgba(29,158,117,.1);padding:1px 6px;border-radius:3px}
+    .n50-hist-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;line-height:1.3}
+    .n50-hist-ticker{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);margin-bottom:8px}
+    .n50-hist-avg{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--pos)}
+    .n50-hist-sub{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);margin-top:2px}
+
+    /* Data grid / table */
+    .n50-table-wrap{overflow-x:auto;border:0.5px solid var(--border);border-radius:var(--r)}
+    .n50-table{width:100%;border-collapse:collapse;font-size:12px}
+    .n50-table th{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);padding:10px 14px;text-align:left;border-bottom:0.5px solid var(--border);background:var(--bg-surf);white-space:nowrap;cursor:pointer;user-select:none;transition:color var(--t)}
+    .n50-table th:hover{color:var(--text-sub)}
+    .n50-table th.sorted{color:var(--gold)}
+    .n50-table th .sort-arrow{margin-left:4px;opacity:.5;font-size:9px}
+    .n50-table th.sorted .sort-arrow{opacity:1;color:var(--gold)}
+    .n50-table td{padding:10px 14px;border-bottom:0.5px solid var(--border-sub);vertical-align:middle;white-space:nowrap}
+    .n50-table tr:last-child td{border-bottom:none}
+    .n50-table tr:hover td{background:var(--bg-card-h)}
+    .n50-td-name{font-weight:500;color:var(--text);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .n50-td-ticker{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
+    .n50-td-num{font-family:'JetBrains Mono',monospace;text-align:right}
+    .n50-td-num.pos{color:var(--pos)}
+    .n50-td-num.neg{color:var(--neg)}
+    .n50-td-num.na{color:var(--text-muted)}
+    .n50-pill{display:inline-block;padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700}
+    .n50-pill.pos{background:rgba(29,158,117,.13);color:var(--pos)}
+    .n50-pill.neg{background:rgba(226,75,74,.11);color:var(--neg)}
+    .n50-empty{text-align:center;padding:40px 20px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)}
+    @media(max-width:860px){.n50-heroes{grid-template-columns:repeat(2,1fr)}.n50-hist-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:520px){.n50-heroes{grid-template-columns:1fr}.n50-hist-grid{grid-template-columns:1fr}}
+
+    /* N50 — hero section header with toggle */
+    .n50-hero-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+    .n50-hero-hdr-left{display:flex;align-items:center;gap:8px;flex:1}
+    .n50-hero-hdr-left::after{content:'';flex:1;height:0.5px;background:var(--border)}
+    .n50-hero-hdr-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text-sub);white-space:nowrap}
+    .n50-hist-toggle{background:none;border:0.5px solid var(--border);border-radius:var(--r-sm);color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:9px;padding:5px 12px;cursor:pointer;transition:var(--t);white-space:nowrap;display:flex;align-items:center;gap:5px}
+    .n50-hist-toggle:hover{border-color:var(--gold);color:var(--gold)}
+    .n50-hist-toggle.active{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,.1)}
+    .n50-hero-period-sel{background:var(--bg-surf);border:0.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 10px;outline:none;cursor:pointer;transition:var(--t)}
+    .n50-hero-period-sel:focus{border-color:#7A8FA6}
+    .n50-hero-period-sel:disabled{opacity:.4;cursor:not-allowed}
+
+    /* N50 — insufficient data state */
+    .n50-hist-empty{padding:20px 16px;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);text-align:center;margin-bottom:28px}
+
+    /* N50 — score bar on historical cards */
+    .n50-hist-score{display:flex;align-items:center;gap:6px;margin-top:6px}
+    .n50-hist-score-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase}
+    .n50-hist-score-bar{flex:1;height:3px;background:var(--border);border-radius:2px;position:relative}
+    .n50-hist-score-fill{height:100%;border-radius:2px;background:var(--pos)}
+
+    /* N50 — mobile table: hide First/Last Price and Ticker on small screens */
+    @media(max-width:760px){
+      .n50-col-price{display:none}
+      .n50-td-ticker{display:none}
+    }
     .quake-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:24px}
     .quake-card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
     .quake-card.minor{border-left-color:#D4A843}
@@ -2011,7 +2118,7 @@ function processMarketData(apiResponse){
     visibleItems=sorted.slice(3,20);
     hiddenItems=sorted.slice(20);
   }
-  return{topMovers,visibleItems,hiddenItems,total:count};
+  return{topMovers,visibleItems,hiddenItems,total:count,raw:sorted};
 }
 
 /* ── Step 2: Context tag ── */
@@ -2031,17 +2138,32 @@ function sortByName(arr){return[...arr].sort((a,b)=>a.name.localeCompare(b.name)
 
 /* ── State ── */
 let _gsProcessed=null;
-let _gsSort='movers';
+let _gsSort='best';      // list: best | worst | movers | az
+let _gsHeroSort='best';  // hero: best | worst | movers
 let _gsFilter='ALL';
 let _gsExpanded=false;
 let _gsSearchQ='';
+
+/* ── Sort helpers ── */
+function _sortItems(items, mode){
+  if(mode==='best')   return[...items].sort((a,b)=>(b.changePercent||0)-(a.changePercent||0));
+  if(mode==='worst')  return[...items].sort((a,b)=>(a.changePercent||0)-(b.changePercent||0));
+  if(mode==='az')     return sortByName(items);
+  return sortByMover(items); // movers = abs desc
+}
+
+/* ── Pick top 3 for heroes from all valid items ── */
+function _heroItems(){
+  if(!_gsProcessed) return[];
+  const all=_gsProcessed.raw||[..._gsProcessed.topMovers,..._gsProcessed.visibleItems,..._gsProcessed.hiddenItems];
+  return _sortItems(all, _gsHeroSort).slice(0,3);
+}
 
 /* ── Filter items by tag and search ── */
 function _applyFilters(items){
   let out=items;
   if(_gsFilter!=='ALL') out=out.filter(x=>contextTag(x.ticker)===_gsFilter);
   if(_gsSearchQ) out=out.filter(x=>x.name.toLowerCase().includes(_gsSearchQ));
-  if(_gsSort==='az') out=sortByName(out);
   return out;
 }
 
@@ -2064,10 +2186,11 @@ function gsHeroCardHTML(item){
     <div class="gs-hero-range-lbl"><span>${lo}</span><span>${hi}</span></div>`;
   }
   const ctx=contextTag(item.ticker);
+  const heroLabel=_gsHeroSort==='best'?'TOP GAINER':_gsHeroSort==='worst'?'TOP LOSER':'TOP MOVER';
   return`<div class="gs-hero ${cls}">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <span class="gs-ctx-tag">${ctx}</span>
-      <span class="gs-hero-tag">TOP MOVER</span>
+      <span class="gs-hero-tag">${heroLabel}</span>
     </div>
     <div class="gs-hero-name">${esc(item.name)}</div>
     <div class="gs-hero-badge ${cls}">${pct}</div>
@@ -2126,10 +2249,21 @@ function gsListRowHTML(item){
   </div>`;
 }
 
-/* ── Sort toggle (small/medium) ── */
+/* ── Sort hero panel (independent) ── */
+function applyHeroSort(sort){
+  _gsHeroSort=sort;
+  ['best','worst','movers'].forEach(s=>{
+    const el=document.getElementById('gs-hero-sort-'+s);
+    if(el) el.classList.toggle('active',s===sort);
+  });
+  const heroWrap=document.getElementById('gs-hero-wrap');
+  if(heroWrap) heroWrap.innerHTML=_heroItems().map(gsHeroCardHTML).join('');
+}
+
+/* ── Sort list/grid (independent) ── */
 function applySortUI(sort){
   _gsSort=sort;
-  ['movers','az'].forEach(s=>{
+  ['best','worst','movers','az'].forEach(s=>{
     const el=document.getElementById('gs-sort-'+s);
     if(el) el.classList.toggle('active',s===sort);
   });
@@ -2158,34 +2292,47 @@ function onGsSearch(q){
   _rerenderCompact();
 }
 
-/* ── Re-render compact area without refetch ── */
+/* ── Shared sort bar HTML ── */
+function _heroSortBar(){
+  return`<div class="gs-sort-bar">
+    <button id="gs-hero-sort-best"   class="gs-sort-btn active" onclick="applyHeroSort('best')">Best</button>
+    <button id="gs-hero-sort-worst"  class="gs-sort-btn"        onclick="applyHeroSort('worst')">Worst</button>
+    <button id="gs-hero-sort-movers" class="gs-sort-btn"        onclick="applyHeroSort('movers')">Movers</button>
+  </div>`;
+}
+function _listSortBar(activeSort){
+  return`<div class="gs-sort-bar">
+    <button id="gs-sort-best"   class="gs-sort-btn${activeSort==='best'?' active':''}"   onclick="applySortUI('best')">Best</button>
+    <button id="gs-sort-worst"  class="gs-sort-btn${activeSort==='worst'?' active':''}"  onclick="applySortUI('worst')">Worst</button>
+    <button id="gs-sort-movers" class="gs-sort-btn${activeSort==='movers'?' active':''}" onclick="applySortUI('movers')">Movers</button>
+    <button id="gs-sort-az"     class="gs-sort-btn${activeSort==='az'?' active':''}"     onclick="applySortUI('az')">A–Z</button>
+  </div>`;
+}
+
+/* ── Re-render compact/list area without refetch ── */
 function _rerenderCompact(){
   if(!_gsProcessed) return;
-  const allRest=[..._gsProcessed.visibleItems,...(_gsExpanded?_gsProcessed.hiddenItems:[])];
-  const filtered=_applyFilters(allRest);
   const count=_gsProcessed.total;
 
   if(count>30){
-    // Large: update list rows only
     const listEl=document.getElementById('gs-list-body');
     if(listEl){
       const all=[..._gsProcessed.visibleItems,..._gsProcessed.hiddenItems];
-      const sorted=_gsSort==='az'?sortByName(all):sortByMover(all);
-      const searchFiltered=_gsSearchQ?sorted.filter(x=>x.name.toLowerCase().includes(_gsSearchQ)):sorted;
-      listEl.innerHTML=searchFiltered.map(gsListRowHTML).join('');
+      const sorted=_sortItems(_applyFilters(all),_gsSort);
+      listEl.innerHTML=sorted.map(gsListRowHTML).join('');
     }
     return;
   }
 
-  // Small/medium: update compact grid + show-more
+  const allRest=[..._gsProcessed.visibleItems,...(_gsExpanded?_gsProcessed.hiddenItems:[])];
+  const filtered=_sortItems(_applyFilters(allRest),_gsSort);
   const gridEl=document.getElementById('gs-compact-wrap');
   if(gridEl) gridEl.innerHTML=filtered.map(gsCompactCardHTML).join('');
 
   const smWrap=document.getElementById('gs-show-more-wrap');
   if(smWrap){
     if(!_gsExpanded&&_gsProcessed.hiddenItems.length>0){
-      const remaining=_applyFilters(_gsProcessed.hiddenItems).length;
-      smWrap.innerHTML=`<button class="gs-show-more-btn" onclick="toggleShowMore()">Show ${remaining} more ▾</button>`;
+      smWrap.innerHTML=`<button class="gs-show-more-btn" onclick="toggleShowMore()">Show ${_applyFilters(_gsProcessed.hiddenItems).length} more ▾</button>`;
     } else if(_gsExpanded&&_gsProcessed.hiddenItems.length>0){
       smWrap.innerHTML=`<button class="gs-show-more-btn" onclick="toggleShowMore()">Show less ▴</button>`;
     } else {
@@ -2199,16 +2346,16 @@ function _renderSmall(processed,allData){
   return`
     ${summaryStripHTML(allData)}
     ${tickerTapeHTML(allData)}
-    <div class="section-head" style="margin-top:4px"><span>// TOP MOVERS</span><span class="section-badge">${processed.total} instruments</span></div>
-    <div class="gs-hero-grid gs-hero-grid-3">${processed.topMovers.map(gsHeroCardHTML).join('')}</div>
+    <div class="gs-compact-header" style="margin-top:4px">
+      <span class="section-head" style="margin:0;border:none;padding:0">// TOP PERFORMERS</span>
+      ${_heroSortBar()}
+    </div>
+    <div class="gs-hero-grid gs-hero-grid-3" id="gs-hero-wrap">${_heroItems().map(gsHeroCardHTML).join('')}</div>
     <div class="gs-compact-header">
       <span class="section-head" style="margin:0;border:none;padding:0;font-size:9px">// ALL MARKETS</span>
-      <div class="gs-sort-bar">
-        <button id="gs-sort-movers" class="gs-sort-btn active" onclick="applySortUI('movers')">Movers</button>
-        <button id="gs-sort-az" class="gs-sort-btn" onclick="applySortUI('az')">A–Z</button>
-      </div>
+      ${_listSortBar('best')}
     </div>
-    <div class="gs-compact-grid" id="gs-compact-wrap">${processed.visibleItems.map(gsCompactCardHTML).join('')}</div>
+    <div class="gs-compact-grid" id="gs-compact-wrap">${_sortItems(processed.visibleItems,'best').map(gsCompactCardHTML).join('')}</div>
     <div id="gs-show-more-wrap"></div>`;
 }
 
@@ -2220,17 +2367,17 @@ function _renderMedium(processed,allData){
   return`
     ${summaryStripHTML(allData)}
     ${tickerTapeHTML(allData)}
-    <div class="section-head" style="margin-top:4px"><span>// TOP MOVERS</span><span class="section-badge">${processed.total} instruments</span></div>
-    <div class="gs-hero-grid gs-hero-grid-3">${processed.topMovers.map(gsHeroCardHTML).join('')}</div>
+    <div class="gs-compact-header" style="margin-top:4px">
+      <span class="section-head" style="margin:0;border:none;padding:0">// TOP PERFORMERS</span>
+      ${_heroSortBar()}
+    </div>
+    <div class="gs-hero-grid gs-hero-grid-3" id="gs-hero-wrap">${_heroItems().map(gsHeroCardHTML).join('')}</div>
     <div class="gs-compact-header">
       <span class="section-head" style="margin:0;border:none;padding:0;font-size:9px">// ALL MARKETS</span>
-      <div class="gs-sort-bar">
-        <button id="gs-sort-movers" class="gs-sort-btn active" onclick="applySortUI('movers')">Movers</button>
-        <button id="gs-sort-az" class="gs-sort-btn" onclick="applySortUI('az')">A–Z</button>
-      </div>
+      ${_listSortBar('best')}
     </div>
     <div class="gs-filter-bar">${chips}</div>
-    <div class="gs-compact-grid" id="gs-compact-wrap">${processed.visibleItems.map(gsCompactCardHTML).join('')}</div>
+    <div class="gs-compact-grid" id="gs-compact-wrap">${_sortItems(processed.visibleItems,'best').map(gsCompactCardHTML).join('')}</div>
     <div id="gs-show-more-wrap">${hidden>0?`<button class="gs-show-more-btn" onclick="toggleShowMore()">Show ${hidden} more ▾</button>`:''}</div>`;
 }
 
@@ -2242,22 +2389,22 @@ function _renderLarge(processed,allData){
     ${tickerTapeHTML(allData)}
     <div class="gs-split-layout">
       <div class="gs-sticky-movers">
-        <div class="section-head" style="margin:0 0 10px;padding-bottom:8px"><span>// TOP MOVERS</span></div>
-        ${processed.topMovers.map(gsHeroCardHTML).join('')}
+        <div class="gs-compact-header" style="margin-bottom:10px;flex-direction:column;align-items:flex-start;gap:8px">
+          <span class="section-head" style="margin:0;border:none;padding:0">// TOP PERFORMERS</span>
+          ${_heroSortBar()}
+        </div>
+        <div id="gs-hero-wrap">${_heroItems().map(gsHeroCardHTML).join('')}</div>
       </div>
       <div>
         <div class="gs-compact-header" style="margin-bottom:10px">
           <span class="section-head" style="margin:0;border:none;padding:0;font-size:9px">// ALL MARKETS · ${processed.total} instruments</span>
-          <div class="gs-sort-bar">
-            <button id="gs-sort-movers" class="gs-sort-btn active" onclick="applySortUI('movers')">Movers</button>
-            <button id="gs-sort-az" class="gs-sort-btn" onclick="applySortUI('az')">A–Z</button>
-          </div>
+          ${_listSortBar('best')}
         </div>
         <div class="gs-search-wrap">
           <span class="gs-search-ico">⌕</span>
           <input class="gs-search-input" id="gs-search" placeholder="Search instruments…" oninput="onGsSearch(this.value)">
         </div>
-        <div class="gs-scroll-list" id="gs-list-body">${allRest.map(gsListRowHTML).join('')}</div>
+        <div class="gs-scroll-list" id="gs-list-body">${_sortItems(allRest,'best').map(gsListRowHTML).join('')}</div>
       </div>
     </div>`;
 }
@@ -2277,7 +2424,7 @@ async function _renderGSCards(){
   }
 
   // Reset state on fresh render
-  _gsExpanded=false; _gsFilter='ALL'; _gsSearchQ=''; _gsSort='movers';
+  _gsExpanded=false; _gsFilter='ALL'; _gsSearchQ=''; _gsSort='best'; _gsHeroSort='best';
 
   _gsProcessed=processMarketData(d);
   const count=_gsProcessed.total;
@@ -2289,30 +2436,45 @@ async function _renderGSCards(){
 
 
 function isDST(date){
-  const y=date.getFullYear();
-  const march=new Date(y,2,1);march.setDate(march.getDate()+(14-march.getDay())%7);
-  const nov=new Date(y,10,1);nov.setDate(nov.getDate()+(7-nov.getDay())%7);
+  // Compute using UTC to avoid browser timezone affecting the result
+  const y=date.getUTCFullYear();
+  // 2nd Sunday of March UTC
+  const march=new Date(Date.UTC(y,2,1));
+  march.setUTCDate(march.getUTCDate()+(14-march.getUTCDay())%7);
+  // 1st Sunday of November UTC
+  const nov=new Date(Date.UTC(y,10,1));
+  nov.setUTCDate(nov.getUTCDate()+(7-nov.getUTCDay())%7);
   return date>=march&&date<nov;
 }
 
 function marketStatusHTML(){
   const now=new Date();
-  const ist=new Date(now.getTime()+((5.5*60+now.getTimezoneOffset())*60000));
-  const imins=ist.getHours()*60+ist.getMinutes();const iday=ist.getDay();
+
+  // ── India (IST = UTC+5:30) — compute purely from UTC ──
+  const istMs=now.getTime()+5.5*3600000;
+  const istDate=new Date(istMs);
+  const ih=istDate.getUTCHours(), im=istDate.getUTCMinutes();
+  const imins=ih*60+im;
+  const iday=istDate.getUTCDay();
   let indSt,indSub;
   if(iday===0||iday===6){indSt='<span class="mkt-closed">CLOSED</span>';indSub='Weekend';}
   else if(imins>=555&&imins<930){indSt='<span class="mkt-open">OPEN</span>';indSub='NSE / BSE';}
   else if(imins>=540&&imins<555){indSt='<span class="mkt-pre">PRE-OPEN</span>';indSub='9:00–9:15 IST';}
   else{indSt='<span class="mkt-closed">CLOSED</span>';indSub='Opens 9:15 IST';}
-  const etOff=isDST(now)?-4:-5;
-  const et=new Date(now.getTime()+(etOff*60-now.getTimezoneOffset())*60000);
-  const emins=et.getHours()*60+et.getMinutes();const eday=et.getDay();
+
+  // ── US Eastern (EDT=-4 / EST=-5) — compute purely from UTC ──
+  const etOffHours=isDST(now)?-4:-5;
+  const etMs=now.getTime()+etOffHours*3600000;
+  const etDate=new Date(etMs);
+  const emins=etDate.getUTCHours()*60+etDate.getUTCMinutes();
+  const eday=etDate.getUTCDay();
   let usSt,usSub;
   if(eday===0||eday===6){usSt='<span class="mkt-closed">CLOSED</span>';usSub='Weekend';}
   else if(emins>=570&&emins<960){usSt='<span class="mkt-open">OPEN</span>';usSub='NYSE / NASDAQ';}
   else if(emins>=240&&emins<570){usSt='<span class="mkt-pre">PRE-MKT</span>';usSub='Pre-market ET';}
   else if(emins>=960&&emins<1200){usSt='<span class="mkt-pre">AFTER-HRS</span>';usSub='After-hours ET';}
   else{usSt='<span class="mkt-closed">CLOSED</span>';usSub='Opens 9:30 ET';}
+
   return`<div class="mkt-status-chip"><div class="msc-lbl">🇮🇳 India Market</div><div class="msc-val">${indSt}</div><div class="msc-sub">${indSub}</div></div>
          <div class="mkt-status-chip"><div class="msc-lbl">🇺🇸 US Market</div><div class="msc-val">${usSt}</div><div class="msc-sub">${usSub}</div></div>`;
 }
@@ -2330,23 +2492,55 @@ async function loadMarketsPanel(){
         <div class="cat-meta"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)">Google Finance · Real NSE/BSE data</span></div>
       </div>
     </div>
-    <div class="mkt-status-row" id="mkt-status-row">${marketStatusHTML()}</div>
-    <div class="mkt-ctrl-bar">
-      <span class="mkt-stamp-txt" id="gs-stamp">Fetching live data…</span>
-      <button class="btn-mkt-refresh" id="gs-refresh-btn" onclick="refreshMarketsPanel()">↻ Refresh</button>
-      <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
-        <span class="toggle-wrap">
-          <input type="checkbox" id="gs-auto-tog" onchange="toggleGSAuto()">
-          <span class="pill"></span>
-        </span>
-        <span class="mkt-auto-lbl">Auto (60s)</span>
-      </label>
+
+    <!-- ── SUB-TAB NAV ── -->
+    <div class="mkt-subtab-nav">
+      <button class="mkt-subtab active" id="mst-today" onclick="switchMktSubtab('today')">
+        <span class="mkt-subtab-ico">◈</span> Market Today
+      </button>
+      <button class="mkt-subtab" id="mst-nifty50" onclick="switchMktSubtab('nifty50')">
+        <span class="mkt-subtab-ico">◉</span> Nifty 50 Performance
+      </button>
     </div>
-    <div id="gs-cards-wrap">
-      <div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Loading market data…</div></div>
+
+    <!-- ── SUBTAB 1: Market Today ── -->
+    <div id="mkt-sub-today" class="mkt-sub active">
+      <div class="mkt-status-row" id="mkt-status-row">${marketStatusHTML()}</div>
+      <div class="mkt-ctrl-bar">
+        <span class="mkt-stamp-txt" id="gs-stamp">Fetching live data…</span>
+        <button class="btn-mkt-refresh" id="gs-refresh-btn" onclick="refreshMarketsPanel()">↻ Refresh</button>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <span class="toggle-wrap">
+            <input type="checkbox" id="gs-auto-tog" onchange="toggleGSAuto()">
+            <span class="pill"></span>
+          </span>
+          <span class="mkt-auto-lbl">Auto (60s)</span>
+        </label>
+      </div>
+      <div id="gs-cards-wrap">
+        <div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Loading market data…</div></div>
+      </div>
+    </div>
+
+    <!-- ── SUBTAB 2: Nifty 50 Performance ── -->
+    <div id="mkt-sub-nifty50" class="mkt-sub">
+      <div id="n50-root">
+        <div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Loading Nifty 50 performance data…</div></div>
+      </div>
     </div>`;
+
   await _renderGSCards();
 }
+
+function switchMktSubtab(tab){
+  document.querySelectorAll('.mkt-subtab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mkt-sub').forEach(s=>s.classList.remove('active'));
+  document.getElementById('mst-'+tab)?.classList.add('active');
+  document.getElementById('mkt-sub-'+tab)?.classList.add('active');
+  // Lazy-load N50 on first visit
+  if(tab==='nifty50'&&!n50State.loaded) n50Init();
+}
+
 
 async function refreshMarketsPanel(){
   try{localStorage.removeItem(GS_CACHE_KEY);}catch{}
@@ -2460,10 +2654,349 @@ async function loadConflictsPanel(id){
   ]);
 }
 
+/* ════════════════════════════════════════
+   NIFTY 50 PERFORMANCE — v2.7
+   Subtab 2 · Single fetch · Memory cache
+   Independent hero + grid filters
+   Historical Outperformers toggle
+════════════════════════════════════════ */
+const N50_API='https://script.google.com/macros/s/AKfycbyL4WySpI8HUFGW8oAedPzFI7nv9j5gSr43ikeHtFp-MCwlStlz4ZTlWenEmveO8bG5GQ/exec';
+const MONTH_NAMES=['','January','February','March','April','May','June','July','August','September','October','November','December'];
+
+/* ── State ── */
+const n50State={
+  loaded:false, loading:false,
+  raw:[],          // full dataset — never mutated after fetch
+  sortCol:'relative_returns', sortDir:-1,
+  gridYear:null, gridMonth:null,  // grid filter (independent)
+  heroYear:null, heroMonth:null,  // hero filter (independent)
+  histMode:false,                 // Historical Outperformers toggle
+};
+
+/* ── Step 1: Fetch (once per session) ── */
+async function n50FetchData(){
+  if(n50State.raw.length) return n50State.raw;
+  DBG.info('N50','Fetching Nifty 50 performance data…');
+  const t0=Date.now();
+  const r=await fetch(N50_API,{signal:AbortSignal.timeout(20000)});
+  if(!r.ok) throw new Error(`HTTP ${r.status}`);
+  const data=await r.json();
+  if(!Array.isArray(data)||!data.length) throw new Error('Empty or invalid response');
+  n50State.raw=data;
+  DBG.ok('N50',`✓ ${data.length} rows · ${((Date.now()-t0)/1000).toFixed(1)}s`);
+  return data;
+}
+
+/* ── Step 2: Compute latest available period ── */
+function n50LatestPeriod(){
+  if(!n50State.raw.length) return{year:null,month:null};
+  const periods=[...new Set(n50State.raw.map(d=>`${d.year}-${String(d.month).padStart(2,'0')}`))]
+    .sort().reverse();
+  const[y,m]=periods[0].split('-');
+  return{year:Number(y),month:Number(m)};
+}
+
+/* ── Step 3: Auto-pick period ── */
+function n50AutoPeriod(){
+  const now=new Date();
+  const curY=now.getFullYear(), curM=now.getMonth()+1;
+  const hasCurrentMonth=n50State.raw.some(d=>d.year===curY&&d.month===curM);
+  if(hasCurrentMonth) return{year:curY,month:curM,fallback:false};
+  return{...n50LatestPeriod(),fallback:true};
+}
+
+/* ── Helpers ── */
+function n50Pct(v,dec=2){
+  if(v==null||isNaN(v)) return'—';
+  return`${v>=0?'+':''}${(v*100).toFixed(dec)}%`;
+}
+function n50Cls(v){return v>0?'pos':v<0?'neg':'na';}
+function n50YMLabel(y,m){return`${MONTH_NAMES[m]||m} ${y}`;}
+
+/* ── Step 4: Build period dropdowns (combined "Month Year") ── */
+function n50BuildSelectors(){
+  const periods=[...new Set(n50State.raw.map(d=>`${d.year}-${String(d.month).padStart(2,'0')}`))]
+    .sort().reverse()
+    .map(s=>{const[y,m]=s.split('-');return{year:Number(y),month:Number(m)};});
+
+  function makeOptions(selId,selectedY,selectedM){
+    const el=document.getElementById(selId);if(!el)return;
+    el.innerHTML=periods.map(p=>{
+      const sel=(p.year===selectedY&&p.month===selectedM)?'selected':'';
+      return`<option value="${p.year}-${p.month}" ${sel}>${n50YMLabel(p.year,p.month)}</option>`;
+    }).join('');
+  }
+  makeOptions('n50-hero-period',n50State.heroYear,n50State.heroMonth);
+  makeOptions('n50-grid-period',n50State.gridYear,n50State.gridMonth);
+}
+
+/* ── Step 5: Filter for a specific period ── */
+function n50FilterForPeriod(year,month){
+  return n50State.raw.filter(d=>d.year==year&&d.month==month);
+}
+
+/* ── Step 6: Apply sort ── */
+function n50ApplySort(items){
+  const col=n50State.sortCol, dir=n50State.sortDir;
+  return[...items].sort((a,b)=>{
+    const av=typeof a[col]==='string'?a[col].toLowerCase():(a[col]??-Infinity);
+    const bv=typeof b[col]==='string'?b[col].toLowerCase():(b[col]??-Infinity);
+    return av<bv?-dir:av>bv?dir:0;
+  });
+}
+
+/* ── Step 7: Compute historical outperformers (combined score) ── */
+function n50ComputeHistorical(){
+  const distinctMonths=new Set(n50State.raw.map(d=>`${d.year}-${d.month}`)).size;
+  if(distinctMonths<2) return{data:[],months:distinctMonths,insufficient:true};
+  const agg={};
+  n50State.raw.forEach(d=>{
+    if(d.relative_returns==null) return;
+    if(!agg[d.ticker]) agg[d.ticker]={name:d.stock_name,ticker:d.ticker,total:0,wins:0,sum:0};
+    agg[d.ticker].total++;
+    agg[d.ticker].sum+=d.relative_returns;
+    if(d.relative_returns>0) agg[d.ticker].wins++;
+  });
+  const ranked=Object.values(agg)
+    .filter(s=>s.total>=2)
+    .map(s=>{
+      const avg=s.sum/s.total;
+      const winRate=s.wins/s.total;
+      // Combined score: 60% avg return + 40% win rate (sign-corrected)
+      const score=avg*0.6+winRate*0.4*(avg>=0?1:-1)*Math.abs(avg);
+      return{...s,avg,winRate,score};
+    })
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,5);
+  return{data:ranked,months:distinctMonths,insufficient:false};
+}
+
+/* ── Step 8: Render hero cards ── */
+function n50RenderTop5(items){
+  const el=document.getElementById('n50-top5');if(!el)return;
+  const top5=[...items]
+    .filter(d=>d.relative_returns!=null)
+    .sort((a,b)=>b.relative_returns-a.relative_returns)
+    .slice(0,5);
+  if(!top5.length){el.innerHTML='<div class="n50-empty">No data for selected period</div>';return;}
+  const RCLS=['r1','r2','r3','',''];
+  el.innerHTML=top5.map((s,i)=>{
+    const mCls=n50Cls(s.monthly_returns);
+    const rCls=n50Cls(s.relative_returns);
+    return`<div class="n50-hero rank-${i+1} ${mCls}">
+      <div class="n50-rank-badge ${RCLS[i]}">#${i+1}</div>
+      <div class="n50-hero-name">${esc(s.stock_name)}</div>
+      <div class="n50-hero-ticker">${esc(s.ticker)}</div>
+      <div class="n50-hero-ret ${mCls}">${n50Pct(s.monthly_returns)}</div>
+      <div class="n50-hero-rel ${rCls}">vs NIFTYBEES <strong>${n50Pct(s.relative_returns)}</strong></div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Step 9: Render historical outperformers ── */
+function n50RenderHistorical(){
+  const el=document.getElementById('n50-top5');if(!el)return;
+  const{data,months,insufficient}=n50ComputeHistorical();
+  if(insufficient){
+    el.innerHTML=`<div class="n50-hist-empty">
+      Insufficient history — check back when more months of data are available.<br>
+      <span style="opacity:.6">Currently have ${months} month${months===1?'':'s'} · minimum 2 required</span>
+    </div>`;
+    return;
+  }
+  if(!data.length){el.innerHTML='<div class="n50-empty">No qualifying data</div>';return;}
+  const maxScore=Math.max(...data.map(s=>Math.abs(s.score)),0.0001);
+  const RCLS=['r1','r2','r3','',''];
+  el.innerHTML=data.map((s,i)=>{
+    const cls=n50Cls(s.avg);
+    const barPct=Math.min(100,(Math.abs(s.score)/maxScore)*100);
+    return`<div class="n50-hist-card ${cls}">
+      <div class="n50-hist-hdr">
+        <span class="n50-hist-rank ${RCLS[i]}">#${i+1}</span>
+        <span class="n50-hist-wins">${s.wins}/${s.total} months ↑</span>
+      </div>
+      <div class="n50-hist-name">${esc(s.name)}</div>
+      <div class="n50-hist-ticker">${esc(s.ticker)}</div>
+      <div class="n50-hist-avg">${n50Pct(s.avg)}<span style="font-size:9px;font-weight:400;opacity:.6"> avg/month vs NIFTYBEES</span></div>
+      <div class="n50-hist-score">
+        <span class="n50-hist-score-lbl">Score</span>
+        <div class="n50-hist-score-bar"><div class="n50-hist-score-fill" style="width:${barPct.toFixed(1)}%"></div></div>
+      </div>
+      <div class="n50-hist-sub">Based on ${s.total} month${s.total===1?'':'s'} · ${Math.round(s.winRate*100)}% win rate</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Step 10: Render data grid ── */
+function n50RenderGrid(items){
+  const tbody=document.getElementById('n50-tbody');if(!tbody)return;
+  if(!items.length){
+    tbody.innerHTML=`<tr><td colspan="6" class="n50-empty">No data for selected period</td></tr>`;
+    return;
+  }
+  n50ApplySort(items).forEach(d=>{
+    // already inline below
+  });
+  tbody.innerHTML=n50ApplySort(items).map(d=>{
+    const mCls=n50Cls(d.monthly_returns);
+    const nCls=n50Cls(d.nifty_returns);
+    const rCls=n50Cls(d.relative_returns);
+    const fp=d.first_price!=null?`₹${Number(d.first_price).toLocaleString('en-IN',{maximumFractionDigits:2})}`:'—';
+    const lp=d.last_price!=null?`₹${Number(d.last_price).toLocaleString('en-IN',{maximumFractionDigits:2})}`:'—';
+    return`<tr>
+      <td><div class="n50-td-name" title="${esc(d.stock_name)}">${esc(d.stock_name)}</div>
+          <div class="n50-td-ticker">${esc(d.ticker)}</div></td>
+      <td class="n50-td-num n50-col-price">${fp}</td>
+      <td class="n50-td-num n50-col-price">${lp}</td>
+      <td class="n50-td-num"><span class="n50-pill ${mCls}">${n50Pct(d.monthly_returns)}</span></td>
+      <td class="n50-td-num ${nCls}">${n50Pct(d.nifty_returns)}</td>
+      <td class="n50-td-num"><span class="n50-pill ${rCls}">${n50Pct(d.relative_returns)}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Step 11: Sync sort UI ── */
+function n50SyncSortUI(){
+  document.querySelectorAll('.n50-table th[data-col]').forEach(th=>{
+    th.classList.toggle('sorted',th.dataset.col===n50State.sortCol);
+    const arrow=th.querySelector('.sort-arrow');
+    if(arrow) arrow.textContent=th.dataset.col===n50State.sortCol?(n50State.sortDir===-1?' ▾':' ▴'):'';
+  });
+  ['best','worst','az'].forEach(id=>{
+    const btn=document.getElementById('n50-sort-'+id);if(!btn)return;
+    btn.classList.toggle('active',(
+      (id==='best' &&n50State.sortCol==='relative_returns'&&n50State.sortDir===-1)||
+      (id==='worst'&&n50State.sortCol==='relative_returns'&&n50State.sortDir===1)||
+      (id==='az'   &&n50State.sortCol==='stock_name'      &&n50State.sortDir===1)
+    ));
+  });
+}
+
+/* ── Event handlers ── */
+function n50OnSort(col){
+  if(n50State.sortCol===col) n50State.sortDir*=-1;
+  else{n50State.sortCol=col;n50State.sortDir=-1;}
+  n50RenderGrid(n50FilterForPeriod(n50State.gridYear,n50State.gridMonth));
+  n50SyncSortUI();
+}
+function n50OnQuickSort(preset){
+  if(preset==='best')  {n50State.sortCol='relative_returns';n50State.sortDir=-1;}
+  if(preset==='worst') {n50State.sortCol='relative_returns';n50State.sortDir=1;}
+  if(preset==='az')    {n50State.sortCol='stock_name';n50State.sortDir=1;}
+  n50RenderGrid(n50FilterForPeriod(n50State.gridYear,n50State.gridMonth));
+  n50SyncSortUI();
+}
+function n50OnGridFilter(){
+  const val=document.getElementById('n50-grid-period')?.value||'';
+  const[y,m]=val.split('-');
+  n50State.gridYear=Number(y);n50State.gridMonth=Number(m);
+  const items=n50FilterForPeriod(n50State.gridYear,n50State.gridMonth);
+  n50RenderGrid(items);n50SyncSortUI();
+  const stamp=document.getElementById('n50-grid-stamp');
+  if(stamp) stamp.textContent=`${items.length} stocks · ${n50YMLabel(n50State.gridYear,n50State.gridMonth)}`;
+}
+function n50OnHeroFilter(){
+  const val=document.getElementById('n50-hero-period')?.value||'';
+  const[y,m]=val.split('-');
+  n50State.heroYear=Number(y);n50State.heroMonth=Number(m);
+  if(!n50State.histMode) n50RenderTop5(n50FilterForPeriod(n50State.heroYear,n50State.heroMonth));
+  n50UpdateHeroLabel();
+}
+function n50ToggleHist(){
+  n50State.histMode=!n50State.histMode;
+  const btn=document.getElementById('n50-hist-btn');
+  if(btn) btn.classList.toggle('active',n50State.histMode);
+  const sel=document.getElementById('n50-hero-period');
+  if(sel) sel.disabled=n50State.histMode;
+  n50UpdateHeroLabel();
+  if(n50State.histMode) n50RenderHistorical();
+  else n50RenderTop5(n50FilterForPeriod(n50State.heroYear,n50State.heroMonth));
+}
+function n50UpdateHeroLabel(){
+  const lbl=document.getElementById('n50-hero-label');if(!lbl)return;
+  lbl.textContent=n50State.histMode
+    ?'// HISTORICAL OUTPERFORMERS · ALL TIME'
+    :`// TOP 5 PERFORMERS · ${n50YMLabel(n50State.heroYear,n50State.heroMonth).toUpperCase()}`;
+}
+
+/* ── Scaffold HTML ── */
+function n50ScaffoldHTML(heroPeriod,fallbackMsg){
+  const heroLabel=`// TOP 5 PERFORMERS · ${n50YMLabel(heroPeriod.year,heroPeriod.month).toUpperCase()}`;
+  return`
+  ${fallbackMsg?`<div class="no-data-compact" style="margin-bottom:14px"><span class="ndc-ico">ℹ</span><div class="ndc-msg">${fallbackMsg}</div></div>`:''}
+  <div class="n50-hero-hdr">
+    <div class="n50-hero-hdr-left">
+      <span class="n50-hero-hdr-label" id="n50-hero-label">${heroLabel}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <select class="n50-hero-period-sel" id="n50-hero-period" onchange="n50OnHeroFilter()"></select>
+      <button class="n50-hist-toggle" id="n50-hist-btn" onclick="n50ToggleHist()">◈ Historical Outperformers</button>
+    </div>
+  </div>
+  <div class="n50-heroes" id="n50-top5"></div>
+
+  <div class="n50-hero-hdr" style="margin-top:8px">
+    <div class="n50-hero-hdr-left">
+      <span class="n50-hero-hdr-label">// FULL GRID · ALL STOCKS</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span class="n50-stamp" id="n50-grid-stamp"></span>
+      <select class="n50-sel" id="n50-grid-period" onchange="n50OnGridFilter()"></select>
+      <div class="n50-sort-bar">
+        <button id="n50-sort-best"  class="n50-sort-btn active" onclick="n50OnQuickSort('best')">Best</button>
+        <button id="n50-sort-worst" class="n50-sort-btn"        onclick="n50OnQuickSort('worst')">Worst</button>
+        <button id="n50-sort-az"    class="n50-sort-btn"        onclick="n50OnQuickSort('az')">A–Z</button>
+      </div>
+    </div>
+  </div>
+  <div class="n50-table-wrap">
+    <table class="n50-table">
+      <thead><tr>
+        <th data-col="stock_name"       onclick="n50OnSort('stock_name')">Stock <span class="sort-arrow"></span></th>
+        <th data-col="first_price"      onclick="n50OnSort('first_price')"      class="n50-col-price" style="text-align:right">First ₹ <span class="sort-arrow"></span></th>
+        <th data-col="last_price"       onclick="n50OnSort('last_price')"       class="n50-col-price" style="text-align:right">Last ₹ <span class="sort-arrow"></span></th>
+        <th data-col="monthly_returns"  onclick="n50OnSort('monthly_returns')"  style="text-align:right">Monthly Ret <span class="sort-arrow"></span></th>
+        <th data-col="nifty_returns"    onclick="n50OnSort('nifty_returns')"    style="text-align:right">NIFTYBEES <span class="sort-arrow"></span></th>
+        <th data-col="relative_returns" onclick="n50OnSort('relative_returns')" style="text-align:right">vs NIFTYBEES <span class="sort-arrow"></span></th>
+      </tr></thead>
+      <tbody id="n50-tbody"><tr><td colspan="6" class="n50-empty">Loading…</td></tr></tbody>
+    </table>
+  </div>`;
+}
+
+/* ── Entry point — lazy-loaded on first subtab visit ── */
+async function n50Init(){
+  if(n50State.loading) return;
+  n50State.loading=true;
+  const root=document.getElementById('n50-root');if(!root)return;
+  try{
+    await n50FetchData();
+    const auto=n50AutoPeriod();
+    n50State.heroYear=auto.year; n50State.heroMonth=auto.month;
+    n50State.gridYear=auto.year; n50State.gridMonth=auto.month;
+    const fallbackMsg=auto.fallback
+      ?`No data yet for the current month — showing ${n50YMLabel(auto.year,auto.month)} (latest available)`
+      :null;
+    root.innerHTML=n50ScaffoldHTML(auto,fallbackMsg);
+    n50BuildSelectors();
+    const heroItems=n50FilterForPeriod(n50State.heroYear,n50State.heroMonth);
+    n50RenderTop5(heroItems);
+    const gridItems=n50FilterForPeriod(n50State.gridYear,n50State.gridMonth);
+    n50RenderGrid(gridItems);
+    n50SyncSortUI();
+    const stamp=document.getElementById('n50-grid-stamp');
+    if(stamp) stamp.textContent=`${gridItems.length} stocks · ${n50YMLabel(n50State.gridYear,n50State.gridMonth)}`;
+    n50State.loaded=true;n50State.loading=false;
+    DBG.ok('N50',`Panel ready · ${n50State.raw.length} rows`);
+  }catch(e){
+    DBG.err('N50',e.message);
+    root.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Failed to load Nifty 50 data · ${esc(e.message)}</div></div>`;
+    n50State.loading=false;
+  }
+}
 buildNav();
-DBG.info('INIT','MERIDIAN v2.7 · Adaptive Markets (Small/Medium/Large) · Filter · Search · Show More');
-DBG.info('SOURCES','GDELT · Google Sheets (GOOGLEFINANCE) · USGS · ReliefWeb');
-DBG.info('SOURCES','GDELT · Google Sheets (GOOGLEFINANCE) · USGS · ReliefWeb');
+DBG.info('INIT','MERIDIAN v2.7 · Adaptive Markets · Nifty 50 Performance subtab');
+DBG.info('SOURCES','GDELT · Google Sheets (GOOGLEFINANCE + N50 Performance) · USGS · ReliefWeb');
 DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = modal · ⎘ copy log');
 loadHome();
 </script>
