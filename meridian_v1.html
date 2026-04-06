@@ -348,6 +348,8 @@
     .gs-sort-btn:hover{border-color:var(--text-sub);color:var(--text-sub)}
     .gs-sort-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,.07)}
 
+    /* (N50 toggle button removed) */
+
     /* ── v2.7 ADAPTIVE UI ── */
     /* Filter chips */
     .gs-filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
@@ -399,7 +401,7 @@
 
     /* ── TICKER TAPE ── */
     .ticker-wrap{overflow:hidden;background:var(--bg-surf);border:0.5px solid var(--border);border-radius:var(--r-sm);margin-bottom:16px;padding:6px 0;white-space:nowrap}
-    .ticker-track{display:inline-flex;gap:0;animation:tickerScroll 120s linear infinite}
+    .ticker-track{display:inline-flex;gap:0;animation:tickerScroll 140s linear infinite}
     .ticker-track:hover{animation-play-state:paused}
     .ticker-item{display:inline-flex;align-items:center;gap:6px;padding:0 22px;border-right:0.5px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;white-space:nowrap}
     .ticker-item:last-child{border-right:none}
@@ -2159,14 +2161,6 @@ function _heroItems(){
   return _sortItems(all, _gsHeroSort).slice(0,3);
 }
 
-/* ── Filter items by tag and search ── */
-function _applyFilters(items){
-  let out=items;
-  if(_gsFilter!=='ALL') out=out.filter(x=>contextTag(x.ticker)===_gsFilter);
-  if(_gsSearchQ) out=out.filter(x=>x.name.toLowerCase().includes(_gsSearchQ));
-  return out;
-}
-
 /* ── Hero card ── */
 function gsHeroCardHTML(item){
   const cls=item.trend==='UP'?'up':item.trend==='DOWN'?'dn':'na';
@@ -2249,6 +2243,20 @@ function gsListRowHTML(item){
   </div>`;
 }
 
+function _applyFilters(items){
+  let out=items;
+  if(_gsFilter!=='ALL') out=out.filter(x=>contextTag(x.ticker)===_gsFilter);
+  if(_gsSearchQ) out=out.filter(x=>x.name.toLowerCase().includes(_gsSearchQ));
+  return out;
+}
+
+/* ── Pick top 3 heroes from filtered full pool ── */
+function _heroItems(){
+  if(!_gsProcessed) return[];
+  const all=_gsProcessed.raw||[];
+  return _sortItems(_applyFilters(all),_gsHeroSort).slice(0,3);
+}
+
 /* ── Sort hero panel (independent) ── */
 function applyHeroSort(sort){
   _gsHeroSort=sort;
@@ -2277,6 +2285,8 @@ function applyFilter(tag){
     el.classList.toggle('active',el.dataset.tag===tag);
   });
   _gsExpanded=false;
+  const heroWrap=document.getElementById('gs-hero-wrap');
+  if(heroWrap) heroWrap.innerHTML=_heroItems().map(gsHeroCardHTML).join('');
   _rerenderCompact();
 }
 
@@ -2295,9 +2305,9 @@ function onGsSearch(q){
 /* ── Shared sort bar HTML ── */
 function _heroSortBar(){
   return`<div class="gs-sort-bar">
-    <button id="gs-hero-sort-best"   class="gs-sort-btn active" onclick="applyHeroSort('best')">Best</button>
-    <button id="gs-hero-sort-worst"  class="gs-sort-btn"        onclick="applyHeroSort('worst')">Worst</button>
-    <button id="gs-hero-sort-movers" class="gs-sort-btn"        onclick="applyHeroSort('movers')">Movers</button>
+    <button id="gs-hero-sort-best"   class="gs-sort-btn${_gsHeroSort==='best'?' active':''}"   onclick="applyHeroSort('best')">Best</button>
+    <button id="gs-hero-sort-worst"  class="gs-sort-btn${_gsHeroSort==='worst'?' active':''}"  onclick="applyHeroSort('worst')">Worst</button>
+    <button id="gs-hero-sort-movers" class="gs-sort-btn${_gsHeroSort==='movers'?' active':''}" onclick="applyHeroSort('movers')">Movers</button>
   </div>`;
 }
 function _listSortBar(activeSort){
@@ -2309,40 +2319,35 @@ function _listSortBar(activeSort){
   </div>`;
 }
 
-/* ── Re-render compact/list area without refetch ── */
+/* ── Re-render compact/list without refetch (issue 2 fix: use raw, not visibleItems) ── */
 function _rerenderCompact(){
   if(!_gsProcessed) return;
   const count=_gsProcessed.total;
+  // Always pull from the full raw pool — heroes do NOT subtract from the grid
+  const allItems=_gsProcessed.raw||[];
 
   if(count>30){
     const listEl=document.getElementById('gs-list-body');
     if(listEl){
-      const all=[..._gsProcessed.visibleItems,..._gsProcessed.hiddenItems];
-      const sorted=_sortItems(_applyFilters(all),_gsSort);
+      const sorted=_sortItems(_applyFilters(allItems),_gsSort);
       listEl.innerHTML=sorted.map(gsListRowHTML).join('');
     }
     return;
   }
 
-  const allRest=[..._gsProcessed.visibleItems,...(_gsExpanded?_gsProcessed.hiddenItems:[])];
-  const filtered=_sortItems(_applyFilters(allRest),_gsSort);
+  // Small/medium: show all filtered items, no show-more needed when N50 active
+  const filtered=_sortItems(_applyFilters(allItems),_gsSort);
   const gridEl=document.getElementById('gs-compact-wrap');
   if(gridEl) gridEl.innerHTML=filtered.map(gsCompactCardHTML).join('');
 
+  // Show-more only relevant when not N50-filtered (N50 always ≤50 = always fits)
   const smWrap=document.getElementById('gs-show-more-wrap');
-  if(smWrap){
-    if(!_gsExpanded&&_gsProcessed.hiddenItems.length>0){
-      smWrap.innerHTML=`<button class="gs-show-more-btn" onclick="toggleShowMore()">Show ${_applyFilters(_gsProcessed.hiddenItems).length} more ▾</button>`;
-    } else if(_gsExpanded&&_gsProcessed.hiddenItems.length>0){
-      smWrap.innerHTML=`<button class="gs-show-more-btn" onclick="toggleShowMore()">Show less ▴</button>`;
-    } else {
-      smWrap.innerHTML='';
-    }
-  }
+  if(smWrap) smWrap.innerHTML=''; // no show-more needed now grid shows all
 }
 
 /* ── Case 1: Small ≤12 ── */
 function _renderSmall(processed,allData){
+  const allItems=processed.raw||[];
   return`
     ${summaryStripHTML(allData)}
     ${tickerTapeHTML(allData)}
@@ -2352,10 +2357,10 @@ function _renderSmall(processed,allData){
     </div>
     <div class="gs-hero-grid gs-hero-grid-3" id="gs-hero-wrap">${_heroItems().map(gsHeroCardHTML).join('')}</div>
     <div class="gs-compact-header">
-      <span class="section-head" style="margin:0;border:none;padding:0;font-size:9px">// ALL MARKETS</span>
+      <span class="section-head" style="margin:0;border:none;padding:0;font-size:9px">// ALL MARKETS · ${processed.total} instruments</span>
       ${_listSortBar('best')}
     </div>
-    <div class="gs-compact-grid" id="gs-compact-wrap">${_sortItems(processed.visibleItems,'best').map(gsCompactCardHTML).join('')}</div>
+    <div class="gs-compact-grid" id="gs-compact-wrap">${_sortItems(allItems,'best').map(gsCompactCardHTML).join('')}</div>
     <div id="gs-show-more-wrap"></div>`;
 }
 
@@ -2363,7 +2368,7 @@ function _renderSmall(processed,allData){
 function _renderMedium(processed,allData){
   const TAGS=['ALL','IN','US','CMD','FX'];
   const chips=TAGS.map(t=>`<button class="gs-filter-chip${t==='ALL'?' active':''}" data-tag="${t}" onclick="applyFilter('${t}')">${t}</button>`).join('');
-  const hidden=processed.hiddenItems.length;
+  const allItems=processed.raw||[];
   return`
     ${summaryStripHTML(allData)}
     ${tickerTapeHTML(allData)}
@@ -2373,17 +2378,17 @@ function _renderMedium(processed,allData){
     </div>
     <div class="gs-hero-grid gs-hero-grid-3" id="gs-hero-wrap">${_heroItems().map(gsHeroCardHTML).join('')}</div>
     <div class="gs-compact-header">
-      <span class="section-head" style="margin:0;border:none;padding:0;font-size:9px">// ALL MARKETS</span>
+      <span class="section-head" style="margin:0;border:none;padding:0;font-size:9px">// ALL MARKETS · ${processed.total} instruments</span>
       ${_listSortBar('best')}
     </div>
     <div class="gs-filter-bar">${chips}</div>
-    <div class="gs-compact-grid" id="gs-compact-wrap">${_sortItems(processed.visibleItems,'best').map(gsCompactCardHTML).join('')}</div>
-    <div id="gs-show-more-wrap">${hidden>0?`<button class="gs-show-more-btn" onclick="toggleShowMore()">Show ${hidden} more ▾</button>`:''}</div>`;
+    <div class="gs-compact-grid" id="gs-compact-wrap">${_sortItems(allItems,'best').map(gsCompactCardHTML).join('')}</div>
+    <div id="gs-show-more-wrap"></div>`;
 }
 
 /* ── Case 3: Large >30 ── */
 function _renderLarge(processed,allData){
-  const allRest=[...processed.visibleItems,...processed.hiddenItems];
+  const allItems=processed.raw||[];
   return`
     ${summaryStripHTML(allData)}
     ${tickerTapeHTML(allData)}
@@ -2404,7 +2409,7 @@ function _renderLarge(processed,allData){
           <span class="gs-search-ico">⌕</span>
           <input class="gs-search-input" id="gs-search" placeholder="Search instruments…" oninput="onGsSearch(this.value)">
         </div>
-        <div class="gs-scroll-list" id="gs-list-body">${_sortItems(allRest,'best').map(gsListRowHTML).join('')}</div>
+        <div class="gs-scroll-list" id="gs-list-body">${_sortItems(allItems,'best').map(gsListRowHTML).join('')}</div>
       </div>
     </div>`;
 }
