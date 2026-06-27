@@ -2459,8 +2459,15 @@ async function fetchRssFeeds(feeds){
     }else{DBG.err('RSS',`Feed failed: ${res.reason?.message||'unknown'}`);}
   }
   items.sort((a,b)=>b.pub-a.pub);
-  DBG.stats.art+=items.length;DBG._st();
-  return items;
+  // Deduplicate by normalized title prefix — removes cross-feed duplicates
+  const seen=new Set();
+  const deduped=items.filter(a=>{
+    const k=(a.title||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').substring(0,55);
+    if(seen.has(k))return false;seen.add(k);return true;
+  });
+  DBG.stats.art+=deduped.length;DBG._st();
+  if(deduped.length<items.length)DBG.info('RSS',`Deduped ${items.length-deduped.length} duplicate(s)`);
+  return deduped;
 }
 
 /* ── RSS Card HTML ── */
