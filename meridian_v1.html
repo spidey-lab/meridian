@@ -2371,6 +2371,9 @@ function tvInitCalendar(){
   });
 }
 function tvInitChart(){
+  const h=Math.min(820,Math.max(520,window.innerHeight-180));
+  const el=document.getElementById('mkt-tv-chart');
+  if(el) el.style.height=h+'px';
   injectTVWidget('mkt-tv-chart','advanced-chart',{
     autosize:true,symbol:'BSE:SENSEX',interval:'D',timezone:'Asia/Kolkata',
     theme:tvTheme(),locale:'en',allow_symbol_change:true,save_image:false,
