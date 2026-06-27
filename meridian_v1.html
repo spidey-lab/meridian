@@ -783,7 +783,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v2.1 · GDELT + Proxy + TwelveData</span>
+      <span class="dbg-hdr-l">// MERIDIAN v2.7 · GDELT + Google Finance + USGS + ReliefWeb</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -801,8 +801,6 @@
     <span class="ds">FETCHES <span id="ds-fetch">0</span></span>
     <span class="ds">FAILED <span id="ds-err">0</span></span>
     <span class="ds">ARTS <span id="ds-art">0</span></span>
-    <span class="ds">PROXY <span id="ds-proxy">0</span></span>
-    <span class="ds">TDAPI <span id="ds-tdapi">0</span></span>
   </div>
 </div>
 
@@ -1130,13 +1128,12 @@ async function _drainQueue(){
 ════════════════════════════════════════ */
 const SRC_CHIPS = {
   GDELT:'gdelt',CACHE:'gdelt',FALLBACK:'gdelt',FILTER:'gdelt',T5:'gdelt',
-  MKT:'mkt',PROXY:'proxy',PROXY1:'proxy',PROXY2:'proxy',
-  TDAPI:'tdapi',YFIN:'yfin',VIX:'vix',
+  GS:'mkt',N50:'mkt',
   USGS:'usgs',RW:'rw',SRCH:'srch',
   HOME:'gdelt',CAT:'gdelt',AUTO:'gdelt',INIT:'',SOURCES:'',KEYS:''
 };
 const DBG = {
-  visible:false, stats:{req:0,hit:0,fetch:0,err:0,art:0,proxy:0,tdapi:0},
+  visible:false, stats:{req:0,hit:0,fetch:0,err:0,art:0},
   log(type,tag,msg){
     const el=document.getElementById('dbg-log');if(!el)return;
     const ts=new Date().toTimeString().slice(0,8);
@@ -1158,7 +1155,7 @@ const DBG = {
     else if(type==='ok'&&Date.now()-this._lastErr>4000)p.className='ok';
   },
   _st(){
-    ['req','hit','fetch','err','art','proxy','tdapi'].forEach(k=>{
+    ['req','hit','fetch','err','art'].forEach(k=>{
       const el=document.getElementById('ds-'+k);if(el)el.textContent=this.stats[k];
     });
   }
@@ -1169,7 +1166,7 @@ function toggleDbg(){
 }
 function clearLog(){
   document.getElementById('dbg-log').innerHTML='';
-  DBG.stats={req:0,hit:0,fetch:0,err:0,art:0,proxy:0,tdapi:0};
+  DBG.stats={req:0,hit:0,fetch:0,err:0,art:0};
   DBG._st();document.getElementById('dbg-pip').className='';
 }
 function copyLog(){
@@ -2018,85 +2015,6 @@ function tickerTapeHTML(items){
   return`<div class="ticker-wrap"><div class="ticker-track">${tapeItems}${tapeItems}</div></div>`;
 }
 
-/* ── Hero card (Top Mover) ── */
-function gsHeroCardHTML(item){
-  const cls=item.trend==='UP'?'up':item.trend==='DOWN'?'dn':'na';
-  const arrow=item.trend==='UP'?'▲':item.trend==='DOWN'?'▼':'';
-  const pct=item.changePercent?`${arrow} ${item.changePercent>0?'+':''}${item.changePercent.toFixed(2)}%`:'—';
-  const priceStr=item.price?item.price.toLocaleString('en-IN',{maximumFractionDigits:2}):'—';
-  const gfUrl=gFinanceUrl(item.ticker);
-  let barHTML='';
-  if(item.dayHigh>0&&item.dayHigh>item.dayLow){
-    const pct2=Math.min(100,Math.max(0,((item.price-item.dayLow)/(item.dayHigh-item.dayLow))*100));
-    const lo=item.dayLow.toLocaleString('en-IN',{maximumFractionDigits:2});
-    const hi=item.dayHigh.toLocaleString('en-IN',{maximumFractionDigits:2});
-    barHTML=`<div class="gs-hero-bar-track">
-      <div class="gs-hero-bar-fill ${cls}" style="width:${pct2.toFixed(1)}%"></div>
-      <div class="gs-hero-bar-dot ${cls}" style="left:${pct2.toFixed(1)}%"></div>
-    </div>
-    <div class="gs-hero-range-lbl"><span>${lo}</span><span>${hi}</span></div>`;
-  }
-  const hasValidMeta=item.open>0||item.prevClose>0;
-  return`<div class="gs-hero ${cls}">
-    <div class="gs-hero-tag">TOP MOVER</div>
-    <div class="gs-hero-name">${esc(item.name)}</div>
-    <div class="gs-hero-price">${priceStr}</div>
-    <div class="gs-hero-badge ${cls}">${pct}</div>
-    ${barHTML}
-    ${hasValidMeta?`<div class="gs-hero-meta">
-      ${item.open>0?`<div class="gs-hero-meta-item">Open <span>${item.open.toLocaleString('en-IN',{maximumFractionDigits:2})}</span></div>`:''}
-      ${item.prevClose>0?`<div class="gs-hero-meta-item">Prev <span>${item.prevClose.toLocaleString('en-IN',{maximumFractionDigits:2})}</span></div>`:''}
-    </div>`:''}
-    <div class="gs-hero-footer">
-      <span class="gs-hero-src">Google Finance</span>
-      <a class="gs-link" href="${gfUrl}" target="_blank" rel="noopener">View →</a>
-    </div>
-  </div>`;
-}
-
-/* ── Context tag from ticker ── */
-function contextTag(ticker){
-  if(!ticker) return'';
-  const t=ticker.toUpperCase();
-  if(t.startsWith('INDEXNSE')||t.startsWith('NSE:')) return'IN';
-  if(t.startsWith('INDEXBOM')||t.startsWith('BSE:')) return'IN';
-  if(t.startsWith('INDEXSP')||t.startsWith('INDEXNASDAQ')) return'US';
-  if(t.includes('BEES')||t.startsWith('COMMODITY')) return'CMD';
-  if(t.startsWith('CURRENCY')) return'FX';
-  return'';
-}
-
-/* ── Compact card ── */
-function gsCompactCardHTML(item){
-  const cls=item.trend==='UP'?'up':item.trend==='DOWN'?'dn':'na';
-  const arrow=item.trend==='UP'?'▲':item.trend==='DOWN'?'▼':'';
-  const pct=item.changePercent?`${arrow}${Math.abs(item.changePercent).toFixed(2)}%`:'—';
-  const priceStr=item.price?item.price.toLocaleString('en-IN',{maximumFractionDigits:2}):'—';
-  const ctxTag=contextTag(item.ticker);
-  let barHTML='';
-  if(item.dayHigh>0&&item.dayHigh>item.dayLow){
-    const pct2=Math.min(100,Math.max(0,((item.price-item.dayLow)/(item.dayHigh-item.dayLow))*100));
-    const lo=item.dayLow.toLocaleString('en-IN',{maximumFractionDigits:2});
-    const hi=item.dayHigh.toLocaleString('en-IN',{maximumFractionDigits:2});
-    barHTML=`<div class="gs-compact-bar-track">
-      <div class="gs-compact-bar-fill ${cls}" style="width:${pct2.toFixed(1)}%"></div>
-      <div class="gs-compact-bar-dot ${cls}" style="left:${pct2.toFixed(1)}%"></div>
-    </div>
-    <div class="gs-compact-range"><span>${lo}</span><span>${hi}</span></div>`;
-  }
-  return`<div class="gs-compact ${cls}">
-    <div class="gs-compact-top">
-      <div style="display:flex;align-items:center;gap:5px;min-width:0">
-        ${ctxTag?`<span class="gs-ctx-tag">${ctxTag}</span>`:''}
-        <span class="gs-compact-name">${esc(item.name.toUpperCase())}</span>
-      </div>
-      <span class="gs-compact-pct ${cls}">${pct}</span>
-    </div>
-    <div class="gs-compact-price">${priceStr}</div>
-    ${barHTML}
-  </div>`;
-}
-
 /* ════════════════════════════════════════
    MARKET DATA PROCESSING — v2.7 Adaptive
 ════════════════════════════════════════ */
@@ -2152,13 +2070,6 @@ function _sortItems(items, mode){
   if(mode==='worst')  return[...items].sort((a,b)=>(a.changePercent||0)-(b.changePercent||0));
   if(mode==='az')     return sortByName(items);
   return sortByMover(items); // movers = abs desc
-}
-
-/* ── Pick top 3 for heroes from all valid items ── */
-function _heroItems(){
-  if(!_gsProcessed) return[];
-  const all=_gsProcessed.raw||[..._gsProcessed.topMovers,..._gsProcessed.visibleItems,..._gsProcessed.hiddenItems];
-  return _sortItems(all, _gsHeroSort).slice(0,3);
 }
 
 /* ── Hero card ── */
@@ -2567,6 +2478,109 @@ function toggleGSAuto(){
     },60000);
     DBG.info('GS','Auto-refresh ON · 60s');
   } else {DBG.info('GS','Auto-refresh OFF');}
+}
+
+/* ════════════════════════════════════════
+   USGS EARTHQUAKE MONITOR
+   CORS-native · No API key · M2.5+ past day
+════════════════════════════════════════ */
+const USGS_URL='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson';
+
+async function loadUSGS(containerId){
+  const el=document.getElementById(containerId);if(!el)return;
+  el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Fetching USGS earthquake data…</div></div>';
+  DBG.info('USGS','Fetching M2.5+ earthquakes (past 24h)…');
+  try{
+    const t0=Date.now();
+    const r=await fetch(USGS_URL,{signal:AbortSignal.timeout(15000)});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    const elapsed=((Date.now()-t0)/1000).toFixed(1);
+    const quakes=(Array.isArray(d.features)?d.features:[])
+      .map(f=>({
+        mag:f.properties.mag,
+        place:f.properties.place,
+        time:new Date(f.properties.time),
+        depth:f.geometry?.coordinates?.[2],
+        url:f.properties.url,
+        felt:f.properties.felt,
+        alert:f.properties.alert,
+      }))
+      .filter(q=>q.mag>=2.5)
+      .sort((a,b)=>b.mag-a.mag);
+    DBG.ok('USGS',`✓ ${quakes.length} earthquakes · M2.5+ · ${elapsed}s`);
+    if(!quakes.length){
+      el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No significant earthquakes in the past 24 hours.</div></div>';
+      return;
+    }
+    function magCls(m){return m>=7?'major':m>=6?'strong':m>=5?'moderate':'minor';}
+    el.innerHTML=`<div class="quake-grid">${quakes.slice(0,12).map(q=>{
+      const cls=magCls(q.mag);
+      const depthStr=q.depth!=null?`${q.depth.toFixed(1)} km depth`:'';
+      const feltStr=q.felt?`${q.felt} felt`:'';
+      const alertBadge=(cls==='major'||cls==='strong')?`<span class="quake-pill" style="background:rgba(226,75,74,.12);color:var(--neg);border-color:rgba(226,75,74,.25)">${cls.toUpperCase()}</span>`:'' ;
+      return`<div class="quake-card ${cls}">
+        <div class="quake-top">
+          <div class="quake-mag ${cls}">M${q.mag.toFixed(1)}</div>
+          <div class="quake-time">${ago(q.time)}</div>
+        </div>
+        <div class="quake-place">${esc(q.place||'Unknown location')}</div>
+        <div class="quake-meta">
+          ${depthStr?`<span class="quake-pill">${depthStr}</span>`:''}
+          ${feltStr?`<span class="quake-pill">${feltStr}</span>`:''}
+          ${alertBadge}
+        </div>
+        ${q.url?`<a class="quake-link" href="${esc(q.url)}" target="_blank" rel="noopener">View USGS details →</a>`:''}
+      </div>`;
+    }).join('')}</div>`;
+  }catch(e){
+    DBG.err('USGS',e.message);
+    el.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">⚠</span><div class="ndc-msg">USGS data unavailable · ${esc(e.message)}</div></div>`;
+  }
+}
+
+/* ════════════════════════════════════════
+   RELIEFWEB HUMANITARIAN CRISES
+   UN OCHA · CORS-native · No API key
+════════════════════════════════════════ */
+const RW_URL='https://api.reliefweb.int/v1/disasters?appname=meridian&limit=20&sort[]=date:desc&fields[include][]=name&fields[include][]=status&fields[include][]=country&fields[include][]=date&filter[field]=status&filter[value][]=ongoing';
+
+async function loadReliefWeb(containerId){
+  const el=document.getElementById(containerId);if(!el)return;
+  el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Fetching ReliefWeb crisis data…</div></div>';
+  DBG.info('RW','Fetching ReliefWeb ongoing crises…');
+  try{
+    const t0=Date.now();
+    const r=await fetch(RW_URL,{signal:AbortSignal.timeout(15000)});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    const elapsed=((Date.now()-t0)/1000).toFixed(1);
+    const items=Array.isArray(d.data)?d.data:[];
+    DBG.ok('RW',`✓ ${items.length} ongoing crises · ${elapsed}s`);
+    if(!items.length){
+      el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No ongoing crises reported by ReliefWeb.</div></div>';
+      return;
+    }
+    el.innerHTML=`<div class="crisis-grid">${items.map(item=>{
+      const f=item.fields||{};
+      const name=f.name||'Unknown crisis';
+      const status=(f.status||'ongoing').toLowerCase();
+      const countries=Array.isArray(f.country)?f.country.map(c=>c.name).join(', '):(f.country?.name||'—');
+      const dateStr=f.date?.created?new Date(f.date.created).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
+      const rwUrl=`https://reliefweb.int/disaster/${item.id}`;
+      return`<div class="crisis-card ${status}" onclick="window.open('${esc(rwUrl)}','_blank','noopener')">
+        <div class="crisis-top">
+          <span class="crisis-status ${status}">${status.toUpperCase()}</span>
+          <span class="crisis-country">${esc(countries)}</span>
+        </div>
+        <div class="crisis-name">${esc(name)}</div>
+        <div class="crisis-meta">${dateStr}</div>
+      </div>`;
+    }).join('')}</div>`;
+  }catch(e){
+    DBG.err('RW',e.message);
+    el.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">⚠</span><div class="ndc-msg">ReliefWeb data unavailable · ${esc(e.message)}</div></div>`;
+  }
 }
 
 /* ════════════════════════════════════════
