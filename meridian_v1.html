@@ -213,22 +213,6 @@
     .btn-mark{display:inline-flex;align-items:center;gap:5px;background:none;color:var(--text-sub);border:0.5px solid var(--border);padding:8px 13px;border-radius:var(--r-sm);font-size:12px;transition:var(--t)}
     .btn-mark:hover{border-color:var(--text-sub);color:var(--text)}
 
-    /* ── SEARCH ── */
-    .search-wrap{max-width:760px;margin:0 auto}
-    .search-ttl{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;margin-bottom:4px}
-    .search-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);margin-bottom:18px}
-    .search-bar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-    .s-input{flex:1;min-width:200px;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color var(--t)}
-    .s-input:focus{border-color:#7A8FA6}
-    .s-input::placeholder{color:var(--text-muted)}
-    .btn-srch{background:var(--text);color:var(--bg);border:none;border-radius:var(--r);padding:10px 20px;font-size:13px;font-weight:600;transition:opacity var(--t);white-space:nowrap}
-    .btn-srch:hover{opacity:.85}
-    .search-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
-    .f-sel{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r-sm);padding:6px 10px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color var(--t)}
-    .f-sel:focus{border-color:#7A8FA6}
-    .f-lbl-row{display:flex;align-items:center;gap:6px}
-    .f-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
-
     /* ── ATTR ── */
     .attr{margin-top:44px;padding-top:16px;border-top:0.5px solid var(--border-sub);text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
 
@@ -619,7 +603,6 @@
     .dl-src.vix{background:rgba(240,131,58,.15);color:#F0833A}
     .dl-src.usgs{background:rgba(226,75,74,.15);color:#E24B4A}
     .dl-src.rw{background:rgba(90,106,138,.2);color:#5A6A8A}
-    .dl-src.srch{background:rgba(212,79,168,.15);color:#D44FA8}
     .dbg-cooldown{display:none;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:3px;background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);animation:blink 1s infinite}
 
     /* ── RESPONSIVE ── */
@@ -694,58 +677,6 @@
   <div id="panel-tamilnadu"   class="panel"></div>
   <div id="panel-wildcard"    class="panel"></div>
 
-  <!-- SEARCH -->
-  <div id="panel-search" class="panel">
-    <div class="search-wrap">
-      <div class="search-ttl">Search Any Topic</div>
-      <div class="search-sub">// FULL-TEXT SEARCH · GDELT GLOBAL ARCHIVE · ENGLISH SOURCES</div>
-      <div class="search-bar">
-        <input class="s-input" id="sInput" type="text"
-          placeholder='e.g. "Tamil Nadu floods" OR "RBI rate cut" OR "Anthropic"'
-          onkeydown="if(event.key==='Enter')doSearch()">
-        <button class="btn-srch" onclick="doSearch()">Search →</button>
-      </div>
-      <div class="search-filters">
-        <div class="f-lbl-row">
-          <span class="f-lbl">TIMESPAN</span>
-          <select class="f-sel" id="sTime">
-            <option value="6H">Last 6h</option>
-            <option value="24H" selected>Last 24h</option>
-            <option value="48H">Last 48h</option>
-            <option value="7D">Last 7 days</option>
-          </select>
-        </div>
-        <div class="f-lbl-row">
-          <span class="f-lbl">SORT</span>
-          <select class="f-sel" id="sSort">
-            <option value="DateDesc" selected>Newest first</option>
-            <option value="HybridRel">Relevance</option>
-            <option value="ToneAsc">Most negative</option>
-            <option value="ToneDesc">Most positive</option>
-          </select>
-        </div>
-        <div class="f-lbl-row">
-          <span class="f-lbl">TONE</span>
-          <select class="f-sel" id="sTone">
-            <option value="">Any</option>
-            <option value=" tone<-1">Negative only</option>
-            <option value=" tone>1">Positive only</option>
-            <option value=" toneabs<1">Neutral only</option>
-          </select>
-        </div>
-        <div class="f-lbl-row">
-          <span class="f-lbl">COUNTRY</span>
-          <select class="f-sel" id="sSrc">
-            <option value="">Global</option>
-            <option value=" sourcecountry:india">India</option>
-            <option value=" sourcecountry:unitedstates">USA</option>
-            <option value=" sourcecountry:unitedkingdom">UK</option>
-          </select>
-        </div>
-      </div>
-      <div id="s-results"></div>
-    </div>
-  </div>
 
   <div class="attr">
     Powered by <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
@@ -1085,7 +1016,6 @@ const CATS = [
     q:'(theme:EPU_ECONOMY OR theme:MANMADE_DISASTER_IMPLIED) ("market crash" OR "debt default" OR "banking crisis" OR stagflation OR recession OR "black swan" OR "financial contagion") sourcelang:english',
     ts:'24H', max:15 },
 
-  { id:'search',     name:'Search',                  ico:'⌕', hex:'#7A8FA6', q:null }
 ];
 
 /* ════════════════════════════════════════
@@ -1129,7 +1059,7 @@ async function _drainQueue(){
 const SRC_CHIPS = {
   GDELT:'gdelt',CACHE:'gdelt',FALLBACK:'gdelt',FILTER:'gdelt',T5:'gdelt',
   GS:'mkt',N50:'mkt',
-  USGS:'usgs',RW:'rw',SRCH:'srch',
+  USGS:'usgs',RW:'rw',
   HOME:'gdelt',CAT:'gdelt',AUTO:'gdelt',INIT:'',SOURCES:'',KEYS:''
 };
 const DBG = {
@@ -1753,89 +1683,6 @@ function openModalShell(id,hex){
 function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';}
 function handleOvClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-
-/* ════════════════════════════════════════
-   SEARCH
-════════════════════════════════════════ */
-async function doSearch(){
-  const q=document.getElementById('sInput').value.trim();
-  if(!q){DBG.warn('SRCH','Empty query');return;}
-  const ts=document.getElementById('sTime').value;
-  const sort=document.getElementById('sSort').value;
-  const tone=document.getElementById('sTone').value;
-  const src=document.getElementById('sSrc').value;
-  const res=document.getElementById('s-results');
-
-  const query=`(${q}) sourcelang:english${tone}${src}`;
-  DBG.info('SRCH',`query="${query}" ts=${ts} sort=${sort}`);
-
-  // Check cooldown before even starting
-  if(!gdeltReady()){
-    const rem=Math.ceil((_gdeltCooldownUntil-Date.now())/1000);
-    _renderSearchCooldown(res,rem,q);
-    return;
-  }
-
-  res.innerHTML=`<div class="art-grid">${skels(2)}</div>`;
-
-  const timespans=[ts];
-  if(ts==='6H')  timespans.push('24H','48H');
-  if(ts==='24H') timespans.push('48H','7D');
-  if(ts==='48H') timespans.push('7D');
-
-  let arts=[];
-  for(let i=0;i<timespans.length;i++){
-    const span=timespans[i];
-    if(i>0) await new Promise(r=>setTimeout(r,2000)); // 2s gap between cascade retries
-    try{
-      DBG.info('SRCH',`Trying ts=${span}…`);
-      arts=await fetchGdeltUnfiltered(query,span,15);
-      if(arts.length>=3){ DBG.ok('SRCH',`${arts.length} results · ts=${span}`); break; }
-      DBG.warn('SRCH',`ts=${span} returned ${arts.length} — widening`);
-    }catch(e){
-      DBG.err('SRCH',`ts=${span} failed: ${e.message}`);
-      if(e.message.includes('cooling')||e.message.includes('rate-limited')){
-        const rem=Math.ceil((_gdeltCooldownUntil-Date.now())/1000);
-        _renderSearchCooldown(res,rem,q);
-        return;
-      }
-    }
-  }
-
-  if(!arts.length){
-    res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No results found for <strong>"${esc(q)}"</strong> · Try different keywords, remove filters, or widen the timespan.</div></div>`;
-    return;
-  }
-
-  arts.sort((a,b)=>parseGdeltDate(b.seendate)-parseGdeltDate(a.seendate));
-  const heroWrap=document.createElement('div');
-  heroWrap.innerHTML=heroCardHTML(arts[0],'#7A8FA6');
-  const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
-  if(hid)lazyHeroDesc(hid);
-  res.innerHTML='';
-  res.appendChild(heroWrap);
-  if(arts.length>1){
-    const g=document.createElement('div');g.className='art-grid';
-    g.innerHTML=arts.slice(1).map(a=>cardHTML(a,'#7A8FA6')).join('');
-    res.appendChild(g);
-  }
-  DBG.ok('SRCH',`Showing ${arts.length} results for "${q}"`);
-}
-
-function _renderSearchCooldown(res,rem,q){
-  res.innerHTML=`<div class="no-data-compact" id="srch-cooldown-box">
-    <span class="ndc-ico">⏸</span>
-    <div class="ndc-msg">GDELT is rate-limited · Auto-retry in <strong id="srch-cd">${rem}s</strong></div>
-    <button class="btn-retry" onclick="doSearch()">↻ Retry now</button>
-  </div>`;
-  const cdTimer=setInterval(()=>{
-    const r2=Math.ceil((_gdeltCooldownUntil-Date.now())/1000);
-    const el=document.getElementById('srch-cd');
-    if(!el){clearInterval(cdTimer);return;}
-    if(r2<=0){clearInterval(cdTimer);doSearch();}
-    else el.textContent=r2+'s';
-  },1000);
-}
 
 /* ════════════════════════════════════════
    KEYBOARD SHORTCUTS
