@@ -952,17 +952,17 @@ function isTrusted(domain){
 }
 
 const CATS = [
-  // Home — RSS: top headlines from Reuters + BBC
+  // Home — RSS: top headlines from AP + BBC
   { id:'home',    name:'Home',           ico:'◈', hex:'#D4A843',
     _rss:[
-      {url:'https://feeds.reuters.com/reuters/topNews',         name:'Reuters'},
+      {url:'https://feeds.apnews.com/rss/apf-topnews',         name:'AP News'},
       {url:'https://feeds.bbci.co.uk/news/world/rss.xml',      name:'BBC World'}
     ]},
 
   // World Conflicts — GDELT: armed conflict + geopolitics + ReliefWeb
   { id:'world',   name:'World Conflicts', ico:'◎', hex:'#E05252',
     q:'(theme:ARMEDCONFLICT OR theme:KILL OR "India Pakistan" OR "Middle East" OR "Russia Ukraine" OR "China Taiwan" OR "South China Sea" OR ceasefire OR sanctions OR NATO) sourcelang:english',
-    ts:'12H', max:20 },
+    ts:'24H', max:20 },
 
   // Markets — Google Sheets / GOOGLEFINANCE (unchanged)
   { id:'markets', name:'Markets',         ico:'◫', hex:'#3DB88A', q:null },
@@ -970,7 +970,7 @@ const CATS = [
   // Economy — RSS: global business + India markets + energy
   { id:'economy', name:'Economy',         ico:'◆', hex:'#26A67A',
     _rss:[
-      {url:'https://feeds.reuters.com/reuters/businessNews',                          name:'Reuters Business'},
+      {url:'https://feeds.apnews.com/rss/apf-business',                               name:'AP Business'},
       {url:'https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms',    name:'ET Markets'},
       {url:'https://oilprice.com/rss/main',                                           name:'OilPrice'}
     ]},
@@ -2363,7 +2363,7 @@ async function loadUSGS(containerId){
    RELIEFWEB HUMANITARIAN CRISES
    UN OCHA · CORS-native · No API key
 ════════════════════════════════════════ */
-const RW_URL='https://api.reliefweb.int/v1/disasters?appname=meridian&limit=20&sort[]=date:desc&fields[include][]=name&fields[include][]=status&fields[include][]=country&fields[include][]=date&filter[field]=status&filter[value][]=ongoing';
+const RW_URL='https://api.reliefweb.int/v1/disasters?appname=meridian';
 
 async function loadReliefWeb(containerId){
   const el=document.getElementById(containerId);if(!el)return;
@@ -2371,7 +2371,17 @@ async function loadReliefWeb(containerId){
   DBG.info('RW','Fetching ReliefWeb ongoing crises…');
   try{
     const t0=Date.now();
-    const r=await fetch(RW_URL,{signal:AbortSignal.timeout(15000)});
+    const r=await fetch(RW_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        limit:20,
+        sort:['date:desc'],
+        fields:{include:['name','status','country','date']},
+        filter:{field:'status',value:['ongoing']}
+      }),
+      signal:AbortSignal.timeout(15000)
+    });
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
     const d=await r.json();
     const elapsed=((Date.now()-t0)/1000).toFixed(1);
