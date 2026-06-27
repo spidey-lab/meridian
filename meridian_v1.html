@@ -424,6 +424,10 @@
     .mkt-sub{display:none;animation:fadeIn .2s ease}
     .mkt-sub.active{display:block}
     .tv-signals-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .tv-cal-wrap{width:100%;height:620px;border-radius:var(--r);overflow:hidden}
+    .tv-chart-wrap{width:100%;height:520px;border-radius:var(--r);overflow:hidden}
+    .tv-signals-item{height:460px;border-radius:var(--r);overflow:hidden}
+    .tv-heatmap-wrap{width:100%;height:620px;border-radius:var(--r);overflow:hidden}
 
     /* ── NIFTY 50 PERFORMANCE ── */
     /* Controls bar */
@@ -613,10 +617,27 @@
       .nav{padding:0 14px}.main{padding:18px 14px 40px}
       .art-grid{grid-template-columns:1fr}
       #lastUpdated{display:none}.toggle-txt{display:none}
+      /* Markets sub-tab nav: scroll horizontally instead of overflowing */
+      .mkt-subtab-nav{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+      .mkt-subtab{padding:10px 14px;font-size:10px;letter-spacing:0}
+      /* Signals: stack vertically on tablet/mobile */
+      .tv-signals-grid{grid-template-columns:1fr}
+      /* Ctrl bar: let stamp shrink naturally */
+      .mkt-stamp-txt{min-width:0;font-size:9px}
+      /* Status chips: remove desktop max-width cap */
+      .mkt-status-chip{max-width:none}
+      /* TV widget heights: compact on mobile */
+      .tv-cal-wrap,.tv-heatmap-wrap{height:500px}
+      .tv-chart-wrap{height:440px}
+      .tv-signals-item{height:400px}
     }
+    .mkt-subtab-nav::-webkit-scrollbar{display:none}
     @media(max-width:520px){
       .logo{font-size:15px;letter-spacing:3px}
       .m-title{font-size:17px}.home-title{font-size:24px}
+      /* Phones: tighten sub-tab buttons further, drop icons to save space */
+      .mkt-subtab{padding:8px 9px;font-size:9px;gap:2px}
+      .mkt-subtab-ico{display:none}
     }
   </style>
 </head>
@@ -2287,25 +2308,25 @@ async function loadMarketsPanel(){
 
     <!-- ── SUBTAB 3: Economic Calendar ── -->
     <div id="mkt-sub-calendar" class="mkt-sub">
-      <div id="mkt-tv-calendar" style="width:100%;height:620px;border-radius:var(--r);overflow:hidden"></div>
+      <div id="mkt-tv-calendar" class="tv-cal-wrap"></div>
     </div>
 
     <!-- ── SUBTAB 4: Advanced Chart ── -->
     <div id="mkt-sub-chart" class="mkt-sub">
-      <div id="mkt-tv-chart" style="width:100%;height:520px;border-radius:var(--r);overflow:hidden"></div>
+      <div id="mkt-tv-chart" class="tv-chart-wrap"></div>
     </div>
 
     <!-- ── SUBTAB 5: Technical Analysis Signals ── -->
     <div id="mkt-sub-signals" class="mkt-sub">
       <div class="tv-signals-grid">
-        <div id="mkt-tv-signals-sensex" style="height:460px;border-radius:var(--r);overflow:hidden"></div>
-        <div id="mkt-tv-signals-spx" style="height:460px;border-radius:var(--r);overflow:hidden"></div>
+        <div id="mkt-tv-signals-sensex" class="tv-signals-item"></div>
+        <div id="mkt-tv-signals-spx" class="tv-signals-item"></div>
       </div>
     </div>
 
     <!-- ── SUBTAB 6: Stock Heatmap ── -->
     <div id="mkt-sub-heatmap" class="mkt-sub">
-      <div id="mkt-tv-heatmap" style="width:100%;height:620px;border-radius:var(--r);overflow:hidden"></div>
+      <div id="mkt-tv-heatmap" class="tv-heatmap-wrap"></div>
     </div>`;
 
   await _renderGSCards();
