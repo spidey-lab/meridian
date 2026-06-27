@@ -425,8 +425,7 @@
     .mkt-sub.active{display:block}
     .tv-signals-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
     .tv-cal-wrap{width:100%;height:620px;border-radius:var(--r);overflow:hidden}
-    .tv-chart-wrap{width:100%;height:700px;border-radius:var(--r);overflow:hidden}
-    .tv-signals-item{height:460px;border-radius:var(--r);overflow:hidden}
+.tv-signals-item{height:460px;border-radius:var(--r);overflow:hidden}
     .tv-heatmap-wrap{width:100%;height:620px;border-radius:var(--r);overflow:hidden}
 
     /* ── NIFTY 50 PERFORMANCE ── */
@@ -628,8 +627,7 @@
       .mkt-status-chip{max-width:none}
       /* TV widget heights: compact on mobile */
       .tv-cal-wrap,.tv-heatmap-wrap{height:500px}
-      .tv-chart-wrap{height:calc(100vh - 180px)}
-      .tv-signals-item{height:400px}
+.tv-signals-item{height:400px}
     }
     .mkt-subtab-nav::-webkit-scrollbar{display:none}
     @media(max-width:520px){
@@ -808,7 +806,7 @@ function applyTheme(t){
   document.getElementById('themeBtn').textContent = t==='dark' ? '☀' : '☾';
   localStorage.setItem(LS_THEME, t);
   // Re-render active TV widget so it picks up the new theme
-  const tvTabs=['calendar','chart','signals','heatmap'];
+  const tvTabs=['calendar','signals','heatmap'];
   const activeEl=document.querySelector('.mkt-sub.active');
   if(activeEl){
     const activeTab=tvTabs.find(tab=>activeEl.id==='mkt-sub-'+tab);
@@ -2269,10 +2267,7 @@ async function loadMarketsPanel(){
       <button class="mkt-subtab" id="mst-calendar" onclick="switchMktSubtab('calendar')">
         <span class="mkt-subtab-ico">◷</span> Calendar
       </button>
-      <button class="mkt-subtab" id="mst-chart" onclick="switchMktSubtab('chart')">
-        <span class="mkt-subtab-ico">◫</span> Chart
-      </button>
-      <button class="mkt-subtab" id="mst-signals" onclick="switchMktSubtab('signals')">
+<button class="mkt-subtab" id="mst-signals" onclick="switchMktSubtab('signals')">
         <span class="mkt-subtab-ico">◆</span> Signals
       </button>
       <button class="mkt-subtab" id="mst-heatmap" onclick="switchMktSubtab('heatmap')">
@@ -2311,10 +2306,6 @@ async function loadMarketsPanel(){
       <div id="mkt-tv-calendar" class="tv-cal-wrap"></div>
     </div>
 
-    <!-- ── SUBTAB 4: Advanced Chart ── -->
-    <div id="mkt-sub-chart" class="mkt-sub">
-      <div id="mkt-tv-chart" class="tv-chart-wrap"></div>
-    </div>
 
     <!-- ── SUBTAB 5: Technical Analysis Signals ── -->
     <div id="mkt-sub-signals" class="mkt-sub">
@@ -2341,10 +2332,9 @@ function switchMktSubtab(tab){
   if(tab==='nifty50'&&!n50State.loaded) n50Init();
   if(!tvLoaded.has(tab)){
     if(tab==='calendar') tvInitCalendar();
-    if(tab==='chart')    tvInitChart();
     if(tab==='signals')  tvInitSignals();
     if(tab==='heatmap')  tvInitHeatmap();
-    if(['calendar','chart','signals','heatmap'].includes(tab)) tvLoaded.add(tab);
+    if(['calendar','signals','heatmap'].includes(tab)) tvLoaded.add(tab);
   }
 }
 
@@ -2370,17 +2360,7 @@ function tvInitCalendar(){
     locale:'en',importanceFilter:'-1,0,1',countryFilter:'in,us,eu,gb'
   });
 }
-function tvInitChart(){
-  const h=Math.min(820,Math.max(520,window.innerHeight-180));
-  const el=document.getElementById('mkt-tv-chart');
-  if(el) el.style.height=h+'px';
-  injectTVWidget('mkt-tv-chart','advanced-chart',{
-    autosize:true,symbol:'BSE:SENSEX',interval:'D',timezone:'Asia/Kolkata',
-    theme:tvTheme(),locale:'en',allow_symbol_change:true,save_image:false,
-    withdateranges:true,hide_side_toolbar:false,calendar:false,
-    support_host:'https://www.tradingview.com'
-  });
-}
+
 function tvInitSignals(){
   const th=tvTheme();
   injectTVWidget('mkt-tv-signals-sensex','technical-analysis',{
