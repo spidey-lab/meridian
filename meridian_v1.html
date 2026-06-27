@@ -2331,6 +2331,7 @@ function tvTheme(){ return document.documentElement.getAttribute('data-theme')||
 function injectTVWidget(containerId,widgetName,config){
   const el=document.getElementById(containerId);if(!el)return;
   el.innerHTML='';
+  el.classList.add('tradingview-widget-container');
   const inner=document.createElement('div');
   inner.className='tradingview-widget-container__widget';
   inner.style.cssText='height:100%;width:100%';
