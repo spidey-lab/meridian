@@ -603,6 +603,7 @@
     .dl-src.vix{background:rgba(240,131,58,.15);color:#F0833A}
     .dl-src.usgs{background:rgba(226,75,74,.15);color:#E24B4A}
     .dl-src.rw{background:rgba(90,106,138,.2);color:#5A6A8A}
+    .dl-src.rss{background:rgba(43,191,204,.15);color:#2BBFCC}
     .dbg-cooldown{display:none;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:3px;background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);animation:blink 1s infinite}
 
     /* ── RESPONSIVE ── */
@@ -624,7 +625,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · GDELT · v2.7</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · RSS + GDELT · v3.0</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -654,7 +655,7 @@
       <div>
         <div class="home-title">Today's Intelligence Brief</div>
         <div class="home-sub" id="home-sub">
-          <span>// TOP STORIES · GDELT · LAST 24 HOURS</span>
+          <span>// TOP STORIES · RSS · LIVE</span>
         </div>
       </div>
       <div class="home-date" id="homeDate"></div>
@@ -663,26 +664,21 @@
     <div class="art-grid" id="home-grid"></div>
   </div>
 
-  <div id="panel-geopolitics" class="panel"></div>
-  <div id="panel-conflicts"   class="panel"></div>
-  <div id="panel-markets"     class="panel"></div>
-  <div id="panel-finance"     class="panel"></div>
-  <div id="panel-indiaeco"    class="panel"></div>
-  <div id="panel-ai"          class="panel"></div>
-  <div id="panel-tech"        class="panel"></div>
-  <div id="panel-politics"    class="panel"></div>
-  <div id="panel-disasters"   class="panel"></div>
-  <div id="panel-health"      class="panel"></div>
-  <div id="panel-energy"      class="panel"></div>
-  <div id="panel-tamilnadu"   class="panel"></div>
-  <div id="panel-wildcard"    class="panel"></div>
+  <div id="panel-world"   class="panel"></div>
+  <div id="panel-markets" class="panel"></div>
+  <div id="panel-economy" class="panel"></div>
+  <div id="panel-techai"  class="panel"></div>
+  <div id="panel-india"   class="panel"></div>
+  <div id="panel-crisis"  class="panel"></div>
 
 
   <div class="attr">
-    Powered by <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
-    Direct browser · CORS native &nbsp;·&nbsp;
+    <strong>RSS Feeds</strong> via rss2json.com &nbsp;·&nbsp;
+    <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
+    <strong>Google Finance</strong> via Sheets &nbsp;·&nbsp;
+    USGS · ReliefWeb &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
-    MERIDIAN v2.0
+    MERIDIAN v3.0
   </div>
 </main>
 
@@ -956,66 +952,53 @@ function isTrusted(domain){
 }
 
 const CATS = [
-  { id:'home',       name:'Home',                  ico:'◈', hex:'#D4A843',
-    q:'(India OR Modi OR economy OR war OR election OR "stock market" OR crisis OR technology) sourcelang:english',
-    ts:'24H', max:10 },
+  // Home — RSS: top headlines from Reuters + BBC
+  { id:'home',    name:'Home',           ico:'◈', hex:'#D4A843',
+    _rss:[
+      {url:'https://feeds.reuters.com/reuters/topNews',         name:'Reuters'},
+      {url:'https://feeds.bbci.co.uk/news/world/rss.xml',      name:'BBC World'}
+    ]},
 
-  { id:'geopolitics',name:'Conflicts & Diplomacy', ico:'◎', hex:'#E05252',
-    // Diplomacy, sanctions, alliances — not active combat
-    q:'("India Pakistan" OR "Middle East diplomacy" OR "Russia Ukraine" OR "China Taiwan" OR "South China Sea" OR "Israel Iran" OR ceasefire OR sanctions OR NATO) sourcelang:english',
-    ts:'24H', max:15 },
+  // World Conflicts — GDELT: armed conflict + geopolitics + ReliefWeb
+  { id:'world',   name:'World Conflicts', ico:'◎', hex:'#E05252',
+    q:'(theme:ARMEDCONFLICT OR theme:KILL OR "India Pakistan" OR "Middle East" OR "Russia Ukraine" OR "China Taiwan" OR "South China Sea" OR ceasefire OR sanctions OR NATO) sourcelang:english',
+    ts:'12H', max:20 },
 
-  { id:'conflicts',  name:'Active Conflicts',       ico:'◉', hex:'#CC2222',
-    // Live war zones, casualties, strikes — ARMEDCONFLICT + KILL themes
-    q:'(theme:ARMEDCONFLICT OR theme:KILL) (war OR attack OR strike OR missile OR killed OR bombing OR offensive OR troops OR frontline) sourcelang:english',
-    ts:'12H', max:15 },
+  // Markets — Google Sheets / GOOGLEFINANCE (unchanged)
+  { id:'markets', name:'Markets',         ico:'◫', hex:'#3DB88A', q:null },
 
-  // Markets tab — loaded by loadMarketsPanel()
-  { id:'markets',    name:'Markets',                ico:'◫', hex:'#3DB88A', q:null },
+  // Economy — RSS: global business + India markets + energy
+  { id:'economy', name:'Economy',         ico:'◆', hex:'#26A67A',
+    _rss:[
+      {url:'https://feeds.reuters.com/reuters/businessNews',                          name:'Reuters Business'},
+      {url:'https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms',    name:'ET Markets'},
+      {url:'https://oilprice.com/rss/main',                                           name:'OilPrice'}
+    ]},
 
-  { id:'finance',    name:'Markets News',           ico:'◈', hex:'#2A9E70',
-    // Global finance — Fed, crude, gold, global indices
-    q:'("Federal Reserve" OR "crude oil" OR "gold price" OR "US markets" OR "S&P 500" OR "oil price" OR "dollar index" OR "bond yields") sourcelang:english',
-    ts:'24H', max:15 },
+  // Tech & AI — RSS: TechCrunch AI + MIT Tech Review + Ars Technica
+  { id:'techai',  name:'Tech & AI',       ico:'◉', hex:'#9B6FE8',
+    _rss:[
+      {url:'https://techcrunch.com/category/artificial-intelligence/feed/', name:'TechCrunch AI'},
+      {url:'https://www.technologyreview.com/feed/',                        name:'MIT Tech Review'},
+      {url:'https://feeds.arstechnica.com/arstechnica/index',               name:'Ars Technica'}
+    ]},
 
-  { id:'indiaeco',   name:'India Economy',          ico:'◆', hex:'#26A67A',
-    // India-specific economic signals — your FIRE-relevant tab
-    q:'("Nifty 50" OR Sensex OR "RBI policy" OR "FII flows" OR "Indian rupee" OR "inflation India" OR "India GDP" OR "Indian economy") sourcelang:english sourcecountry:india',
-    ts:'24H', max:15 },
+  // India — RSS: national + politics + Tamil Nadu (NDTV + The Hindu)
+  { id:'india',   name:'India',           ico:'◀', hex:'#F0833A',
+    _rss:[
+      {url:'https://feeds.feedburner.com/ndtvnews-india-news',           name:'NDTV India'},
+      {url:'https://www.thehindu.com/news/national/feeder/default.rss',  name:'The Hindu'},
+      {url:'https://www.thehindu.com/news/cities/chennai/feeder/default.rss', name:'The Hindu Chennai'}
+    ]},
 
-  { id:'ai',         name:'AI & ML',                ico:'◉', hex:'#9B6FE8',
-    q:'(OpenAI OR Anthropic OR "large language model" OR "AI regulation" OR DeepSeek OR "AI Act" OR "artificial intelligence" OR "India AI") sourcelang:english',
-    ts:'24H', max:15 },
-
-  { id:'tech',       name:'Technology',             ico:'◫', hex:'#4B8EF0',
-    q:'theme:WB_133_INFORMATION_AND_COMMUNICATION_TECHNOLOGIES (semiconductors OR cybersecurity OR Nvidia OR "data breach" OR "quantum computing" OR "India startup") sourcelang:english',
-    ts:'24H', max:15 },
-
-  { id:'politics',   name:'Politics (India)',        ico:'◆', hex:'#F0833A',
-    q:'(theme:ELECTION OR theme:GENERAL_GOVERNMENT) ("Lok Sabha" OR BJP OR "Indian election" OR TVK OR DMK OR "Rahul Gandhi" OR "Modi policy") sourcelang:english sourcecountry:india',
-    ts:'24H', max:15 },
-
-  { id:'disasters',  name:'Natural Disasters',       ico:'◬', hex:'#E84C74',
+  // Crisis Watch — USGS earthquakes + GDELT natural disasters + RSS health
+  { id:'crisis',  name:'Crisis Watch',    ico:'◬', hex:'#E84C74',
     q:'theme:NATURAL_DISASTER sourcelang:english',
-    ts:'24H', max:15 },
-
-  { id:'health',     name:'Health & Outbreaks',      ico:'◌', hex:'#2BBFCC',
-    // MEDICAL + TAX_DISEASE themes — higher daily volume than Science was
-    q:'(theme:MEDICAL OR theme:TAX_DISEASE) (outbreak OR epidemic OR pandemic OR "public health" OR virus OR disease OR WHO OR "health emergency") sourcelang:english',
-    ts:'24H', max:15 },
-
-  { id:'energy',     name:'Energy & Commodities',    ico:'◑', hex:'#D4B843',
-    q:'theme:WB_507_ENERGY_AND_EXTRACTIVES (OPEC OR "crude oil" OR "gold price" OR lithium OR "solar energy India" OR "renewable energy" OR "coal India") sourcelang:english',
-    ts:'24H', max:15 },
-
-  { id:'tamilnadu',  name:'Tamil Nadu',              ico:'◀', hex:'#CC3A3A',
-    q:'("Tamil Nadu" OR Chennai OR Coimbatore OR AIADMK OR "DMK government" OR "TVK party" OR "Chennai metro" OR "Tamil Nadu floods") sourcelang:english sourcecountry:india',
-    ts:'48H', max:15 },
-
-  { id:'wildcard',   name:'Signal & Shift',          ico:'◈', hex:'#D44FA8',
-    q:'(theme:EPU_ECONOMY OR theme:MANMADE_DISASTER_IMPLIED) ("market crash" OR "debt default" OR "banking crisis" OR stagflation OR recession OR "black swan" OR "financial contagion") sourcelang:english',
-    ts:'24H', max:15 },
-
+    ts:'24H', max:10,
+    _rss:[
+      {url:'https://www.who.int/rss-feeds/news-english.xml', name:'WHO'},
+      {url:'https://www.statnews.com/feed/',                  name:'STAT News'}
+    ]},
 ];
 
 /* ════════════════════════════════════════
@@ -1059,8 +1042,8 @@ async function _drainQueue(){
 const SRC_CHIPS = {
   GDELT:'gdelt',CACHE:'gdelt',FALLBACK:'gdelt',FILTER:'gdelt',T5:'gdelt',
   GS:'mkt',N50:'mkt',
-  USGS:'usgs',RW:'rw',
-  HOME:'gdelt',CAT:'gdelt',AUTO:'gdelt',INIT:'',SOURCES:'',KEYS:''
+  USGS:'usgs',RW:'rw',RSS:'rss',
+  HOME:'rss',CAT:'gdelt',AUTO:'gdelt',INIT:'',SOURCES:'',KEYS:''
 };
 const DBG = {
   visible:false, stats:{req:0,hit:0,fetch:0,err:0,art:0},
@@ -1401,9 +1384,9 @@ function cardHTML(a,hex){
 async function lazyHeroDesc(id){
   const a=artStore[id];if(!a)return;
   const el=document.getElementById('hdesc-'+id);if(!el)return;
+  if(a._snippet){el.textContent=a._snippet;return;}
   const snip=await fetchDesc(a);
   if(snip&&el){el.textContent=snip.slice(0,180)+(snip.length>180?'…':'');}
-  // else leave empty — no fallback text
 }
 
 function renderErr(el,msg,fn){
@@ -1416,64 +1399,38 @@ function renderErr(el,msg,fn){
 }
 
 /* ════════════════════════════════════════
-   LOAD HOME
+   LOAD HOME — RSS feeds (Reuters + BBC)
 ════════════════════════════════════════ */
 async function loadHome(){
   const hero=document.getElementById('home-hero');
   const grid=document.getElementById('home-grid');
   hero.innerHTML='';
-  grid.innerHTML=`<div class="progress-wrap" id="home-prog-wrap">${
-    `<div class="progress-stages">${STAGES.map((s,i)=>`<span class="p-stage${i===0?' active':''}" id="hpg-s${i}">${s}</span>${i<STAGES.length-1?'<span class="p-arr">→</span>':''}`).join('')}</div><div class="p-msg p-dots" id="hpg-pm">Contacting GDELT</div>`
-  }</div>`;
+  grid.innerHTML=`<div class="progress-wrap"><div class="p-msg p-dots">Fetching latest headlines</div></div>`;
   document.getElementById('homeDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  DBG.info('HOME','Loading… (cascade: 24H→48H→7D→Tier5)');
-
-  let pgStage=0;
-  const pgTimer=setInterval(()=>{
-    const prev=document.getElementById(`hpg-s${pgStage}`);
-    if(prev){prev.classList.remove('active');prev.classList.add('done');}
-    pgStage=Math.min(pgStage+1,STAGES.length-1);
-    const curr=document.getElementById(`hpg-s${pgStage}`);if(curr)curr.classList.add('active');
-    const msg=document.getElementById('hpg-pm');if(msg)msg.textContent=STAGES[pgStage];
-  },7000);
-
+  const sub=document.getElementById('home-sub');
+  DBG.info('HOME','Loading RSS feeds (Reuters + BBC)…');
   try{
-    // Use cascade — same as categories
-    const {arts,status,ageMs,elapsed}=await fetchWithFallback(cat('home').q,'24H',20);
-    clearInterval(pgTimer);
-    const pgw=document.getElementById('home-prog-wrap');if(pgw)pgw.remove();
-
-    // Title-based dedup (not domain-based) — keeps more variety
+    const items=await fetchRssFeeds(cat('home')._rss);
     const seen=new Set();
-    const top=arts
-      .sort((a,b)=>parseGdeltDate(b.seendate)-parseGdeltDate(a.seendate))
-      .filter(a=>{
-        const k=(a.title||'').substring(0,50).toLowerCase();
-        if(seen.has(k))return false;seen.add(k);return true;
-      })
-      .slice(0,7);
-
-    const sub=document.getElementById('home-sub');
-    if(sub)sub.innerHTML=`<span>// TOP STORIES · GDELT · LAST 24 HOURS</span>${cacheBadgeHTML(status,ageMs,elapsed)}`;
-
+    const top=items.filter(a=>{
+      const k=(a.title||'').substring(0,60).toLowerCase();
+      if(seen.has(k))return false;seen.add(k);return true;
+    }).slice(0,9);
+    const pgw=grid.querySelector('.progress-wrap');if(pgw)pgw.remove();
+    if(sub)sub.innerHTML=`<span>// TOP STORIES · RSS · LIVE</span><span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE · ${top.length} stories</span>`;
     if(top.length){
-      hero.innerHTML=heroCardHTML(top[0],'#D4A843');
-      const heroId=Object.keys(artStore).find(k=>artStore[k]===top[0]);
-      if(heroId)lazyHeroDesc(heroId);
-      if(top.length>1)grid.innerHTML=top.slice(1).map(a=>cardHTML(a,'#D4A843')).join('');
-      else grid.innerHTML='';
-    } else {
+      hero.innerHTML=rssHeroCardHTML(top[0],'#D4A843');
+      grid.innerHTML=top.slice(1).map(a=>rssCardHTML(a,'#D4A843')).join('');
+    }else{
       hero.innerHTML='';
-      grid.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories right now.</div><div class="empty-hint">GDELT indexes every 15 min.</div></div>`;
+      grid.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories right now.</div><div class="empty-hint">RSS feeds may be temporarily unavailable.</div></div>`;
     }
-    const unvCount=top.filter(a=>a._unverified).length;
     updateStamp();
-    DBG.ok('HOME',`${top.length} stories · ${top.length-unvCount} trusted · ${unvCount} unverified · ${status}`);
+    DBG.ok('HOME',`${top.length} RSS stories`);
   }catch(e){
-    clearInterval(pgTimer);
-    const pgw=document.getElementById('home-prog-wrap');if(pgw)pgw.remove();
+    const pgw=grid.querySelector('.progress-wrap');if(pgw)pgw.remove();
     DBG.err('HOME',e.message);
-    grid.innerHTML=`<div class="err-box"><div class="err-title">⚠ FETCH FAILED</div><div class="err-msg">${esc(e.message)}</div><div class="err-hint">Open debug panel for diagnosis.</div><button class="btn-retry" onclick="loadHome()">↻ Retry</button></div>`;
+    grid.innerHTML=`<div class="err-box"><div class="err-title">⚠ FETCH FAILED</div><div class="err-msg">${esc(e.message)}</div><div class="err-hint">RSS proxy may be temporarily unavailable. Try refreshing.</div><button class="btn-retry" onclick="loadHome()">↻ Retry</button></div>`;
   }
 }
 
@@ -1634,8 +1591,15 @@ async function loadCatGeneric(id){
 async function cardClick(id,hex){
   const a=artStore[id];if(!a)return;
   openModalShell(id,hex);
-  const desc=await fetchDesc(a);
   const mDesc=document.getElementById('mDesc');
+  if(a._rss){
+    if(mDesc){
+      if(a._snippet){mDesc.className='m-desc';mDesc.textContent=a._snippet;}
+      else{mDesc.className='m-desc';mDesc.style.cssText='color:var(--text-muted);font-style:italic';mDesc.textContent='Click "Open Full Article" to read this story.';}
+    }
+    return;
+  }
+  const desc=await fetchDesc(a);
   if(mDesc){
     if(desc){mDesc.className='m-desc';mDesc.textContent=desc;}
     else{mDesc.className='m-desc';mDesc.style.cssText='color:var(--text-muted);font-style:italic';mDesc.textContent='Full summary not available from GDELT. Click "Open Full Article" to read the source.';}
@@ -1648,7 +1612,7 @@ async function cardClick(id,hex){
 function openModalShell(id,hex){
   const a=artStore[id];if(!a)return;
   const c=CATS.find(x=>x.hex===hex)||CATS[0];
-  const t=getTone(a);const d=parseGdeltDate(a.seendate);
+  const t=getTone(a);
   _currentModalUrl=a.url||'';
 
   document.getElementById('mTag').textContent=c.name.toUpperCase();
@@ -1659,11 +1623,20 @@ function openModalShell(id,hex){
   if(a.url_mobile){mob.href=a.url_mobile;mob.style.display='inline-flex';}
   else mob.style.display='none';
 
-  document.getElementById('mMeta').innerHTML=`
-    <span class="m-mi">${flag(a.sourcecountry)} ${esc(a.sourcecountry||'Unknown')}</span>
-    <span class="m-mi">◎ ${esc((a.domain||'').replace(/^www\./,''))}</span>
-    <span class="m-mi">◷ ${ago(d)}</span>
-    <span class="m-mi">⌂ ${esc(a.language||'English')}</span>`;
+  if(a._rss){
+    const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
+    document.getElementById('mMeta').innerHTML=`
+      <span class="m-mi">◎ ${esc((a.domain||a._src||'').replace(/^www\./,''))}</span>
+      <span class="m-mi">◷ ${ts}</span>
+      <span class="m-mi">📡 RSS</span>`;
+  }else{
+    const d=parseGdeltDate(a.seendate);
+    document.getElementById('mMeta').innerHTML=`
+      <span class="m-mi">${flag(a.sourcecountry)} ${esc(a.sourcecountry||'Unknown')}</span>
+      <span class="m-mi">◎ ${esc((a.domain||'').replace(/^www\./,''))}</span>
+      <span class="m-mi">◷ ${ago(d)}</span>
+      <span class="m-mi">⌂ ${esc(a.language||'English')}</span>`;
+  }
 
   const mDesc=document.getElementById('mDesc');
   mDesc.className='m-desc loading';mDesc.textContent='Fetching article context…';mDesc.style.cssText='';
@@ -1690,7 +1663,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
   const keys=['1','2','3','4','5','6','7','8','9','0'];
-  const tabIds=['home','geopolitics','conflicts','markets','finance','indiaeco','ai','tech','politics','disasters'];
+  const tabIds=['home','world','markets','economy','techai','india','crisis'];
   const idx=keys.indexOf(e.key);
   if(idx>=0&&tabIds[idx]){switchTab(tabIds[idx]);return;}
   if(e.key==='r'||e.key==='R')manualRefresh();
@@ -2431,17 +2404,135 @@ async function loadReliefWeb(containerId){
 }
 
 /* ════════════════════════════════════════
-   LOAD CATEGORY — DISPATCHER
-   Routes to specialised loaders or generic GDELT loader
+   RSS INFRASTRUCTURE
+   CORS proxy: rss2json.com (10k req/month free)
+   Cache: same 15-min localStorage TTL as GDELT
 ════════════════════════════════════════ */
-async function loadCat(id){
-  if(id==='disasters') return loadDisastersPanel(id);
-  if(id==='conflicts')  return loadConflictsPanel(id);
-  if(id==='markets')    return loadMarketsPanel();
-  return loadCatGeneric(id);
+const RSS_J='https://api.rss2json.com/v1/api.json?rss_url=';
+
+function stripHtml(s){
+  return(s||'').replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&nbsp;/g,' ').trim();
+}
+function parseRssDate(s){
+  if(!s)return new Date(0);const d=new Date(s);return isNaN(d.getTime())?new Date(0):d;
 }
 
-async function loadDisastersPanel(id){
+async function fetchRSS(feedUrl){
+  const key=LS_PFX+'rss'+btoa(encodeURIComponent(feedUrl)).slice(0,28);
+  try{
+    const raw=localStorage.getItem(key);
+    if(raw){const{data,ts}=JSON.parse(raw);if(Date.now()-ts<CACHE_TTL){DBG.ok('RSS',`CACHE HIT · ${new URL(feedUrl).hostname}`);return{items:data,cached:true};}}
+  }catch{}
+  DBG.stats.fetch++;
+  DBG.info('RSS',`Fetching ${new URL(feedUrl).hostname}…`);
+  const r=await fetch(RSS_J+encodeURIComponent(feedUrl),{signal:AbortSignal.timeout(15000)});
+  if(!r.ok)throw new Error(`rss2json HTTP ${r.status}`);
+  const j=await r.json();
+  if(j.status!=='ok')throw new Error(`rss2json: ${j.message||j.status}`);
+  const items=(j.items||[]).slice(0,25);
+  try{localStorage.setItem(key,JSON.stringify({data:items,ts:Date.now()}));}catch{}
+  DBG.ok('RSS',`✓ ${items.length} items · ${new URL(feedUrl).hostname}`);
+  return{items,cached:false};
+}
+
+function normalizeRssItem(item,sourceName){
+  const title=stripHtml(item.title||'');
+  const desc=stripHtml(item.description||item.content||'');
+  const url=item.link||item.url||'';
+  let domain=sourceName;
+  try{domain=new URL(url).hostname.replace(/^www\./,'');}catch{}
+  return{
+    title,domain,url,
+    pub:parseRssDate(item.pubDate||item.published),
+    _snippet:desc.slice(0,220)+(desc.length>220?'…':''),
+    _src:sourceName,_rss:true,tone:null,_unverified:false
+  };
+}
+
+async function fetchRssFeeds(feeds){
+  const results=await Promise.allSettled(feeds.map(f=>fetchRSS(f.url).then(r=>({f,r}))));
+  const items=[];
+  for(const res of results){
+    if(res.status==='fulfilled'){
+      const{f,r}=res.value;
+      for(const item of r.items)items.push(normalizeRssItem(item,f.name));
+    }else{DBG.err('RSS',`Feed failed: ${res.reason?.message||'unknown'}`);}
+  }
+  items.sort((a,b)=>b.pub-a.pub);
+  DBG.stats.art+=items.length;DBG._st();
+  return items;
+}
+
+/* ── RSS Card HTML ── */
+function rssHeroCardHTML(a,hex){
+  const id=storeArt(a);
+  const t=getTone(a);
+  const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
+  return`<div class="hero-card ${t.cls}" onclick="cardClick('${id}','${hex}')">
+    <div class="hero-top">
+      <div class="hero-top-left">
+        <span class="badge-top">${esc(a._src||'RSS')}</span>
+        <span class="c-tone ${t.cls}">${t.lbl}</span>
+      </div>
+      <span class="c-time">${ts}</span>
+    </div>
+    <div class="hero-title">${esc(a.title)}</div>
+    <div class="hero-desc" id="hdesc-${id}">${esc(a._snippet||'')}</div>
+  </div>`;
+}
+
+function rssCardHTML(a,hex){
+  const id=storeArt(a);
+  const t=getTone(a);
+  const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
+  return`<div class="card ${t.cls}" onclick="cardClick('${id}','${hex}')">
+    <div class="card-top">
+      <div class="card-top-left">
+        <span class="c-src">${esc(a._src||a.domain||'RSS')}</span>
+        <span class="c-tone ${t.cls}">${t.lbl}</span>
+      </div>
+      <span class="c-time">${ts}</span>
+    </div>
+    <div class="c-title">${esc(a.title)}</div>
+  </div>`;
+}
+
+/* ── Generic RSS tab loader ── */
+async function loadRssTab(id){
+  const panel=document.getElementById('panel-'+id);
+  const c=cat(id);
+  panel.innerHTML=`
+    <div class="cat-head">
+      <div class="cat-head-row">
+        <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex}"></div><div class="cat-name">${c.name}</div></div>
+        <div class="cat-meta" id="cc-${id}"></div>
+      </div>
+    </div>
+    <div id="hero-${id}"></div>
+    <div class="art-grid" id="g-${id}">${skels(4)}</div>`;
+  try{
+    const items=await fetchRssFeeds(c._rss);
+    const meta=document.getElementById('cc-'+id);
+    if(meta)meta.innerHTML=`<span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE · ${items.length} stories</span>`;
+    const heroEl=document.getElementById('hero-'+id);
+    const gridEl=document.getElementById('g-'+id);
+    if(items.length){
+      heroEl.innerHTML=rssHeroCardHTML(items[0],c.hex);
+      gridEl.innerHTML=items.slice(1,13).map(a=>rssCardHTML(a,c.hex)).join('');
+    }else{
+      heroEl.innerHTML='';
+      gridEl.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories available right now.</div><div class="empty-hint">RSS feeds may be temporarily unavailable.</div></div>`;
+    }
+  }catch(e){
+    DBG.err('RSS',`loadRssTab(${id}): ${e.message}`);
+    const gridEl=document.getElementById('g-'+id);
+    if(gridEl)renderErr(gridEl,e.message,`loadCat('${id}')`);
+  }
+}
+
+/* ── World Conflicts: GDELT (armed conflict + geopolitics) + ReliefWeb ── */
+async function loadWorldConflicts(){
+  const id='world';
   const panel=document.getElementById('panel-'+id);
   const c=cat(id);
   panel.innerHTML=`
@@ -2452,47 +2543,7 @@ async function loadDisastersPanel(id){
       </div>
       <div id="tonebar-${id}"></div>
     </div>
-    <div class="section-head"><span>// USGS EARTHQUAKE MONITOR · GLOBAL · REAL-TIME</span><span class="section-badge">M2.5+ events</span></div>
-    <div id="usgs-container-${id}">Loading USGS…</div>
-    <div style="height:24px"></div>
-    <div class="section-head"><span>// GDELT NEWS · NATURAL DISASTERS</span><span class="section-badge" id="cc-${id}-gdelt"></span></div>
-    <div id="hero-${id}"></div>
-    <div class="art-grid" id="g-${id}">${skels(4)}</div>`;
-  // Load USGS and GDELT in parallel
-  await Promise.all([
-    loadUSGS('usgs-container-'+id),
-    (async()=>{
-      const stop=showProgress('g-'+id);
-      try{
-        const {arts,status,ageMs,elapsed}=await fetchWithFallback(c.q,c.ts,c.max||15);
-        stop();
-        document.getElementById('cc-'+id+'-gdelt').textContent=`${arts.length} stories`;
-        document.getElementById('cc-'+id).innerHTML=`${cacheBadgeHTML(status,ageMs,elapsed)}`;
-        if(arts.length) document.getElementById('tonebar-'+id).innerHTML=toneBarHTML(arts);
-        if(arts.length){
-          const heroEl=document.getElementById('hero-'+id);
-          heroEl.innerHTML=heroCardHTML(arts[0],c.hex);
-          const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
-          if(hid) lazyHeroDesc(hid);
-          if(arts.length>1) document.getElementById('g-'+id).innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
-          else document.getElementById('g-'+id).innerHTML='';
-        }
-      }catch(e){stop();renderErr(document.getElementById('g-'+id),e.message,`loadCat('${id}')`);}
-    })()
-  ]);
-}
-
-async function loadConflictsPanel(id){
-  const panel=document.getElementById('panel-'+id);
-  const c=cat(id);
-  panel.innerHTML=`
-    <div class="cat-head">
-      <div class="cat-head-row">
-        <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex}"></div><div class="cat-name">${c.name}</div></div>
-        <div class="cat-meta" id="cc-${id}"></div>
-      </div>
-    </div>
-    <div class="section-head"><span>// GDELT · ARMED CONFLICT NEWS</span><span class="section-badge" id="cc-${id}-gdelt"></span></div>
+    <div class="section-head"><span>// GDELT · ARMED CONFLICTS & DIPLOMACY</span><span class="section-badge" id="cc-${id}-gdelt"></span></div>
     <div id="hero-${id}"></div>
     <div class="art-grid" id="g-${id}">${skels(4)}</div>
     <div style="height:28px"></div>
@@ -2503,21 +2554,88 @@ async function loadConflictsPanel(id){
     (async()=>{
       const stop=showProgress('g-'+id);
       try{
-        const {arts,status,ageMs,elapsed}=await fetchWithFallback(c.q,c.ts,c.max||15);
+        const{arts,status,ageMs,elapsed}=await fetchWithFallback(c.q,c.ts,c.max||20);
         stop();
         document.getElementById('cc-'+id+'-gdelt').textContent=`${arts.length} stories`;
-        document.getElementById('cc-'+id).innerHTML=`${cacheBadgeHTML(status,ageMs,elapsed)}`;
+        document.getElementById('cc-'+id).innerHTML=cacheBadgeHTML(status,ageMs,elapsed);
+        if(arts.length)document.getElementById('tonebar-'+id).innerHTML=toneBarHTML(arts);
         if(arts.length){
           const heroEl=document.getElementById('hero-'+id);
           heroEl.innerHTML=heroCardHTML(arts[0],c.hex);
           const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
-          if(hid) lazyHeroDesc(hid);
-          if(arts.length>1) document.getElementById('g-'+id).innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
-          else document.getElementById('g-'+id).innerHTML='';
+          if(hid)lazyHeroDesc(hid);
+          document.getElementById('g-'+id).innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
         }
       }catch(e){stop();renderErr(document.getElementById('g-'+id),e.message,`loadCat('${id}')`);}
     })()
   ]);
+}
+
+/* ── Crisis Watch: USGS + GDELT natural disasters + RSS health ── */
+async function loadCrisisWatch(){
+  const id='crisis';
+  const panel=document.getElementById('panel-'+id);
+  const c=cat(id);
+  panel.innerHTML=`
+    <div class="cat-head">
+      <div class="cat-head-row">
+        <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex}"></div><div class="cat-name">${c.name}</div></div>
+        <div class="cat-meta" id="cc-${id}"></div>
+      </div>
+      <div id="tonebar-${id}"></div>
+    </div>
+    <div class="section-head"><span>// USGS · EARTHQUAKE MONITOR · GLOBAL REAL-TIME</span><span class="section-badge">M2.5+ events</span></div>
+    <div id="usgs-container-${id}">Loading USGS…</div>
+    <div style="height:24px"></div>
+    <div class="section-head"><span>// GDELT · NATURAL DISASTERS</span><span class="section-badge" id="cc-${id}-gdelt"></span></div>
+    <div id="hero-${id}"></div>
+    <div class="art-grid" id="g-${id}">${skels(4)}</div>
+    <div style="height:28px"></div>
+    <div class="section-head"><span>// RSS · HEALTH & OUTBREAKS</span><span class="section-badge">WHO · STAT News</span></div>
+    <div class="art-grid" id="rss-${id}">${skels(2)}</div>`;
+  await Promise.all([
+    loadUSGS('usgs-container-'+id),
+    (async()=>{
+      const stop=showProgress('g-'+id);
+      try{
+        const{arts,status,ageMs,elapsed}=await fetchWithFallback(c.q,c.ts,c.max||10);
+        stop();
+        document.getElementById('cc-'+id+'-gdelt').textContent=`${arts.length} stories`;
+        document.getElementById('cc-'+id).innerHTML=cacheBadgeHTML(status,ageMs,elapsed);
+        if(arts.length)document.getElementById('tonebar-'+id).innerHTML=toneBarHTML(arts);
+        if(arts.length){
+          const heroEl=document.getElementById('hero-'+id);
+          heroEl.innerHTML=heroCardHTML(arts[0],c.hex);
+          const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
+          if(hid)lazyHeroDesc(hid);
+          document.getElementById('g-'+id).innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
+        }
+      }catch(e){stop();renderErr(document.getElementById('g-'+id),e.message,`loadCat('${id}')`);}
+    })(),
+    (async()=>{
+      try{
+        const items=await fetchRssFeeds(c._rss);
+        const el=document.getElementById('rss-'+id);
+        if(el)el.innerHTML=items.slice(0,6).map(a=>rssCardHTML(a,c.hex)).join('')||
+          `<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No health news available.</div></div>`;
+      }catch(e){
+        DBG.err('RSS',`Crisis health feeds: ${e.message}`);
+        const el=document.getElementById('rss-'+id);if(el)el.innerHTML='';
+      }
+    })()
+  ]);
+}
+
+/* ════════════════════════════════════════
+   LOAD CATEGORY — DISPATCHER
+════════════════════════════════════════ */
+async function loadCat(id){
+  if(id==='world')   return loadWorldConflicts();
+  if(id==='crisis')  return loadCrisisWatch();
+  if(id==='markets') return loadMarketsPanel();
+  const c=cat(id);
+  if(c&&c._rss)      return loadRssTab(id);
+  return loadCatGeneric(id);
 }
 
 /* ════════════════════════════════════════
@@ -2861,9 +2979,9 @@ async function n50Init(){
   }
 }
 buildNav();
-DBG.info('INIT','MERIDIAN v2.7 · Adaptive Markets · Nifty 50 Performance subtab');
-DBG.info('SOURCES','GDELT · Google Sheets (GOOGLEFINANCE + N50 Performance) · USGS · ReliefWeb');
-DBG.info('KEYS','Keyboard: 1-9 = tabs · R = refresh · Esc = modal · ⎘ copy log');
+DBG.info('INIT','MERIDIAN v3.0 · RSS + GDELT · 7 tabs · Nifty 50 Performance subtab');
+DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · ReliefWeb');
+DBG.info('KEYS','Keyboard: 1-7 = tabs · R = refresh · Esc = modal · ⎘ copy log');
 loadHome();
 </script>
 </body>
