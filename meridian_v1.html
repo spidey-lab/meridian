@@ -630,6 +630,20 @@
 .tv-signals-item{height:400px}
     }
     .mkt-subtab-nav::-webkit-scrollbar{display:none}
+
+    /* ── SEARCH TAB ── */
+    .search-bar-wrap{display:flex;gap:8px;margin:10px 0 12px}
+    .search-input{flex:1;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;padding:10px 14px;outline:none;transition:border-color var(--t)}
+    .search-input:focus{border-color:#7A8FA6}
+    .search-input::placeholder{color:var(--text-muted)}
+    .search-btn{background:none;border:0.5px solid #7A8FA6;border-radius:var(--r-sm);color:#7A8FA6;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;padding:10px 20px;cursor:pointer;transition:var(--t);white-space:nowrap}
+    .search-btn:hover{background:#7A8FA6;color:var(--bg)}
+    .search-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+    .search-preset-chip{background:none;border:0.5px solid var(--border);border-radius:12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;padding:4px 10px;cursor:pointer;transition:var(--t);letter-spacing:.3px}
+    .search-preset-chip:hover{border-color:#7A8FA6;color:#7A8FA6}
+    .search-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:14px;color:var(--text-muted)}
+    .se-ico{font-size:36px;opacity:.15}
+    .se-msg{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.5px;text-align:center}
     @media(max-width:520px){
       .logo{font-size:15px;letter-spacing:3px}
       .m-title{font-size:17px}.home-title{font-size:24px}
@@ -645,7 +659,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · RSS + GDELT · v3.0</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · RSS + GOOGLE NEWS · v3.0</div>
   </div>
   <div class="hdr-right">
     <span id="lastUpdated">—</span>
@@ -690,11 +704,12 @@
   <div id="panel-techai"  class="panel"></div>
   <div id="panel-india"   class="panel"></div>
   <div id="panel-crisis"  class="panel"></div>
+  <div id="panel-search"  class="panel"></div>
 
 
   <div class="attr">
     <strong>RSS Feeds</strong> via rss2json.com &nbsp;·&nbsp;
-    <strong>GDELT Project</strong> — gdeltproject.org &nbsp;·&nbsp;
+    <strong>Google News</strong> RSS &nbsp;·&nbsp;
     <strong>Google Finance</strong> via Sheets &nbsp;·&nbsp;
     USGS · ReliefWeb &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
@@ -986,10 +1001,11 @@ const CATS = [
       {url:'https://feeds.bbci.co.uk/news/world/rss.xml',      name:'BBC World'}
     ]},
 
-  // World Conflicts — GDELT: armed conflict + geopolitics + ReliefWeb
+  // World Conflicts — Google News RSS: armed conflict + geopolitics
   { id:'world',   name:'World Conflicts', ico:'◎', hex:'#E05252',
-    q:'(theme:ARMEDCONFLICT OR theme:KILL OR "India Pakistan" OR "Middle East" OR "Russia Ukraine" OR "China Taiwan" OR "South China Sea" OR ceasefire OR sanctions OR NATO) sourcelang:english',
-    ts:'24H', max:20 },
+    _rss:[
+      {url:'https://news.google.com/rss/search?q=war+OR+conflict+OR+ceasefire+OR+Ukraine+OR+Gaza+OR+NATO+OR+%22India+Pakistan%22+OR+sanctions+OR+%22South+China+Sea%22+OR+%22Middle+East%22&hl=en&gl=US&ceid=US:en', name:'Google News'}
+    ]},
 
   // Markets — Google Sheets / GOOGLEFINANCE (unchanged)
   { id:'markets', name:'Markets',         ico:'◫', hex:'#3DB88A', q:null },
@@ -1010,12 +1026,11 @@ const CATS = [
       {url:'https://feeds.arstechnica.com/arstechnica/index',               name:'Ars Technica'}
     ]},
 
-  // India — RSS: national + politics + Tamil Nadu (NDTV + The Hindu)
+  // India — Google News India edition: broad multi-publisher coverage
   { id:'india',   name:'India',           ico:'◀', hex:'#F0833A',
     _rss:[
-      {url:'https://feeds.feedburner.com/ndtvnews-india-news',           name:'NDTV India'},
-      {url:'https://www.thehindu.com/news/national/feeder/default.rss',  name:'The Hindu'},
-      {url:'https://www.thehindu.com/news/cities/chennai/feeder/default.rss', name:'The Hindu Chennai'}
+      {url:'https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en',                                                                                                          name:'Google News India'},
+      {url:'https://news.google.com/rss/search?q=India+politics+OR+Modi+OR+BJP+OR+election+OR+Supreme+Court+OR+Parliament&hl=en-IN&gl=IN&ceid=IN:en', name:'India Politics'}
     ]},
 
   // Crisis Watch — USGS earthquakes + GDELT natural disasters + RSS health
@@ -1026,6 +1041,9 @@ const CATS = [
       {url:'https://www.who.int/rss-feeds/news-english.xml', name:'WHO'},
       {url:'https://www.statnews.com/feed/',                  name:'STAT News'}
     ]},
+
+  // Search — Google News RSS search with user query
+  { id:'search',  name:'Search',          ico:'◐', hex:'#7A8FA6', _search:true },
 ];
 
 /* ════════════════════════════════════════
@@ -1690,7 +1708,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
   const keys=['1','2','3','4','5','6','7','8','9','0'];
-  const tabIds=['home','world','markets','economy','techai','india','crisis'];
+  const tabIds=['home','world','markets','economy','techai','india','crisis','search'];
   const idx=keys.indexOf(e.key);
   if(idx>=0&&tabIds[idx]){switchTab(tabIds[idx]);return;}
   if(e.key==='r'||e.key==='R')manualRefresh();
@@ -2551,17 +2569,31 @@ async function fetchRSS(feedUrl){
 }
 
 function normalizeRssItem(item,sourceName){
-  const title=stripHtml(item.title||'');
-  const desc=stripHtml(item.description||item.content||'');
+  const rawTitle=stripHtml(item.title||'');
   const url=item.link||item.url||'';
-  let domain=sourceName;
-  try{domain=new URL(url).hostname.replace(/^www\./,'');}catch{}
-  return{
-    title,domain,url,
-    pub:parseRssDate(item.pubDate||item.published),
-    _snippet:desc.slice(0,220)+(desc.length>220?'…':''),
-    _src:sourceName,_rss:true,tone:null,_unverified:false
-  };
+  const isGN=url.includes('news.google.com');
+  // Google News title format: "Headline - Publisher Name"
+  let title=rawTitle, publisherName=sourceName;
+  if(isGN&&rawTitle.includes(' - ')){
+    const parts=rawTitle.split(' - ');
+    publisherName=parts.pop().trim();
+    title=parts.join(' - ').trim();
+  }
+  let domain=publisherName;
+  if(!isGN){try{domain=new URL(url).hostname.replace(/^www\./,'');}catch{}}
+  // Google News description = "title\xa0\xa0source\n\nrelated headline\xa0\xa0source…"
+  // First line is duplicate of title — skip it; show only the related headlines (cluster context)
+  const rawDesc=stripHtml(item.description||item.content||'').replace(/ /g,' ').trim();
+  let snippet='';
+  if(isGN){
+    const lines=rawDesc.split('\n').map(l=>l.trim()).filter(Boolean).slice(1);
+    const rel=lines.join(' · ');
+    snippet=rel.slice(0,200)+(rel.length>200?'…':'');
+  }else{
+    snippet=rawDesc.slice(0,220)+(rawDesc.length>220?'…':'');
+  }
+  return{title,domain,url,pub:parseRssDate(item.pubDate||item.published),
+    _snippet:snippet,_src:publisherName,_rss:true,tone:null,_unverified:false};
 }
 
 async function fetchRssFeeds(feeds){
@@ -2652,45 +2684,58 @@ async function loadRssTab(id){
   }
 }
 
-/* ── World Conflicts: GDELT (armed conflict + geopolitics) + ReliefWeb ── */
-async function loadWorldConflicts(){
-  const id='world';
-  const panel=document.getElementById('panel-'+id);
-  const c=cat(id);
+/* ── Search Tab: Google News RSS with user query ── */
+async function loadSearchTab(){
+  const panel=document.getElementById('panel-search');if(!panel)return;
   panel.innerHTML=`
     <div class="cat-head">
       <div class="cat-head-row">
-        <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex}"></div><div class="cat-name">${c.name}</div></div>
-        <div class="cat-meta" id="cc-${id}"></div>
+        <div class="cat-title-row"><div class="cat-pip" style="background:#7A8FA6"></div><div class="cat-name">Search</div></div>
+        <div class="cat-meta"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)">Powered by Google News</span></div>
       </div>
-      <div id="tonebar-${id}"></div>
+      <div class="search-bar-wrap">
+        <input type="text" id="search-input" class="search-input" placeholder="Search any topic… e.g. Tamil Nadu, Anthropic, Nifty 50" autocomplete="off">
+        <button class="search-btn" onclick="doNewsSearch()">Search</button>
+      </div>
+      <div class="search-presets">
+        <button class="search-preset-chip" onclick="doNewsSearch('India Pakistan')">India Pakistan</button>
+        <button class="search-preset-chip" onclick="doNewsSearch('OpenAI OR Anthropic')">AI Race</button>
+        <button class="search-preset-chip" onclick="doNewsSearch('Nifty 50 OR Sensex')">Markets</button>
+        <button class="search-preset-chip" onclick="doNewsSearch('Gaza OR Ukraine OR Taiwan')">Conflicts</button>
+        <button class="search-preset-chip" onclick="doNewsSearch('RBI OR inflation OR GDP')">Economy</button>
+        <button class="search-preset-chip" onclick="doNewsSearch('Tamil Nadu OR Chennai')">Tamil Nadu</button>
+      </div>
     </div>
-    <div class="section-head"><span>// GDELT · ARMED CONFLICTS & DIPLOMACY</span><span class="section-badge" id="cc-${id}-gdelt"></span></div>
-    <div id="hero-${id}"></div>
-    <div class="art-grid" id="g-${id}">${skels(4)}</div>
-    <div style="height:28px"></div>
-    <div class="section-head"><span>// RELIEFWEB · UN HUMANITARIAN · ONGOING CRISES</span><span class="section-badge">Live data</span></div>
-    <div id="rw-container-${id}">Loading ReliefWeb…</div>`;
-  await Promise.all([
-    loadReliefWeb('rw-container-'+id),
-    (async()=>{
-      const stop=showProgress('g-'+id);
-      try{
-        const{arts,status,ageMs,elapsed}=await fetchWithFallback(c.q,c.ts,c.max||20);
-        stop();
-        document.getElementById('cc-'+id+'-gdelt').textContent=`${arts.length} stories`;
-        document.getElementById('cc-'+id).innerHTML=cacheBadgeHTML(status,ageMs,elapsed);
-        if(arts.length)document.getElementById('tonebar-'+id).innerHTML=toneBarHTML(arts);
-        if(arts.length){
-          const heroEl=document.getElementById('hero-'+id);
-          heroEl.innerHTML=heroCardHTML(arts[0],c.hex);
-          const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
-          if(hid)lazyHeroDesc(hid);
-          document.getElementById('g-'+id).innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
-        }
-      }catch(e){stop();renderErr(document.getElementById('g-'+id),e.message,`loadCat('${id}')`);}
-    })()
-  ]);
+    <div id="search-results">
+      <div class="search-empty">
+        <div class="se-ico">◐</div>
+        <div class="se-msg">Enter a topic to search live Google News</div>
+      </div>
+    </div>`;
+  const inp=document.getElementById('search-input');
+  if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')doNewsSearch();});
+}
+
+async function doNewsSearch(preset){
+  const inp=document.getElementById('search-input');
+  const query=preset||(inp&&inp.value.trim())||'';
+  if(!query)return;
+  if(preset&&inp)inp.value=preset;
+  const res=document.getElementById('search-results');if(!res)return;
+  const hex='#7A8FA6';
+  res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Searching "${query}"…</div></div>`;
+  try{
+    const feedUrl=`https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-IN&gl=IN&ceid=IN:en`;
+    const{items}=await fetchRSS(feedUrl);
+    const norm=items.map(i=>normalizeRssItem(i,'Google News'));
+    if(!norm.length){res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No results for "${query}".</div></div>`;return;}
+    let html=rssHeroCardHTML(norm[0],hex);
+    if(norm.length>1)html+=`<div class="art-grid">${norm.slice(1).map(a=>rssCardHTML(a,hex)).join('')}</div>`;
+    res.innerHTML=html;
+  }catch(e){
+    DBG.err('SEARCH',e.message);
+    res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Search failed: ${e.message}</div></div>`;
+  }
 }
 
 /* ── Crisis Watch: USGS + GDELT natural disasters + RSS health ── */
@@ -2752,7 +2797,7 @@ async function loadCrisisWatch(){
    LOAD CATEGORY — DISPATCHER
 ════════════════════════════════════════ */
 async function loadCat(id){
-  if(id==='world')   return loadWorldConflicts();
+  if(id==='search')  return loadSearchTab();
   if(id==='crisis')  return loadCrisisWatch();
   if(id==='markets') return loadMarketsPanel();
   const c=cat(id);
