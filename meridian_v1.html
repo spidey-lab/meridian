@@ -1026,11 +1026,11 @@ const CATS = [
       {url:'https://feeds.arstechnica.com/arstechnica/index',               name:'Ars Technica'}
     ]},
 
-  // India — Google News India edition: broad multi-publisher coverage
+  // India — targeted domestic queries to avoid global conflict bleed-in
   { id:'india',   name:'India',           ico:'◀', hex:'#F0833A',
     _rss:[
-      {url:'https://news.google.com/rss?hl=en-IN&gl=IN&ceid=IN:en',                                                                                                          name:'Google News India'},
-      {url:'https://news.google.com/rss/search?q=India+politics+OR+Modi+OR+BJP+OR+election+OR+Supreme+Court+OR+Parliament&hl=en-IN&gl=IN&ceid=IN:en', name:'India Politics'}
+      {url:'https://news.google.com/rss/search?q=India+government+OR+Lok+Sabha+OR+Rajya+Sabha+OR+Supreme+Court+India+OR+RBI+OR+Indian+economy+OR+SEBI+OR+income+tax+India&hl=en-IN&gl=IN&ceid=IN:en', name:'India National'},
+      {url:'https://news.google.com/rss/search?q=%22Tamil+Nadu%22+OR+Chennai+OR+%22MK+Stalin%22+OR+DMK+OR+Kollywood+OR+Karnataka+OR+Maharashtra+OR+Bengaluru+OR+Mumbai&hl=en-IN&gl=IN&ceid=IN:en',    name:'States & Regions'}
     ]},
 
   // Crisis Watch — USGS earthquakes + GDELT natural disasters + RSS health
@@ -1358,7 +1358,7 @@ function switchTab(id){
   b.classList.add('active');b.style.borderBottomColor=c.hex;b.style.color='var(--text)';
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
-  if(!loaded.has(id)&&id!=='search'){
+  if(!loaded.has(id)){
     loaded.add(id);
     loadCat(id);
   }
