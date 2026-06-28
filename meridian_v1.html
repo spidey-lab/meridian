@@ -2727,7 +2727,7 @@ async function doNewsSearch(preset){
   try{
     const feedUrl=`https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-IN&gl=IN&ceid=IN:en`;
     const{items}=await fetchRSS(feedUrl);
-    const norm=items.map(i=>normalizeRssItem(i,'Google News'));
+    const norm=items.map(i=>normalizeRssItem(i,'Google News')).sort((a,b)=>b.pub-a.pub);
     if(!norm.length){res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No results for "${query}".</div></div>`;return;}
     let html=rssHeroCardHTML(norm[0],hex);
     if(norm.length>1)html+=`<div class="art-grid">${norm.slice(1).map(a=>rssCardHTML(a,hex)).join('')}</div>`;
