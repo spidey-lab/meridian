@@ -634,13 +634,20 @@
     .seis-badge.major{background:rgba(224,82,82,.15);color:#E05252;border:0.5px solid rgba(224,82,82,.3)}
 
     /* ── CRISIS COMMAND: DUAL PANEL LAYOUT ── */
-    .crisis-dual-panel{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;align-items:start}
-    .crisis-panel-box{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden}
-    .crisis-panel-head{padding:10px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.015)}
+    .crisis-dual-panel{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;align-items:stretch}
+    .crisis-panel-box{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;height:340px}
+    .crisis-panel-head{padding:10px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.015);flex-shrink:0}
     .cpanel-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.8px;color:var(--text-sub);text-transform:uppercase}
     .cpanel-badge{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);background:var(--bg-surf);padding:2px 7px;border-radius:3px;border:0.5px solid var(--border)}
-    .crisis-panel-pills{padding:8px 14px 6px;border-bottom:0.5px solid var(--border)}
+    .crisis-panel-pills{padding:8px 14px 6px;border-bottom:0.5px solid var(--border);flex-shrink:0}
     .crisis-panel-pills .filter-pills{margin-bottom:0}
+    .cpanel-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:var(--border) transparent;min-height:0}
+    .cpanel-body::-webkit-scrollbar{width:3px}
+    .cpanel-body::-webkit-scrollbar-track{background:transparent}
+    .cpanel-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+    .cpanel-quiet{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px 16px;border-top:0.5px solid var(--border);min-height:40px}
+    .cpanel-quiet-ico{font-size:22px;opacity:.08}
+    .cpanel-quiet-lbl{font-family:'JetBrains Mono',monospace;font-size:7.5px;font-weight:700;letter-spacing:.9px;color:var(--text-muted);opacity:.3;text-align:center;line-height:1.7;text-transform:uppercase}
 
     /* ── CRISIS COMMAND: GDACS ALERT LIST (PREMIUM FORMAT) ── */
     .alert-list{display:flex;flex-direction:column}
@@ -765,6 +772,7 @@
       .tv-cal-wrap,.tv-heatmap-wrap{height:500px}
       .tv-signals-item{height:400px}
       .crisis-dual-panel{grid-template-columns:1fr}
+      .crisis-panel-box{height:auto;max-height:340px}
     }
     .mkt-subtab-nav::-webkit-scrollbar{display:none}
 
@@ -3423,14 +3431,26 @@ async function loadCrisisWatch(){
         <div class="crisis-panel-pills">
           <div id="gdacs-filter-pills" class="filter-pills"></div>
         </div>
-        <div id="gdacs-alerts">${skels(2)}</div>
+        <div class="cpanel-body">
+          <div id="gdacs-alerts">${skels(2)}</div>
+          <div class="cpanel-quiet">
+            <div class="cpanel-quiet-ico">◎</div>
+            <div class="cpanel-quiet-lbl">GDACS Global Monitoring<br>Continuous Feed Active</div>
+          </div>
+        </div>
       </div>
       <div class="crisis-panel-box">
         <div class="crisis-panel-head">
           <span class="cpanel-title">◎ USGS · Seismic Activity</span>
           <span class="cpanel-badge">M5.0+ · past 24h</span>
         </div>
-        <div id="usgs-container-crisis"></div>
+        <div class="cpanel-body">
+          <div id="usgs-container-crisis"></div>
+          <div class="cpanel-quiet">
+            <div class="cpanel-quiet-ico">◬</div>
+            <div class="cpanel-quiet-lbl">USGS M2.5+ Global<br>Past 24 Hour Window</div>
+          </div>
+        </div>
       </div>
     </div>
 
