@@ -4115,9 +4115,9 @@ async function _loadClimateNews(){
     const feeds=await Promise.allSettled(CLIMATE_NEWS_RSS.map(f=>fetchRSS(f.url).then(r=>(r.items||[]).map(it=>normalizeRssItem(it,f.name)))));
     let arts=[];
     feeds.forEach(r=>{if(r.status==='fulfilled')arts=arts.concat(r.value);});
-    arts=deduplicate(arts).sort((a,b)=>(b.pub||0)-(a.pub||0)).slice(0,12);
+    arts=dedup(arts).sort((a,b)=>(b.pub||0)-(a.pub||0)).slice(0,12);
     if(!arts.length){el.innerHTML='<div style="padding:16px;text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--text-muted)">No climate news available.</div>';return;}
-    const frag=arts.map(a=>artCardHTML(a,'climate')).join('');
+    const frag=arts.map(a=>rssCardHTML(a,'#38BDF8')).join('');
     el.innerHTML=`<div class="art-grid" style="padding:14px">${frag}</div>`;
   }catch(e){
     if(el)el.innerHTML=`<div style="padding:16px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)">Climate news unavailable</div>`;
