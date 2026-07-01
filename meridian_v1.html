@@ -861,11 +861,10 @@
     .clim-h-bar-fill{position:absolute;bottom:0;width:100%;background:linear-gradient(180deg,var(--clr-climate),rgba(56,189,248,.3));border-radius:2px;transition:height 1s ease}
     .clim-h-rain-pct{font-family:'JetBrains Mono',monospace;font-size:7px;color:rgba(96,165,250,.7)}
 
-    /* Top hero row: hero fixed width left, hourly fills right */
-    .clim-top-row{display:flex;gap:14px;margin-bottom:14px;align-items:stretch}
-    .clim-top-row .clim-hero{flex:0 0 320px}
-    .clim-hourly-panel{flex:1 1 0;min-width:0;display:flex;flex-direction:column}
-    .clim-hourly-panel .clim-hourly-scroll{flex:1;flex-wrap:wrap;align-content:flex-start}
+    /* Top hero row: equal halves */
+    .clim-top-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;align-items:stretch}
+    .clim-hourly-panel{display:flex;flex-direction:column}
+    .clim-hourly-panel .clim-hourly-scroll{flex:1;align-content:flex-start}
 
     /* Two-col grid */
     .clim-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
@@ -948,8 +947,7 @@
     .clim-news-section{margin-top:4px}
 
     @media(max-width:860px){
-      .clim-top-row{flex-direction:column}
-      .clim-top-row .clim-hero{flex:none}
+      .clim-top-row{grid-template-columns:1fr}
       .clim-two-col,.clim-three-col{grid-template-columns:1fr}
       .clim-extra-metrics{grid-template-columns:repeat(2,1fr)}
       .clim-temp{font-size:58px}
