@@ -3225,7 +3225,7 @@ async function doNewsSearch(preset){
     const topBullets=norm.slice(0,3).map(a=>`<div class="topic-brief-bullet">
       <span class="tbul-dot">—</span>
       <span class="tbul-txt">${esc(a.title)}</span>
-      <span class="tbul-src">${esc(a.source||'')}</span>
+      <span class="tbul-src">${esc(a._src||a.domain||'')}</span>
     </div>`).join('');
     let html=`<div class="topic-brief-card">
       <div class="topic-brief-head">
@@ -3323,7 +3323,8 @@ function gdacsAlertListRowHTML(a){
   const lvl=a.alertlevel.toLowerCase();
   const icon=GDACS_TYPE_ICON[a.eventtype]||'◎';
   const name=a.eventname?`${a.eventname} · ${a.country}`:a.country||'Unknown';
-  const timeStr=a.pub&&!isNaN(a.pub.getTime())?ago(a.pub):'';
+  const pub=a.pub instanceof Date?a.pub:(a.pub?new Date(a.pub):null);
+  const timeStr=pub&&!isNaN(pub.getTime())?ago(pub):'';
   return`<a class="alert-list-row" href="${esc(a.link)}" target="_blank" rel="noopener">
     <span class="alr-dot ${lvl}"></span>
     <span class="alr-level ${lvl}">${a.alertlevel.toUpperCase()}</span>
