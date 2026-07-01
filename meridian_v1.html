@@ -43,7 +43,7 @@
       /* Per-section accent colours */
       --clr-home:#C8A86B;--clr-world:#D94F4F;--clr-markets:#1D9E75;
       --clr-economy:#2B7FFF;--clr-techai:#8B5CE8;--clr-india:#E07A3A;
-      --clr-crisis:#C83850;--clr-search:#5A8FA6;
+      --clr-crisis:#C83850;--clr-tamilnadu:#14B8A6;--clr-search:#5A8FA6;
     }
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -103,8 +103,9 @@
     #panel-economy .panel-banner{background:linear-gradient(135deg,rgba(43,127,255,.1) 0%,transparent 65%);border-bottom:1px solid rgba(43,127,255,.12)}
     #panel-techai  .panel-banner{background:linear-gradient(135deg,rgba(139,92,232,.1) 0%,transparent 65%);border-bottom:1px solid rgba(139,92,232,.12)}
     #panel-india   .panel-banner{background:linear-gradient(135deg,rgba(224,122,58,.1) 0%,transparent 65%);border-bottom:1px solid rgba(224,122,58,.12)}
-    #panel-crisis  .panel-banner{background:linear-gradient(135deg,rgba(200,56,80,.1) 0%,transparent 65%);border-bottom:1px solid rgba(200,56,80,.12)}
-    #panel-search  .panel-banner{background:linear-gradient(135deg,rgba(90,143,166,.1) 0%,transparent 65%);border-bottom:1px solid rgba(90,143,166,.12)}
+    #panel-crisis     .panel-banner{background:linear-gradient(135deg,rgba(200,56,80,.1) 0%,transparent 65%);border-bottom:1px solid rgba(200,56,80,.12)}
+    #panel-tamilnadu  .panel-banner{background:linear-gradient(135deg,rgba(20,184,166,.1) 0%,transparent 65%);border-bottom:1px solid rgba(20,184,166,.12)}
+    #panel-search     .panel-banner{background:linear-gradient(135deg,rgba(90,143,166,.1) 0%,transparent 65%);border-bottom:1px solid rgba(90,143,166,.12)}
 
     /* ── HOME HEAD ── */
     .home-head{margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px}
@@ -567,40 +568,126 @@
       .n50-col-price{display:none}
       .n50-td-ticker{display:none}
     }
-    .quake-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:24px}
-    .quake-card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px}
-    .quake-card.minor{border-left-color:#D4A843}
-    .quake-card.moderate{border-left-color:#F0833A}
-    .quake-card.strong{border-left-color:var(--neg)}
-    .quake-card.major{border-left-color:#9B1B1B;background:rgba(155,27,27,.05)}
-    .quake-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-    .quake-mag{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;line-height:1}
-    .quake-mag.minor{color:#D4A843}
-    .quake-mag.moderate{color:#F0833A}
-    .quake-mag.strong{color:var(--neg)}
-    .quake-mag.major{color:#E05252}
-    .quake-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
-    .quake-place{font-size:13px;font-weight:500;color:var(--text);line-height:1.35}
-    .quake-meta{display:flex;gap:10px;flex-wrap:wrap}
-    .quake-pill{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px;background:var(--bg-surf);color:var(--text-sub);border:0.5px solid var(--border)}
-    .quake-link{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);text-decoration:none;margin-top:2px}
-    .quake-link:hover{color:var(--text)}
     .section-head{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-sub);margin-bottom:14px;padding:10px 0 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-weight:500}
     .section-badge{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);background:var(--bg-surf);border:1px solid var(--border);padding:2px 8px;border-radius:20px}
 
-    /* ── RELIEFWEB CRISIS CARDS ── */
-    .crisis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;margin-bottom:24px}
-    .crisis-card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--neg);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:background var(--t)}
-    .crisis-card:hover{background:var(--bg-card-h)}
-    .crisis-card.ongoing{border-left-color:var(--neg)}
-    .crisis-card.past{border-left-color:var(--text-muted)}
-    .crisis-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
-    .crisis-status{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:3px;font-weight:500}
-    .crisis-status.ongoing{background:rgba(226,75,74,.12);color:var(--tone-neg-txt);border:0.5px solid rgba(226,75,74,.25)}
-    .crisis-status.past{background:var(--bg-surf);color:var(--text-muted);border:0.5px solid var(--border)}
-    .crisis-country{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
-    .crisis-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;line-height:1.35;color:var(--text);margin-bottom:6px}
-    .crisis-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
+    /* ── CRISIS COMMAND: ALERT TICKER ── */
+    .alert-ticker-outer{background:rgba(200,56,80,.06);border-top:1px solid rgba(200,56,80,.15);border-bottom:1px solid rgba(200,56,80,.15);padding:7px 0;overflow:hidden;white-space:nowrap;margin-bottom:18px;position:relative}
+    .alert-ticker-outer::before,.alert-ticker-outer::after{content:'';position:absolute;top:0;bottom:0;width:40px;z-index:2;pointer-events:none}
+    .alert-ticker-outer::before{left:0;background:linear-gradient(to right,var(--bg-surf),transparent)}
+    .alert-ticker-outer::after{right:0;background:linear-gradient(to left,var(--bg-surf),transparent)}
+    .alert-ticker-inner{display:inline-block;animation:tickerScroll 50s linear infinite}
+    .alert-ticker-inner:hover{animation-play-state:paused}
+    @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .ticker-item{display:inline-flex;align-items:center;gap:6px;margin-right:32px;font-family:'JetBrains Mono',monospace;font-size:10px}
+    .ticker-level{font-size:8px;font-weight:700;letter-spacing:.8px;padding:2px 6px;border-radius:3px}
+    .ticker-level.red{background:rgba(226,75,74,.18);color:#E24B4A;border:0.5px solid rgba(226,75,74,.35)}
+    .ticker-level.orange{background:rgba(245,158,11,.15);color:#F59E0B;border:0.5px solid rgba(245,158,11,.3)}
+    .ticker-sep{color:var(--text-muted);opacity:.4}
+
+    /* ── CRISIS COMMAND: STAT COUNTERS ── */
+    .crisis-summary-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+    .crisis-summary-item{flex:1;min-width:90px;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+    .csi-label{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase}
+    .csi-count{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;line-height:1;color:var(--text)}
+    .csi-sub{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-sub)}
+
+    /* ── CRISIS COMMAND: FILTER PILLS ── */
+    .filter-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+    .filter-pill{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.5px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-sub);cursor:pointer;transition:all .15s ease;white-space:nowrap}
+    .filter-pill:hover{border-color:var(--clr-crisis);color:var(--clr-crisis)}
+    .filter-pill.active{border-color:var(--clr-crisis);color:var(--clr-crisis);background:rgba(200,56,80,.08)}
+
+    /* ── CRISIS COMMAND: GDACS ALERT CARDS ── */
+    .gdacs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:8px}
+    .alert-card{background:var(--bg-card);border:0.5px solid var(--border);border-left:3px solid var(--border);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:8px;transition:background var(--t);cursor:pointer;text-decoration:none;display:block}
+    .alert-card:hover{background:var(--bg-card-h)}
+    .alert-card.red{border-left-color:#E24B4A;background:rgba(226,75,74,.04);animation:alertPulse 2.5s ease-in-out infinite}
+    .alert-card.orange{border-left-color:#F59E0B;background:rgba(245,158,11,.03)}
+    @keyframes alertPulse{0%,100%{box-shadow:0 0 0 0 rgba(226,75,74,0)}50%{box-shadow:0 0 0 3px rgba(226,75,74,.12)}}
+    .alert-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .alert-level-badge{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.8px;padding:2px 7px;border-radius:3px}
+    .alert-level-badge.red{background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3)}
+    .alert-level-badge.orange{background:rgba(245,158,11,.12);color:#F59E0B;border:0.5px solid rgba(245,158,11,.25)}
+    .alert-type-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub);display:flex;align-items:center;gap:4px}
+    .alert-country{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);line-height:1.2}
+    .alert-severity{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--text)}
+    .alert-pop{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub)}
+    .alert-footer{display:flex;align-items:center;justify-content:space-between;margin-top:2px}
+    .alert-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
+    .alert-link{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--clr-crisis);text-decoration:none;opacity:.7}
+    .alert-link:hover{opacity:1}
+
+    /* ── CRISIS COMMAND: SEISMIC BAR LIST ── */
+    .seismic-list{display:flex;flex-direction:column;gap:2px;margin-bottom:4px}
+    .seismic-row{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:4px;transition:background var(--t);cursor:pointer;text-decoration:none}
+    .seismic-row:hover{background:var(--bg-card-h)}
+    .seis-mag{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;width:38px;flex-shrink:0;letter-spacing:-.5px}
+    .seis-mag.minor{color:#D4A843}.seis-mag.moderate{color:#F0833A}.seis-mag.strong{color:var(--neg)}.seis-mag.major{color:#E05252}
+    .seis-bar-track{width:80px;flex-shrink:0;height:3px;background:var(--bg-surf);border-radius:2px;overflow:hidden}
+    .seis-bar{height:100%;border-radius:2px;transition:width .6s cubic-bezier(.22,1,.36,1)}
+    .seis-place{flex:1;font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .seis-meta{display:flex;align-items:center;gap:6px;flex-shrink:0}
+    .seis-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);width:26px;text-align:right}
+    .seis-badge{font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.5px}
+    .seis-badge.strong{background:rgba(226,75,74,.1);color:var(--neg);border:0.5px solid rgba(226,75,74,.25)}
+    .seis-badge.major{background:rgba(224,82,82,.15);color:#E05252;border:0.5px solid rgba(224,82,82,.3)}
+
+    /* ── CRISIS COMMAND: DUAL PANEL LAYOUT ── */
+    .crisis-dual-panel{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px;align-items:start}
+    .crisis-panel-box{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden}
+    .crisis-panel-head{padding:10px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.015)}
+    .cpanel-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.8px;color:var(--text-sub);text-transform:uppercase}
+    .cpanel-badge{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);background:var(--bg-surf);padding:2px 7px;border-radius:3px;border:0.5px solid var(--border)}
+    .crisis-panel-pills{padding:8px 14px 6px;border-bottom:0.5px solid var(--border)}
+    .crisis-panel-pills .filter-pills{margin-bottom:0}
+
+    /* ── CRISIS COMMAND: GDACS ALERT LIST (PREMIUM FORMAT) ── */
+    .alert-list{display:flex;flex-direction:column}
+    .alert-list-row{display:flex;align-items:center;gap:9px;padding:9px 14px;border-bottom:0.5px solid var(--border);transition:background var(--t);cursor:pointer;text-decoration:none}
+    .alert-list-row:last-child{border-bottom:none}
+    .alert-list-row:hover{background:var(--bg-card-h)}
+    .alr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .alr-dot.red{background:#E24B4A;box-shadow:0 0 5px rgba(226,75,74,.6);animation:dotPulse 2s ease-in-out infinite}
+    .alr-dot.orange{background:#F59E0B;box-shadow:0 0 4px rgba(245,158,11,.5)}
+    @keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.35}}
+    .alr-level{font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;letter-spacing:.6px;padding:1px 5px;border-radius:2px;flex-shrink:0}
+    .alr-level.red{background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3)}
+    .alr-level.orange{background:rgba(245,158,11,.12);color:#F59E0B;border:0.5px solid rgba(245,158,11,.25)}
+    .alr-type{font-size:12px;flex-shrink:0;opacity:.65}
+    .alr-name{flex:1;font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+    .alr-detail{flex-shrink:0;text-align:right;line-height:1.4;min-width:52px}
+    .alr-sev{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--text)}
+    .alr-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted)}
+
+    /* ── CRISIS COMMAND: SEISMIC v2 (HUMAN-READABLE SCALE) ── */
+    .seismic-list-v2{display:flex;flex-direction:column}
+    .seismic-row-v2{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:0.5px solid var(--border);transition:background var(--t);cursor:pointer;text-decoration:none}
+    .seismic-row-v2:last-child{border-bottom:none}
+    .seismic-row-v2:hover{background:var(--bg-card-h)}
+    .seis-scale-block{display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;width:72px;gap:0}
+    .seis-scale-lbl{font-family:'JetBrains Mono',monospace;font-size:6.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;line-height:1.2}
+    .seis-scale-lbl.moderate{color:#F0833A}.seis-scale-lbl.strong{color:var(--neg)}.seis-scale-lbl.major{color:#E05252}.seis-scale-lbl.great{color:#C83850}
+    .seis-num-v2{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;line-height:1.1;letter-spacing:-1px}
+    .seis-num-v2.moderate{color:#F0833A}.seis-num-v2.strong{color:var(--neg)}.seis-num-v2.major{color:#E05252}.seis-num-v2.great{color:#C83850}
+    .seis-v2-bar{width:3px;border-radius:2px;flex-shrink:0;align-self:center}
+    .seis-v2-info{flex:1;overflow:hidden}
+    .seis-v2-place{font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+    .seis-v2-meta{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);margin-top:2px}
+
+    /* ── SEARCH: TOPIC BRIEF CARD ── */
+    .topic-brief-card{background:var(--bg-card);border:0.5px solid var(--border);border-top:2px solid #5A8FA6;border-radius:var(--r);padding:16px 18px;margin-bottom:20px;box-shadow:var(--shadow-card)}
+    .topic-brief-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:11px}
+    .topic-brief-ico{font-size:20px;opacity:.35;flex-shrink:0;margin-top:3px}
+    .topic-brief-body{flex:1;min-width:0}
+    .topic-brief-query{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text);line-height:1.15}
+    .topic-brief-count{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:3px}
+    .topic-brief-badge{font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;letter-spacing:.8px;padding:2px 7px;border-radius:3px;background:rgba(90,143,166,.12);color:#5A8FA6;border:0.5px solid rgba(90,143,166,.25);flex-shrink:0;align-self:flex-start;margin-top:4px;white-space:nowrap}
+    .topic-brief-bullets{display:flex;flex-direction:column;gap:0}
+    .topic-brief-bullet{display:flex;align-items:baseline;gap:9px;padding:6px 0;border-top:0.5px solid var(--border)}
+    .tbul-dot{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);flex-shrink:0;user-select:none;opacity:.5}
+    .tbul-txt{flex:1;font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--text);line-height:1.3}
+    .tbul-src{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);flex-shrink:0;white-space:nowrap}
 
     /* ── DEBUG ── */
     #dbg-btn{position:fixed;bottom:16px;right:16px;z-index:800;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);cursor:pointer;display:flex;align-items:center;gap:6px;transition:border-color .2s}
@@ -651,7 +738,7 @@
     .dbg-cooldown{display:none;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:3px;background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);animation:blink 1s infinite}
 
     /* ── STAGGERED CARD ANIMATION ── */
-    .art-grid .card,.quake-grid .quake-card,.crisis-grid .crisis-card{
+    .art-grid .card,.gdacs-grid .alert-card{
       animation:cardSlideUp .3s cubic-bezier(0.22,1,0.36,1) both
     }
     .art-grid .card:nth-child(1){animation-delay:0ms}
@@ -677,6 +764,7 @@
       .mkt-status-chip{max-width:none}
       .tv-cal-wrap,.tv-heatmap-wrap{height:500px}
       .tv-signals-item{height:400px}
+      .crisis-dual-panel{grid-template-columns:1fr}
     }
     .mkt-subtab-nav::-webkit-scrollbar{display:none}
 
@@ -693,6 +781,91 @@
     .search-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 20px;gap:16px;color:var(--text-muted)}
     .se-ico{font-size:40px;opacity:.12}
     .se-msg{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.8px;text-align:center}
+    /* ── RECENCY PULSE BADGE ── */
+    .c-recency{display:inline-flex;align-items:center;gap:3px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:.5px;flex-shrink:0}
+    .c-recency.live{background:rgba(226,75,74,.1);color:var(--neg);border:1px solid rgba(226,75,74,.25)}
+    .c-recency.live .rc-dot{width:4px;height:4px;border-radius:50%;background:var(--neg);animation:pulse 1.4s infinite;box-shadow:0 0 5px var(--neg);flex-shrink:0}
+    .c-recency.fresh{background:rgba(200,168,107,.1);color:var(--gold);border:1px solid rgba(200,168,107,.25)}
+
+    /* ── SECTION DIGEST LINE ── */
+    .section-digest{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub);display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:5px}
+    .section-digest-dot{width:5px;height:5px;border-radius:50%;background:var(--pos);animation:pulse 2s infinite;box-shadow:0 0 6px var(--pos);flex-shrink:0}
+
+    /* ── SMOOTH TAB CROSSFADE ── */
+    @keyframes fadeOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-6px)}}
+    .panel.fading-out{display:block!important;animation:fadeOut .15s ease forwards;pointer-events:none}
+
+    /* ── DAILY DIGEST STRIP ── */
+    /* ── TODAY IN BRIEF card ── */
+    .brief-card{background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:22px;box-shadow:var(--shadow-card)}
+    .brief-card-header{padding:10px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .brief-card-title{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--text-sub);text-transform:uppercase}
+    .brief-card-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
+    .brief-row{display:flex;align-items:baseline;gap:10px;padding:9px 16px;cursor:pointer;border-bottom:0.5px solid var(--border);transition:background var(--t)}
+    .brief-row:last-child{border-bottom:none}
+    .brief-row:hover{background:var(--bg-card-h)}
+    .brief-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;align-self:flex-start}
+    .brief-cat{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;flex-shrink:0;width:86px}
+    .brief-headline{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--text);line-height:1.35;flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
+    .brief-age{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+
+    /* ── DENSITY TOGGLE ── */
+    .density-btn{background:none;border:1px solid var(--border);color:var(--text-sub);padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;transition:var(--t);letter-spacing:.3px;cursor:pointer;white-space:nowrap}
+    .density-btn:hover{border-color:var(--gold);color:var(--gold)}
+    /* Compact density */
+    body.density-compact .card{padding:9px 12px}
+    body.density-compact .hero-card{padding:17px 19px}
+    body.density-compact .art-grid{gap:8px}
+    body.density-compact .c-title{font-size:14px}
+    body.density-compact .hero-title{font-size:22px}
+    body.density-compact .hero-desc{font-size:12px}
+    body.density-compact .main{padding:20px 24px 48px}
+    /* Spacious density */
+    body.density-spacious .card{padding:20px 22px}
+    body.density-spacious .hero-card{padding:28px 30px}
+    body.density-spacious .art-grid{gap:18px}
+    body.density-spacious .c-title{font-size:17px;-webkit-line-clamp:4}
+    body.density-spacious .hero-title{font-size:30px}
+    body.density-spacious .hero-desc{font-size:14px}
+    body.density-spacious .main{padding:36px 28px 72px}
+
+    /* ── CURSOR SPOTLIGHT + 3D TILT ── */
+    .card,.hero-card{background-image:none;will-change:transform,background-image}
+    /* JS handles transform, so remove it from CSS hover to avoid conflict */
+    .card:hover{transform:none}
+    .hero-card:hover{transform:none}
+
+    /* ── LOGO MARKET GLOW ── */
+    .logo.mkt-open em{color:var(--pos)!important;text-shadow:0 0 16px rgba(29,158,117,.7),0 0 36px rgba(29,158,117,.3)}
+    .logo.mkt-pre em{color:var(--gold)!important;text-shadow:0 0 16px rgba(200,168,107,.6),0 0 36px rgba(200,168,107,.25);animation:logoGlow 2s ease-in-out infinite}
+    @keyframes logoGlow{0%,100%{opacity:1}50%{opacity:.55}}
+
+    /* ── VELOCITY BADGE ── */
+    .velocity-badge{display:inline-flex;align-items:center;gap:3px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:.5px;background:rgba(139,92,232,.12);color:#8B5CE8;border:1px solid rgba(139,92,232,.3)}
+    .velocity-badge.hot{background:rgba(226,75,74,.1);color:var(--neg);border-color:rgba(226,75,74,.28);animation:pulse 1.5s infinite}
+
+    /* ── CROSS-SECTION TRACKER ── */
+    .cross-section-block{margin-bottom:22px}
+    .cross-tags{display:flex;flex-wrap:wrap;gap:6px}
+    .cross-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow-card);transition:border-color .18s ease}
+    .cross-tag:hover{border-color:var(--text-sub)}
+    .cross-keyword{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--text);letter-spacing:.5px}
+    .cross-cat-pill{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:600;padding:1px 6px;border-radius:20px;border:1px solid currentColor;letter-spacing:.3px;opacity:.85}
+
+    /* ── HOME RADAR CHART ── */
+    .home-analytics-row{display:flex;gap:24px;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap}
+    .radar-block{flex-shrink:0}
+    .cross-block{flex:1;min-width:200px}
+    .analytics-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--text-sub);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .analytics-lbl::after{content:'';flex:1;height:.5px;background:var(--border)}
+
+    /* ── HEATMAP STRIP ── */
+    .heatmap-strip{display:flex;align-items:center;gap:8px;margin-top:8px;overflow:hidden}
+    .heatmap-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.5px;white-space:nowrap;flex-shrink:0}
+
+    /* ── ACTIVITY SPARKLINE ── */
+    .sparkline-wrap{display:inline-flex;align-items:center;gap:6px}
+
     @media(max-width:520px){
       .logo{font-size:16px;letter-spacing:4px}
       .m-title{font-size:19px}.home-title{font-size:26px}
@@ -717,6 +890,7 @@
     <button class="btn-hdr" id="refreshBtn" onclick="manualRefresh()">
       <span class="spin-icon">↻</span> Refresh
     </button>
+    <button class="density-btn" id="densityBtn" onclick="cycleDensity()" title="Card density"></button>
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme"></button>
     <label class="auto-row" title="Auto-refresh every 15 minutes">
       <span class="toggle-wrap">
@@ -747,6 +921,7 @@
         <div class="home-date" id="homeDate"></div>
       </div>
     </div>
+    <div id="home-digest"></div>
     <div id="home-hero"></div>
     <div class="art-grid" id="home-grid"></div>
   </div>
@@ -756,8 +931,9 @@
   <div id="panel-economy" class="panel"></div>
   <div id="panel-techai"  class="panel"></div>
   <div id="panel-india"   class="panel"></div>
-  <div id="panel-crisis"  class="panel"></div>
-  <div id="panel-search"  class="panel"></div>
+  <div id="panel-tamilnadu" class="panel"></div>
+  <div id="panel-crisis"   class="panel"></div>
+  <div id="panel-search"   class="panel"></div>
 
 
   <div class="attr">
@@ -1089,17 +1265,19 @@ const CATS = [
       {url:'https://news.google.com/rss/search?q=%22Tamil+Nadu%22+OR+TVK+OR+DMK+OR+AIADMK+OR+Edappadi+OR+%22Tamil+Nadu+government%22+OR+Kollywood+OR+Karnataka+OR+Maharashtra+OR+Bengaluru+OR+Mumbai&hl=en-IN&gl=IN&ceid=IN:en', name:'States & Regions'}
     ]},
 
-  // Crisis Watch — USGS earthquakes + GDELT natural disasters + RSS health
-  { id:'crisis',  name:'Crisis Watch',    ico:'◬', hex:'#E84C74',
-    q:'theme:NATURAL_DISASTER sourcelang:english',
-    ts:'24H', max:10,
+  // Tamil Nadu — dedicated regional tab
+  { id:'tamilnadu', name:'Tamil Nadu', ico:'◈', hex:'#14B8A6',
     _rss:[
-      {url:'https://www.who.int/rss-feeds/news-english.xml', name:'WHO'},
-      {url:'https://www.statnews.com/feed/',                  name:'STAT News'}
+      {url:'https://news.google.com/rss/search?q=%22Tamil+Nadu%22+OR+Chennai+news+latest&hl=en-IN&gl=IN&ceid=IN:en', name:'TN General'},
+      {url:'https://news.google.com/rss/search?q=DMK+OR+AIADMK+OR+TVK+OR+%22MK+Stalin%22+OR+%22Edappadi+Palanisami%22+OR+%22Stalin%22+Tamil&hl=en-IN&gl=IN&ceid=IN:en', name:'TN Politics'},
+      {url:'https://news.google.com/rss/search?q=%22Tamil+Nadu%22+weather+OR+cyclone+OR+rainfall+OR+Chennai+flood+OR+drought+TN&hl=en-IN&gl=IN&ceid=IN:en', name:'TN Climate'}
     ]},
 
+  // Crisis Watch — USGS earthquakes + RSS disaster/conflict news + ReliefWeb
+  { id:'crisis',  name:'Crisis Watch', ico:'◬', hex:'#E84C74' },
+
   // Search — Google News RSS search with user query
-  { id:'search',  name:'Search',          ico:'◐', hex:'#7A8FA6', _search:true },
+  { id:'search',  name:'Search', ico:'◐', hex:'#7A8FA6', _search:true },
 ];
 
 /* ════════════════════════════════════════
@@ -1397,6 +1575,235 @@ function showProgress(containerId){
 }
 
 /* ════════════════════════════════════════
+   VELOCITY BADGE
+════════════════════════════════════════ */
+function velocityBadge(items){
+  const now=Date.now();
+  const in30=items.filter(a=>a.pub&&(now-a.pub.getTime())<1800000).length;
+  const in60=items.filter(a=>a.pub&&(now-a.pub.getTime())<3600000).length;
+  if(in30>=3){
+    const hot=in30>=6;
+    return`<span class="velocity-badge${hot?' hot':''}">↑${in30} in 30m</span>`;
+  }
+  if(in60>=5){
+    return`<span class="velocity-badge">↑${in60} in 1h</span>`;
+  }
+  return'';
+}
+
+/* ════════════════════════════════════════
+   ACTIVITY SPARKLINE
+════════════════════════════════════════ */
+function activitySparkline(items,hex){
+  const W=64,H=18,BUCKETS=12,MS=7200000;
+  const now=Date.now();
+  const counts=Array(BUCKETS).fill(0);
+  items.forEach(a=>{
+    if(!a.pub)return;
+    const age=now-a.pub.getTime();
+    if(age<0||age>=BUCKETS*MS)return;
+    counts[BUCKETS-1-Math.floor(age/MS)]++;
+  });
+  const max=Math.max(...counts,1);
+  const bw=(W-1)/(BUCKETS-1);
+  const pts=counts.map((v,i)=>{
+    const x=i*bw;
+    const y=H-1-(v/max)*(H-3);
+    return`${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  return`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible;vertical-align:middle">
+    <polyline points="${pts}" fill="none" stroke="${hex}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".8"/>
+    <circle cx="${(BUCKETS-1)*bw}" cy="${H-1-(counts[BUCKETS-1]/max)*(H-3)}" r="2" fill="${hex}"/>
+  </svg>`;
+}
+
+/* ════════════════════════════════════════
+   HOURLY HEATMAP STRIP
+════════════════════════════════════════ */
+function hourlyHeatmap(items,hex){
+  const BLOCKS=24;
+  const now=Date.now();
+  const counts=Array(BLOCKS).fill(0);
+  items.forEach(a=>{
+    if(!a.pub)return;
+    const age=now-a.pub.getTime();
+    if(age<0||age>=BLOCKS*3600000)return;
+    counts[BLOCKS-1-Math.floor(age/3600000)]++;
+  });
+  const max=Math.max(...counts,1);
+  const blocks=counts.map((v,i)=>{
+    const op=v===0?0.07:0.12+0.88*(v/max);
+    const title=`${BLOCKS-1-i}h ago: ${v} stories`;
+    return`<div title="${title}" style="width:9px;height:16px;border-radius:2px;background:${hex};opacity:${op.toFixed(2)};flex-shrink:0"></div>`;
+  }).join('');
+  return`<div class="heatmap-strip"><span class="heatmap-lbl">24H</span>${blocks}<span class="heatmap-lbl" style="margin-left:2px">NOW</span></div>`;
+}
+
+/* ════════════════════════════════════════
+   SECTION DATA STORE (for analytics)
+════════════════════════════════════════ */
+const _sectionTopics={};
+const _sectionStoryCount={};
+const _STOP=new Set(['the','a','an','in','on','at','to','of','for','and','or','but','is','are','was','were','has','have','had','be','by','with','from','that','this','it','its','as','up','out','new','over','than','after','before','will','says','said','amid','may','can','more','also','into','been','he','she','they','we','his','her','their','our','not','no','over','about','would','could','should','us']);
+function extractKeywords(title){
+  return title.toLowerCase()
+    .replace(/[^a-z0-9\s]/g,'')
+    .split(/\s+/)
+    .filter(w=>w.length>3&&!_STOP.has(w));
+}
+function storeSectionData(id,items){
+  _sectionStoryCount[id]=items.length;
+  const freq={};
+  items.slice(0,40).forEach(a=>{
+    extractKeywords(a.title||'').forEach(w=>{freq[w]=(freq[w]||0)+1;});
+  });
+  _sectionTopics[id]=Object.entries(freq)
+    .filter(([,n])=>n>1)
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,20)
+    .map(([w])=>w);
+  drawHomeAnalytics();
+}
+
+/* ════════════════════════════════════════
+   CROSS-SECTION STORY TRACKER
+════════════════════════════════════════ */
+function refreshCrossSection(){
+  const sids=Object.keys(_sectionTopics).filter(id=>id!=='home');
+  if(sids.length<2)return'';
+  const overlap={};
+  for(let i=0;i<sids.length;i++){
+    for(let j=i+1;j<sids.length;j++){
+      const a=_sectionTopics[sids[i]]||[];
+      const b=_sectionTopics[sids[j]]||[];
+      const shared=a.filter(w=>b.includes(w));
+      shared.forEach(w=>{
+        if(!overlap[w])overlap[w]=new Set();
+        overlap[w].add(sids[i]);
+        overlap[w].add(sids[j]);
+      });
+    }
+  }
+  const results=Object.entries(overlap)
+    .filter(([,s])=>s.size>=2)
+    .sort((a,b)=>b[1].size-a[1].size)
+    .slice(0,8);
+  if(!results.length)return'<div class="text-muted" style="font-size:12px;font-family:\'JetBrains Mono\',monospace;color:var(--text-sub)">No cross-section overlaps yet</div>';
+  const pills=results.map(([w,sset])=>{
+    const cats=[...sset].map(sid=>{const c=cat(sid);return`<span class="cross-cat-pill" style="color:${c.hex};border-color:${c.hex}">${c.name}</span>`;}).join('');
+    return`<div class="cross-tag"><span class="cross-keyword">${w.toUpperCase()}</span>${cats}</div>`;
+  }).join('');
+  return`<div class="cross-tags">${pills}</div>`;
+}
+
+/* ════════════════════════════════════════
+   HOME RADAR CHART
+════════════════════════════════════════ */
+function drawRadarSVG(){
+  const sids=CATS.filter(c=>c.id!=='home'&&c.id!=='search'&&_sectionStoryCount[c.id]!==undefined);
+  if(sids.length<3)return'';
+  const N=sids.length;
+  const SIZE=130,CX=SIZE/2,CY=SIZE/2,R=50;
+  const max=Math.max(...sids.map(c=>_sectionStoryCount[c.id]||0),1);
+  const angleStep=(2*Math.PI)/N;
+  const pts=sids.map((c,i)=>{
+    const angle=-Math.PI/2+i*angleStep;
+    const r=R*(((_sectionStoryCount[c.id]||0))/max);
+    return{x:CX+r*Math.cos(angle),y:CY+r*Math.sin(angle),c};
+  });
+  const gridLines=[.25,.5,.75,1].map(f=>{
+    const gpts=sids.map((_,i)=>{
+      const angle=-Math.PI/2+i*angleStep;
+      return`${(CX+R*f*Math.cos(angle)).toFixed(1)},${(CY+R*f*Math.sin(angle)).toFixed(1)}`;
+    }).join(' ');
+    return`<polygon points="${gpts}" fill="none" stroke="var(--border)" stroke-width=".5"/>`;
+  }).join('');
+  const axes=sids.map((_,i)=>{
+    const angle=-Math.PI/2+i*angleStep;
+    return`<line x1="${CX}" y1="${CY}" x2="${(CX+R*Math.cos(angle)).toFixed(1)}" y2="${(CY+R*Math.sin(angle)).toFixed(1)}" stroke="var(--border)" stroke-width=".5"/>`;
+  }).join('');
+  const polyPts=pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const fillColor=sids[0]?sids[0].hex:'#C8A86B';
+  const labels=sids.map((c,i)=>{
+    const angle=-Math.PI/2+i*angleStep;
+    const lx=CX+(R+14)*Math.cos(angle);
+    const ly=CY+(R+14)*Math.sin(angle);
+    const anchor=Math.cos(angle)>0.1?'start':Math.cos(angle)<-0.1?'end':'middle';
+    return`<text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}" text-anchor="${anchor}" font-family="'JetBrains Mono',monospace" font-size="7" fill="${c.hex}" letter-spacing=".5">${c.name.slice(0,6).toUpperCase()}</text>`;
+  }).join('');
+  return`<svg width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}">
+    ${gridLines}${axes}
+    <polygon points="${polyPts}" fill="${fillColor}" fill-opacity=".12" stroke="${fillColor}" stroke-width="1.5" stroke-linejoin="round"/>
+    ${pts.map(p=>`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="2.5" fill="${p.c.hex}"/>`).join('')}
+    ${labels}
+  </svg>`;
+}
+
+function drawHomeAnalytics(){
+  const el=document.getElementById('home-analytics');if(!el)return;
+  const radar=drawRadarSVG();
+  const cross=refreshCrossSection();
+  if(!radar&&!cross){el.innerHTML='';return;}
+  el.innerHTML=`<div class="home-analytics-row">
+    ${radar?`<div class="radar-block">
+      <div class="analytics-lbl">Coverage Radar</div>
+      ${radar}
+    </div>`:''}
+    ${cross?`<div class="cross-block">
+      <div class="analytics-lbl">Cross-Section Threads</div>
+      ${cross}
+    </div>`:''}
+  </div>`;
+}
+
+/* ════════════════════════════════════════
+   LOGO MARKET GLOW (IST)
+════════════════════════════════════════ */
+function updateLogoGlow(){
+  const now=new Date();
+  const ist=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Kolkata'}));
+  const h=ist.getHours(),m=ist.getMinutes(),day=ist.getDay();
+  const logo=document.querySelector('.logo');if(!logo)return;
+  logo.classList.remove('mkt-open','mkt-pre');
+  if(day===0||day===6)return;
+  const mins=h*60+m;
+  if(mins>=555&&mins<915) logo.classList.add('mkt-open');
+  else if((mins>=540&&mins<555)||(mins>=915&&mins<960)) logo.classList.add('mkt-pre');
+}
+
+/* ════════════════════════════════════════
+   CURSOR SPOTLIGHT + 3D TILT
+════════════════════════════════════════ */
+function getCardHex(card){
+  const panel=card.closest('.panel');
+  if(!panel)return'#C8A86B';
+  const id=panel.id.replace('panel-','');
+  const c=cat(id);
+  return c?c.hex:'#C8A86B';
+}
+(function initCardEffects(){
+  document.addEventListener('mousemove',e=>{
+    const card=e.target.closest('.card,.hero-card');
+    if(!card){return;}
+    const rect=card.getBoundingClientRect();
+    const x=e.clientX-rect.left;
+    const y=e.clientY-rect.top;
+    const cx=rect.width/2,cy=rect.height/2;
+    const dx=(x-cx)/cx,dy=(y-cy)/cy;
+    const hex=getCardHex(card);
+    card.style.backgroundImage=`radial-gradient(circle at ${x}px ${y}px, ${hex}18 0%, transparent 65%)`;
+    card.style.transform=`perspective(800px) rotateX(${(-dy*4).toFixed(2)}deg) rotateY(${(dx*4).toFixed(2)}deg)`;
+  });
+  document.addEventListener('mouseleave',e=>{
+    const card=e.target.closest&&e.target.closest('.card,.hero-card');
+    if(card){
+      card.style.backgroundImage='';
+      card.style.transform='';
+    }
+  },true);
+})();
+
+/* ════════════════════════════════════════
    NAV
 ════════════════════════════════════════ */
 function buildNav(){
@@ -1416,15 +1823,23 @@ function switchTab(id){
   });
   const b=document.getElementById('tab-'+id),c=cat(id);
   b.classList.add('active');
-  b.style.background=c.hex+'1A';       // 10% alpha fill
-  b.style.borderColor=c.hex+'50';      // 31% alpha border
+  b.style.background=c.hex+'1A';
+  b.style.borderColor=c.hex+'50';
   b.style.color=c.hex;
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  if(!loaded.has(id)){
-    loaded.add(id);
-    loadCat(id);
+  const outPanel=document.querySelector('.panel.active');
+  const inPanel=document.getElementById('panel-'+id);
+  if(outPanel&&outPanel!==inPanel){
+    outPanel.classList.add('fading-out');
+    setTimeout(()=>{
+      outPanel.classList.remove('active','fading-out');
+      inPanel.classList.add('active');
+    },130);
+  }else{
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    inPanel.classList.add('active');
   }
+  if(history.replaceState) history.replaceState(null,'','#'+id);
+  if(!loaded.has(id)){loaded.add(id);loadCat(id);}
 }
 
 /* ════════════════════════════════════════
@@ -1458,6 +1873,7 @@ function heroCardHTML(a,hex){
         <span class="c-src" style="max-width:180px">${esc(src)}</span>
         <span class="c-tone ${t.cls}">${t.lbl}${sc}</span>
         ${a._unverified?unvBadge:`<span class="badge-top">TOP STORY</span>`}
+        ${recencyBadge(d)}
       </div>
       <span class="c-time">${ago(d)}</span>
     </div>
@@ -1481,6 +1897,7 @@ function cardHTML(a,hex){
         <span class="c-src">${esc(src)}</span>
         <span class="c-tone ${t.cls}">${t.lbl}${sc}</span>
         ${unvBadge}
+        ${recencyBadge(d)}
       </div>
       <span class="c-time">${ago(d)}</span>
     </div>
@@ -1525,7 +1942,9 @@ async function loadHome(){
       if(seen.has(k))return false;seen.add(k);return true;
     }).slice(0,9);
     const pgw=grid.querySelector('.progress-wrap');if(pgw)pgw.remove();
-    if(sub)sub.innerHTML=`<span>// TOP STORIES · RSS · LIVE</span><span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE · ${top.length} stories</span>`;
+    const newestHome=top.length>0?top[0].pub:null;
+    const homeUpStr=newestHome&&newestHome.getTime()>0?ago(newestHome):'just now';
+    if(sub)sub.innerHTML=`<span>// TOP STORIES · RSS · LIVE</span><span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE · ${top.length} stories</span><span class="section-digest"><span class="section-digest-dot"></span>latest ${homeUpStr}</span>`;
     if(top.length){
       hero.innerHTML=rssHeroCardHTML(top[0],'#D4A843');
       grid.innerHTML=top.slice(1).map(a=>rssCardHTML(a,'#D4A843')).join('');
@@ -1533,7 +1952,9 @@ async function loadHome(){
       hero.innerHTML='';
       grid.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories right now.</div><div class="empty-hint">RSS feeds may be temporarily unavailable.</div></div>`;
     }
+    storeSectionData('home',top);
     updateStamp();
+    setTimeout(loadDigestBrief,300);
     DBG.ok('HOME',`${top.length} RSS stories`);
   }catch(e){
     const pgw=grid.querySelector('.progress-wrap');if(pgw)pgw.remove();
@@ -1774,7 +2195,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
   const keys=['1','2','3','4','5','6','7','8','9','0'];
-  const tabIds=['home','world','markets','economy','techai','india','crisis','search'];
+  const tabIds=['home','world','markets','economy','techai','india','tamilnadu','crisis','search'];
   const idx=keys.indexOf(e.key);
   if(idx>=0&&tabIds[idx]){switchTab(tabIds[idx]);return;}
   if(e.key==='r'||e.key==='R')manualRefresh();
@@ -2495,14 +2916,21 @@ function toggleGSAuto(){
 ════════════════════════════════════════ */
 const USGS_URL='https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson';
 
+function magScale(m){
+  if(m>=8)return{label:'GREAT',cls:'great'};
+  if(m>=7)return{label:'MAJOR',cls:'major'};
+  if(m>=6)return{label:'STRONG',cls:'strong'};
+  return{label:'MODERATE',cls:'moderate'};
+}
+
 async function loadUSGS(containerId){
   const el=document.getElementById(containerId);if(!el)return;
-  el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Fetching USGS earthquake data…</div></div>';
+  el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Fetching seismic data…</div></div>';
   DBG.info('USGS','Fetching M2.5+ earthquakes (past 24h)…');
   try{
     const t0=Date.now();
     const r=await fetch(USGS_URL,{signal:AbortSignal.timeout(15000)});
-    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
     const d=await r.json();
     const elapsed=((Date.now()-t0)/1000).toFixed(1);
     const quakes=(Array.isArray(d.features)?d.features:[])
@@ -2512,93 +2940,37 @@ async function loadUSGS(containerId){
         time:new Date(f.properties.time),
         depth:f.geometry?.coordinates?.[2],
         url:f.properties.url,
-        felt:f.properties.felt,
-        alert:f.properties.alert,
       }))
-      .filter(q=>q.mag>=2.5)
-      .sort((a,b)=>b.mag-a.mag);
-    DBG.ok('USGS',`✓ ${quakes.length} earthquakes · M2.5+ · ${elapsed}s`);
+      .filter(q=>q.mag>=5.0)
+      .sort((a,b)=>b.mag-a.mag)
+      .slice(0,10);
+    DBG.ok('USGS',`✓ M5.0+ filtered · ${quakes.length} shown · ${elapsed}s`);
     if(!quakes.length){
-      el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No significant earthquakes in the past 24 hours.</div></div>';
+      el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No M5.0+ earthquakes in the past 24 hours.</div></div>';
       return;
     }
-    function magCls(m){return m>=7?'major':m>=6?'strong':m>=5?'moderate':'minor';}
-    el.innerHTML=`<div class="quake-grid">${quakes.slice(0,12).map(q=>{
-      const cls=magCls(q.mag);
-      const depthStr=q.depth!=null?`${q.depth.toFixed(1)} km depth`:'';
-      const feltStr=q.felt?`${q.felt} felt`:'';
-      const alertBadge=(cls==='major'||cls==='strong')?`<span class="quake-pill" style="background:rgba(226,75,74,.12);color:var(--neg);border-color:rgba(226,75,74,.25)">${cls.toUpperCase()}</span>`:'' ;
-      return`<div class="quake-card ${cls}">
-        <div class="quake-top">
-          <div class="quake-mag ${cls}">M${q.mag.toFixed(1)}</div>
-          <div class="quake-time">${ago(q.time)}</div>
+    const maxMag=quakes[0].mag;
+    function magColor(cls){return cls==='great'?'#C83850':cls==='major'?'#E05252':cls==='strong'?'#E24B4A':'#F0833A';}
+    el.innerHTML=`<div class="seismic-list-v2">${quakes.map(q=>{
+      const sc=magScale(q.mag);
+      const barH=Math.max(8,Math.round(((q.mag-5.0)/Math.max(maxMag-5.0,0.1))*28));
+      const href=q.url?`href="${esc(q.url)}" target="_blank" rel="noopener"`:'';
+      const depthStr=q.depth!=null?` · ${q.depth.toFixed(0)}km depth`:'';
+      return`<a class="seismic-row-v2" ${href}>
+        <div class="seis-scale-block">
+          <span class="seis-scale-lbl ${sc.cls}">${sc.label}</span>
+          <span class="seis-num-v2 ${sc.cls}">${q.mag.toFixed(1)}</span>
         </div>
-        <div class="quake-place">${esc(q.place||'Unknown location')}</div>
-        <div class="quake-meta">
-          ${depthStr?`<span class="quake-pill">${depthStr}</span>`:''}
-          ${feltStr?`<span class="quake-pill">${feltStr}</span>`:''}
-          ${alertBadge}
+        <div class="seis-v2-bar" style="height:${barH}px;background:${magColor(sc.cls)};opacity:.75"></div>
+        <div class="seis-v2-info">
+          <div class="seis-v2-place">${esc(q.place||'Unknown location')}</div>
+          <div class="seis-v2-meta">${ago(q.time)}${depthStr}</div>
         </div>
-        ${q.url?`<a class="quake-link" href="${esc(q.url)}" target="_blank" rel="noopener">View USGS details →</a>`:''}
-      </div>`;
+      </a>`;
     }).join('')}</div>`;
   }catch(e){
     DBG.err('USGS',e.message);
-    el.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">⚠</span><div class="ndc-msg">USGS data unavailable · ${esc(e.message)}</div></div>`;
-  }
-}
-
-/* ════════════════════════════════════════
-   RELIEFWEB HUMANITARIAN CRISES
-   UN OCHA · CORS-native · No API key
-════════════════════════════════════════ */
-const RW_URL='https://api.reliefweb.int/v1/disasters?appname=meridian';
-
-async function loadReliefWeb(containerId){
-  const el=document.getElementById(containerId);if(!el)return;
-  el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Fetching ReliefWeb crisis data…</div></div>';
-  DBG.info('RW','Fetching ReliefWeb ongoing crises…');
-  try{
-    const t0=Date.now();
-    const r=await fetch(RW_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        limit:20,
-        sort:['date:desc'],
-        fields:{include:['name','status','country','date']},
-        filter:{field:'status',value:['ongoing']}
-      }),
-      signal:AbortSignal.timeout(15000)
-    });
-    if(!r.ok) throw new Error(`HTTP ${r.status}`);
-    const d=await r.json();
-    const elapsed=((Date.now()-t0)/1000).toFixed(1);
-    const items=Array.isArray(d.data)?d.data:[];
-    DBG.ok('RW',`✓ ${items.length} ongoing crises · ${elapsed}s`);
-    if(!items.length){
-      el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No ongoing crises reported by ReliefWeb.</div></div>';
-      return;
-    }
-    el.innerHTML=`<div class="crisis-grid">${items.map(item=>{
-      const f=item.fields||{};
-      const name=f.name||'Unknown crisis';
-      const status=(f.status||'ongoing').toLowerCase();
-      const countries=Array.isArray(f.country)?f.country.map(c=>c.name).join(', '):(f.country?.name||'—');
-      const dateStr=f.date?.created?new Date(f.date.created).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
-      const rwUrl=`https://reliefweb.int/disaster/${item.id}`;
-      return`<div class="crisis-card ${status}" onclick="window.open('${esc(rwUrl)}','_blank','noopener')">
-        <div class="crisis-top">
-          <span class="crisis-status ${status}">${status.toUpperCase()}</span>
-          <span class="crisis-country">${esc(countries)}</span>
-        </div>
-        <div class="crisis-name">${esc(name)}</div>
-        <div class="crisis-meta">${dateStr}</div>
-      </div>`;
-    }).join('')}</div>`;
-  }catch(e){
-    DBG.err('RW',e.message);
-    el.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">⚠</span><div class="ndc-msg">ReliefWeb data unavailable · ${esc(e.message)}</div></div>`;
+    el.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">⚠</span><div class="ndc-msg">USGS unavailable · ${esc(e.message)}</div></div>`;
   }
 }
 
@@ -2617,7 +2989,7 @@ function parseRssDate(s){
 }
 
 async function fetchRSS(feedUrl){
-  const key=LS_PFX+'rss'+btoa(encodeURIComponent(feedUrl)).slice(0,28);
+  const key=LS_PFX+'rss'+btoa(encodeURIComponent(feedUrl)).slice(0,80);
   try{
     const raw=localStorage.getItem(key);
     if(raw){const{data,ts}=JSON.parse(raw);if(Date.now()-ts<CACHE_TTL){DBG.ok('RSS',`CACHE HIT · ${new URL(feedUrl).hostname}`);return{items:data,cached:true};}}
@@ -2684,6 +3056,14 @@ async function fetchRssFeeds(feeds){
 }
 
 /* ── RSS Card HTML ── */
+function recencyBadge(pub){
+  if(!pub||pub.getTime()===0)return'';
+  const age=Date.now()-pub.getTime();
+  if(age<3600000)return`<span class="c-recency live"><span class="rc-dot"></span>LIVE</span>`;
+  if(age<10800000)return`<span class="c-recency fresh">NEW</span>`;
+  return'';
+}
+
 function rssHeroCardHTML(a,hex){
   const id=storeArt(a);
   const t=getTone(a);
@@ -2693,6 +3073,7 @@ function rssHeroCardHTML(a,hex){
       <div class="hero-top-left">
         <span class="badge-top">${esc(a._src||'RSS')}</span>
         <span class="c-tone ${t.cls}">${t.lbl}</span>
+        ${recencyBadge(a.pub)}
       </div>
       <span class="c-time">${ts}</span>
     </div>
@@ -2710,6 +3091,7 @@ function rssCardHTML(a,hex){
       <div class="card-top-left">
         <span class="c-src">${esc(a._src||a.domain||'RSS')}</span>
         <span class="c-tone ${t.cls}">${t.lbl}</span>
+        ${recencyBadge(a.pub)}
       </div>
       <span class="c-time">${ts}</span>
     </div>
@@ -2727,13 +3109,24 @@ async function loadRssTab(id){
         <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex};box-shadow:0 0 10px ${c.hex}"></div><div class="cat-name">${c.name}</div></div>
         <div class="cat-meta" id="cc-${id}"></div>
       </div>
+      <div class="section-digest" id="sdigest-${id}"></div>
+      <div id="hmap-${id}"></div>
     </div>
     <div id="hero-${id}"></div>
     <div class="art-grid" id="g-${id}">${skels(4)}</div>`;
   try{
     const items=await fetchRssFeeds(c._rss);
     const meta=document.getElementById('cc-'+id);
-    if(meta)meta.innerHTML=`<span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE · ${items.length} stories</span>`;
+    const vel=velocityBadge(items);
+    const spkSvg=activitySparkline(items,c.hex);
+    if(meta)meta.innerHTML=`<span class="sparkline-wrap">${spkSvg}<span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE · ${items.length}</span></span>`;
+    const sd=document.getElementById('sdigest-'+id);
+    if(sd&&items.length){
+      const newest=items[0].pub;const upStr=newest&&newest.getTime()>0?ago(newest):'just now';
+      sd.innerHTML=`<span class="section-digest-dot"></span>${items.length} stories · latest ${upStr}${vel?' · '+vel:''}`;
+    }
+    const hmap=document.getElementById('hmap-'+id);
+    if(hmap)hmap.innerHTML=hourlyHeatmap(items,c.hex);
     const heroEl=document.getElementById('hero-'+id);
     const gridEl=document.getElementById('g-'+id);
     if(items.length){
@@ -2743,6 +3136,7 @@ async function loadRssTab(id){
       heroEl.innerHTML='';
       gridEl.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories available right now.</div><div class="empty-hint">RSS feeds may be temporarily unavailable.</div></div>`;
     }
+    storeSectionData(id,items);
   }catch(e){
     DBG.err('RSS',`loadRssTab(${id}): ${e.message}`);
     const gridEl=document.getElementById('g-'+id);
@@ -2782,78 +3176,334 @@ async function loadSearchTab(){
   if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')doNewsSearch();});
 }
 
+/* Transform plain multi-word queries into OR-joined for better RSS coverage.
+   Single words and queries with existing operators/quotes pass through unchanged. */
+function smartSearchQuery(raw){
+  const q=raw.trim();
+  if(!q)return q;
+  if(/\s+(?:OR|AND|NOT)\s+/i.test(q)||q.includes('"'))return q;
+  const words=q.split(/\s+/).filter(Boolean);
+  if(words.length<=2)return q;
+  return`"${words.join(' ')}" OR ${words.join(' OR ')}`;
+}
+
 async function doNewsSearch(preset){
   const inp=document.getElementById('search-input');
-  const query=preset||(inp&&inp.value.trim())||'';
-  if(!query)return;
+  const rawQuery=preset||(inp&&inp.value.trim())||'';
+  if(!rawQuery)return;
   if(preset&&inp)inp.value=preset;
   const res=document.getElementById('search-results');if(!res)return;
   const hex='#7A8FA6';
-  res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Searching "${query}"…</div></div>`;
+  const q=smartSearchQuery(rawQuery);
+  res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Searching "${esc(rawQuery)}"…</div></div>`;
+  DBG.info('SEARCH',`Query: ${rawQuery} → ${q}`);
   try{
-    const feedUrl=`https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-IN&gl=IN&ceid=IN:en`;
-    const{items}=await fetchRSS(feedUrl);
-    const norm=items.map(i=>normalizeRssItem(i,'Google News')).sort((a,b)=>b.pub-a.pub);
-    if(!norm.length){res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No results for "${query}".</div></div>`;return;}
-    let html=rssHeroCardHTML(norm[0],hex);
-    if(norm.length>1)html+=`<div class="art-grid">${norm.slice(1).map(a=>rssCardHTML(a,hex)).join('')}</div>`;
+    const feedUrl=`https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-IN&gl=IN&ceid=IN:en`;
+    let rssResult;
+    try{
+      rssResult=await fetchRSS(feedUrl);
+    }catch(primaryErr){
+      DBG.info('SEARCH',`rss2json failed (${primaryErr.message}), trying XML fallback…`);
+      res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Retrying via fallback…</div></div>`;
+      const proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(feedUrl);
+      const r=await fetch(proxy,{signal:AbortSignal.timeout(15000)});
+      if(!r.ok)throw new Error(`Search unavailable (${primaryErr.message})`);
+      const xml=await r.text();
+      const doc=new DOMParser().parseFromString(xml,'text/xml');
+      const rawItems=[...doc.querySelectorAll('item')].map(item=>{
+        const g=tag=>item.querySelector(tag)?.textContent||'';
+        return{title:g('title'),link:g('link'),pubDate:g('pubDate'),description:g('description'),content:''};
+      });
+      rssResult={items:rawItems};
+    }
+    const norm=rssResult.items.map(i=>normalizeRssItem(i,'Google News')).sort((a,b)=>b.pub-a.pub);
+    if(!norm.length){
+      res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No results for "${esc(rawQuery)}".</div></div>`;
+      return;
+    }
+    /* Topic Brief hero card — replaces single article hero */
+    const topBullets=norm.slice(0,3).map(a=>`<div class="topic-brief-bullet">
+      <span class="tbul-dot">—</span>
+      <span class="tbul-txt">${esc(a.title)}</span>
+      <span class="tbul-src">${esc(a.source||'')}</span>
+    </div>`).join('');
+    let html=`<div class="topic-brief-card">
+      <div class="topic-brief-head">
+        <div class="topic-brief-ico">◐</div>
+        <div class="topic-brief-body">
+          <div class="topic-brief-query">${esc(rawQuery)}</div>
+          <div class="topic-brief-count">${norm.length} result${norm.length===1?'':'s'} · Google News</div>
+        </div>
+        <div class="topic-brief-badge">TOPIC BRIEF</div>
+      </div>
+      <div class="topic-brief-bullets">${topBullets}</div>
+    </div>`;
+    if(norm.length>3)html+=`<div class="art-grid">${norm.slice(3).map(a=>rssCardHTML(a,hex)).join('')}</div>`;
+    else if(norm.length>0)html+=`<div class="art-grid">${norm.map(a=>rssCardHTML(a,hex)).join('')}</div>`;
     res.innerHTML=html;
   }catch(e){
     DBG.err('SEARCH',e.message);
-    res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Search failed: ${e.message}</div></div>`;
+    res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Search failed: ${esc(e.message)}</div></div>`;
   }
 }
 
-/* ── Crisis Watch: USGS + GDELT natural disasters + RSS health ── */
+/* ════════════════════════════════════════
+   CRISIS COMMAND — GDACS + USGS + NEWS
+   Sources: GDACS (EU/UN) · USGS · Google News
+════════════════════════════════════════ */
+
+/* ── GDACS: parse XML (CORS-native, no proxy) ── */
+const GDACS_TYPE_ICON={EQ:'◬',TC:'◉',FL:'≋',VO:'△',TS:'≈',DR:'◁'};
+const GDACS_TYPE_LABEL={EQ:'Earthquake',TC:'Cyclone',FL:'Flood',VO:'Volcano',TS:'Tsunami',DR:'Drought'};
+const GDACS_LEVEL_ORDER={Red:2,Orange:1,Green:0};
+
+/* Parse all alert metadata from title text — works with rss2json which
+   strips gdacs: namespace tags but preserves the human-readable title.
+   Title format: "[Level] [alert|notification] [for] [EventType] [NAME] in/near [Country] [date]"
+   Examples: "Red alert Flood in Libya"
+             "Orange notification for tropical cyclone FREDDY near Mozambique"
+             "Green earthquake (Magnitude 5.6M) in Fiji 01/07/2026" */
+function parseGDACSTitle(item){
+  const title=(item.title||'').trim();
+  const lower=title.toLowerCase();
+  const desc=stripHtml(item.description||item.content||'');
+
+  const alertlevel=lower.startsWith('red')?'Red':lower.startsWith('orange')?'Orange':'Green';
+
+  const eventtype=lower.includes('earthquake')?'EQ'
+    :(lower.includes('cyclone')||lower.includes('tropical depression')||lower.includes('tropical storm'))?'TC'
+    :lower.includes('flood')?'FL'
+    :lower.includes('volcano')?'VO'
+    :lower.includes('tsunami')?'TS'
+    :lower.includes('drought')?'DR':'';
+
+  const countryM=title.match(/\b(?:in|near)\s+([A-Z][A-Za-z\s]+?)(?:\s+\d{2}\/|\s*[\(\.,]|$)/);
+  const country=countryM?countryM[1].trim():'';
+
+  const nameM=title.match(/cyclone\s+([A-Z][A-Z0-9\-]+)/i);
+  const eventname=nameM?nameM[1]:'';
+
+  const magM=title.match(/Magnitude\s+([\d.]+)M/i);
+  const windM=title.match(/(\d+)\s*km\/h/);
+  const catM=desc.match(/Category\s+(\d)/i);
+  const severity=magM?`M${magM[1]}`:windM?`${windM[1]} km/h`:catM?`Cat ${catM[1]}`:'';
+
+  const popM=desc.match(/affecting\s+([\d,.]+\s*(?:thousand|million|hundred)?[^.]*)/i);
+  const population=popM?popM[1].replace(/\s+/g,' ').trim():'';
+
+  return{
+    title,link:item.link||item.url||'',
+    pub:parseRssDate(item.pubDate||item.published||''),
+    alertlevel,alertscore:alertlevel==='Red'?100:alertlevel==='Orange'?50:0,
+    eventtype,severity,severityVal:0,population,country,eventname,iso3:''
+  };
+}
+
+async function fetchGDACS(){
+  const key=LS_PFX+'gdacs_proc';
+  try{const raw=localStorage.getItem(key);if(raw){const{data,ts}=JSON.parse(raw);if(Date.now()-ts<CACHE_TTL){DBG.ok('GDACS','CACHE HIT');return data;}}}catch{}
+  /* Use rss2json — same proxy as all other feeds, CORS-safe, proven reliable.
+     GDACS RSS 2.0 standard fields (title/link/pubDate/description) come through
+     fine; namespace tags are stripped but we parse from title text instead. */
+  const{items}=await fetchRSS('https://www.gdacs.org/xml/rss.xml');
+  const data=items
+    .map(parseGDACSTitle)
+    .filter(a=>a.alertlevel!=='Green')
+    .sort((a,b)=>(GDACS_LEVEL_ORDER[b.alertlevel]||0)-(GDACS_LEVEL_ORDER[a.alertlevel]||0)||b.alertscore-a.alertscore);
+  try{localStorage.setItem(key,JSON.stringify({data,ts:Date.now()}));}catch{}
+  DBG.ok('GDACS',`✓ ${data.length} active alerts (Red+Orange)`);
+  return data;
+}
+
+/* ── GDACS state for filter pills ── */
+let _gdacsAlerts=[];
+let _gdacsFilter='ALL';
+
+function gdacsAlertListRowHTML(a){
+  const lvl=a.alertlevel.toLowerCase();
+  const icon=GDACS_TYPE_ICON[a.eventtype]||'◎';
+  const name=a.eventname?`${a.eventname} · ${a.country}`:a.country||'Unknown';
+  const timeStr=a.pub&&!isNaN(a.pub.getTime())?ago(a.pub):'';
+  return`<a class="alert-list-row" href="${esc(a.link)}" target="_blank" rel="noopener">
+    <span class="alr-dot ${lvl}"></span>
+    <span class="alr-level ${lvl}">${a.alertlevel.toUpperCase()}</span>
+    <span class="alr-type">${icon}</span>
+    <span class="alr-name">${esc(name)}</span>
+    <div class="alr-detail">
+      ${a.severity?`<div class="alr-sev">${esc(a.severity)}</div>`:''}
+      ${timeStr?`<div class="alr-time">${timeStr}</div>`:''}
+    </div>
+  </a>`;
+}
+
+function gdacsFilteredHTML(alerts,filter){
+  const list=filter==='ALL'?alerts:alerts.filter(a=>a.eventtype===filter);
+  if(!list.length)return`<div class="no-data-compact" style="margin:10px 14px"><span class="ndc-ico">◎</span><div class="ndc-msg">No ${GDACS_TYPE_LABEL[filter]||filter} alerts active right now.</div></div>`;
+  return`<div class="alert-list">${list.map(gdacsAlertListRowHTML).join('')}</div>`;
+}
+
+function setGDACSFilter(f){
+  _gdacsFilter=f;
+  document.querySelectorAll('.filter-pill').forEach(p=>p.classList.toggle('active',p.dataset.filter===f));
+  const grid=document.getElementById('gdacs-alerts');
+  if(grid)grid.innerHTML=gdacsFilteredHTML(_gdacsAlerts,f);
+}
+
+function gdacsFilterPillsHTML(alerts){
+  const types=[...new Set(alerts.map(a=>a.eventtype))].filter(t=>GDACS_TYPE_LABEL[t]);
+  const pills=[{f:'ALL',label:'All'},...types.map(t=>({f:t,label:`${GDACS_TYPE_ICON[t]} ${GDACS_TYPE_LABEL[t]}`}))];
+  return pills.map(p=>`<button class="filter-pill${p.f==='ALL'?' active':''}" data-filter="${p.f}" onclick="setGDACSFilter('${p.f}')">${p.label}</button>`).join('');
+}
+
+function gdacsTickerHTML(alerts){
+  if(!alerts.length)return'';
+  const items=alerts.map(a=>{
+    const lvl=a.alertlevel.toLowerCase();
+    const icon=GDACS_TYPE_ICON[a.eventtype]||'◎';
+    const label=GDACS_TYPE_LABEL[a.eventtype]||a.eventtype;
+    const name=a.eventname?`${a.eventname} · ${a.country}`:a.country;
+    return`<span class="ticker-item"><span class="ticker-level ${lvl}">${a.alertlevel.toUpperCase()}</span><span>${icon} ${esc(label)} · ${esc(name||'—')}</span><span class="ticker-sep">●</span></span>`;
+  }).join('');
+  const doubled=items+items;
+  return`<div class="alert-ticker-outer"><div class="alert-ticker-inner">${doubled}</div></div>`;
+}
+
+/* ── News RSS feeds for Crisis tab ── */
+const CRISIS_NEWS_RSS=[
+  {url:'https://news.google.com/rss/search?q=natural+disaster+OR+cyclone+OR+flood+OR+earthquake+OR+tsunami+OR+volcano&hl=en-IN&gl=IN&ceid=IN:en', name:'Global Crisis'},
+  {url:'https://news.google.com/rss/search?q=India+disaster+OR+cyclone+India+OR+flood+India+OR+%22Tamil+Nadu%22+cyclone+OR+landslide+India+OR+earthquake+India&hl=en-IN&gl=IN&ceid=IN:en', name:'India & TN Crisis'}
+];
+
 async function loadCrisisWatch(){
   const id='crisis';
-  const panel=document.getElementById('panel-'+id);
   const c=cat(id);
+  const panel=document.getElementById('panel-'+id);
   panel.innerHTML=`
     <div class="panel-banner">
       <div class="cat-head-row">
         <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex};box-shadow:0 0 10px ${c.hex}"></div><div class="cat-name">${c.name}</div></div>
-        <div class="cat-meta" id="cc-${id}"></div>
+        <div class="cat-meta" id="crisis-meta-bar"></div>
       </div>
-      <div id="tonebar-${id}"></div>
+      <div class="section-digest" id="sdigest-crisis"></div>
+      <div id="hmap-crisis"></div>
     </div>
-    <div class="section-head"><span>// USGS · EARTHQUAKE MONITOR · GLOBAL REAL-TIME</span><span class="section-badge">M2.5+ events</span></div>
-    <div id="usgs-container-${id}">Loading USGS…</div>
-    <div style="height:24px"></div>
-    <div class="section-head"><span>// GDELT · NATURAL DISASTERS</span><span class="section-badge" id="cc-${id}-gdelt"></span></div>
-    <div id="hero-${id}"></div>
-    <div class="art-grid" id="g-${id}">${skels(4)}</div>
-    <div style="height:28px"></div>
-    <div class="section-head"><span>// RSS · HEALTH & OUTBREAKS</span><span class="section-badge">WHO · STAT News</span></div>
-    <div class="art-grid" id="rss-${id}">${skels(2)}</div>`;
+
+    <div id="gdacs-ticker"></div>
+
+    <div class="crisis-summary-row">
+      <div class="crisis-summary-item">
+        <div class="csi-label" style="color:#E24B4A">Red Alerts</div>
+        <div class="csi-count" id="cri-red">—</div>
+        <div class="csi-sub">GDACS critical</div>
+      </div>
+      <div class="crisis-summary-item">
+        <div class="csi-label" style="color:#F59E0B">Orange Alerts</div>
+        <div class="csi-count" id="cri-orange">—</div>
+        <div class="csi-sub">GDACS moderate</div>
+      </div>
+      <div class="crisis-summary-item">
+        <div class="csi-label" style="color:var(--clr-crisis)">M5+ Quakes</div>
+        <div class="csi-count" id="cri-quake">—</div>
+        <div class="csi-sub">USGS past 24h</div>
+      </div>
+      <div class="crisis-summary-item">
+        <div class="csi-label" style="color:var(--text-sub)">Crisis Stories</div>
+        <div class="csi-count" id="cri-news">—</div>
+        <div class="csi-sub">Global + India/TN</div>
+      </div>
+    </div>
+
+    <div class="crisis-dual-panel">
+      <div class="crisis-panel-box">
+        <div class="crisis-panel-head">
+          <span class="cpanel-title">◬ GDACS · Disaster Alerts</span>
+          <span class="cpanel-badge" id="gdacs-count-badge">—</span>
+        </div>
+        <div class="crisis-panel-pills">
+          <div id="gdacs-filter-pills" class="filter-pills"></div>
+        </div>
+        <div id="gdacs-alerts">${skels(2)}</div>
+      </div>
+      <div class="crisis-panel-box">
+        <div class="crisis-panel-head">
+          <span class="cpanel-title">◎ USGS · Seismic Activity</span>
+          <span class="cpanel-badge">M5.0+ · past 24h</span>
+        </div>
+        <div id="usgs-container-crisis"></div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <span>// CRISIS NEWS · GLOBAL & INDIA</span>
+      <span class="section-badge" id="crisis-news-badge"></span>
+    </div>
+    <div id="hero-crisis"></div>
+    <div class="art-grid" id="g-crisis">${skels(4)}</div>`;
+
   await Promise.all([
-    loadUSGS('usgs-container-'+id),
-    (async()=>{
-      const stop=showProgress('g-'+id);
-      try{
-        const{arts,status,ageMs,elapsed}=await fetchWithFallback(c.q,c.ts,c.max||10);
-        stop();
-        document.getElementById('cc-'+id+'-gdelt').textContent=`${arts.length} stories`;
-        document.getElementById('cc-'+id).innerHTML=cacheBadgeHTML(status,ageMs,elapsed);
-        if(arts.length)document.getElementById('tonebar-'+id).innerHTML=toneBarHTML(arts);
-        if(arts.length){
-          const heroEl=document.getElementById('hero-'+id);
-          heroEl.innerHTML=heroCardHTML(arts[0],c.hex);
-          const hid=Object.keys(artStore).find(k=>artStore[k]===arts[0]);
-          if(hid)lazyHeroDesc(hid);
-          document.getElementById('g-'+id).innerHTML=arts.slice(1).map(a=>cardHTML(a,c.hex)).join('');
-        }
-      }catch(e){stop();renderErr(document.getElementById('g-'+id),e.message,`loadCat('${id}')`);}
-    })(),
+    /* ── GDACS disaster alerts ── */
     (async()=>{
       try{
-        const items=await fetchRssFeeds(c._rss);
-        const el=document.getElementById('rss-'+id);
-        if(el)el.innerHTML=items.slice(0,6).map(a=>rssCardHTML(a,c.hex)).join('')||
-          `<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No health news available.</div></div>`;
+        const alerts=await fetchGDACS();
+        _gdacsAlerts=alerts;
+        _gdacsFilter='ALL';
+        const redCount=alerts.filter(a=>a.alertlevel==='Red').length;
+        const orgCount=alerts.filter(a=>a.alertlevel==='Orange').length;
+        const rc=document.getElementById('cri-red');if(rc)rc.textContent=redCount;
+        const oc=document.getElementById('cri-orange');if(oc)oc.textContent=orgCount;
+        const badge=document.getElementById('gdacs-count-badge');
+        if(badge)badge.textContent=`${alerts.length} active`;
+        const ticker=document.getElementById('gdacs-ticker');
+        if(ticker)ticker.innerHTML=gdacsTickerHTML(alerts);
+        const pills=document.getElementById('gdacs-filter-pills');
+        if(pills)pills.innerHTML=gdacsFilterPillsHTML(alerts);
+        const grid=document.getElementById('gdacs-alerts');
+        if(grid)grid.innerHTML=gdacsFilteredHTML(alerts,'ALL');
+        const meta=document.getElementById('crisis-meta-bar');
+        if(meta)meta.innerHTML=`<span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE · ${alerts.length} alerts</span>`;
       }catch(e){
-        DBG.err('RSS',`Crisis health feeds: ${e.message}`);
-        const el=document.getElementById('rss-'+id);if(el)el.innerHTML='';
+        DBG.err('GDACS',e.message);
+        const grid=document.getElementById('gdacs-alerts');
+        if(grid)grid.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">⚠</span><div class="ndc-msg">GDACS unavailable · ${esc(e.message)}</div></div>`;
+      }
+    })(),
+
+    /* ── USGS seismic ── */
+    (async()=>{
+      await loadUSGS('usgs-container-crisis');
+      const el=document.getElementById('usgs-container-crisis');
+      const count=el?el.querySelectorAll('.seismic-row-v2').length:0;
+      const cnt=document.getElementById('cri-quake');if(cnt)cnt.textContent=count||'0';
+    })(),
+
+    /* ── Crisis news (blended Global + India/TN) ── */
+    (async()=>{
+      try{
+        const items=await fetchRssFeeds(CRISIS_NEWS_RSS);
+        const seen=new Set();
+        const deduped=items.filter(a=>{
+          const k=(a.title||'').substring(0,55).toLowerCase();
+          if(seen.has(k))return false;seen.add(k);return true;
+        }).sort((a,b)=>b.pub-a.pub).slice(0,15);
+        const nc=document.getElementById('cri-news');if(nc)nc.textContent=deduped.length;
+        const badge=document.getElementById('crisis-news-badge');if(badge)badge.textContent=`${deduped.length} stories`;
+        const hmap=document.getElementById('hmap-crisis');if(hmap)hmap.innerHTML=hourlyHeatmap(deduped,c.hex);
+        const sd=document.getElementById('sdigest-crisis');
+        if(sd&&deduped.length){const t=deduped[0].pub&&deduped[0].pub.getTime()>0?ago(deduped[0].pub):'just now';sd.innerHTML=`<span class="section-digest-dot"></span>${deduped.length} stories · latest ${t}`;}
+        const heroEl=document.getElementById('hero-crisis');
+        const gridEl=document.getElementById('g-crisis');
+        if(deduped.length){
+          heroEl.innerHTML=rssHeroCardHTML(deduped[0],c.hex);
+          gridEl.innerHTML=deduped.slice(1).map(a=>rssCardHTML(a,c.hex)).join('');
+        }else{
+          heroEl.innerHTML='';
+          gridEl.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No crisis news available.</div></div>`;
+        }
+        storeSectionData(id,deduped);
+      }catch(e){
+        DBG.err('RSS','Crisis news: '+e.message);
+        const gridEl=document.getElementById('g-crisis');
+        if(gridEl)renderErr(gridEl,e.message,'loadCrisisWatch()');
       }
     })()
   ]);
@@ -3211,10 +3861,95 @@ async function n50Init(){
     n50State.loading=false;
   }
 }
+/* ════════════════════════════════════════
+   DENSITY TOGGLE
+════════════════════════════════════════ */
+const DENSITIES=['comfortable','compact','spacious'];
+const DENSITY_ICONS={comfortable:'≡',compact:'⊟',spacious:'⊞'};
+const DENSITY_LABELS={comfortable:'COZY',compact:'COMPACT',spacious:'SPACIOUS'};
+const LS_DENSITY='mer18_density';
+function setDensity(d){
+  document.body.classList.remove(...DENSITIES.map(x=>'density-'+x));
+  if(d!=='comfortable')document.body.classList.add('density-'+d);
+  localStorage.setItem(LS_DENSITY,d);
+  const btn=document.getElementById('densityBtn');
+  if(btn)btn.textContent=DENSITY_ICONS[d]||'≡';
+  btn&&(btn.title=DENSITY_LABELS[d]||'Density');
+}
+function cycleDensity(){
+  const cur=localStorage.getItem(LS_DENSITY)||'comfortable';
+  setDensity(DENSITIES[(DENSITIES.indexOf(cur)+1)%DENSITIES.length]);
+}
+(()=>{ setDensity(localStorage.getItem(LS_DENSITY)||'comfortable'); })();
+
+/* ════════════════════════════════════════
+   DAILY DIGEST BRIEF — home panel strip
+   Fetches lead story from each RSS section
+   concurrently; cache-first so it's instant
+   on repeat visits.
+════════════════════════════════════════ */
+async function loadDigestBrief(){
+  const el=document.getElementById('home-digest');if(!el)return;
+  const sections=CATS.filter(c=>c._rss&&c.id!=='home');
+  el.innerHTML=`
+    <div class="brief-card">
+      <div class="brief-card-header">
+        <span class="brief-card-title">Today in Brief</span>
+        <span class="brief-card-time" id="brief-time"></span>
+      </div>
+      <div id="brief-list">
+        ${sections.map(c=>`<div class="brief-row" id="dbrf-${c.id}">
+          <div class="brief-dot" style="background:${c.hex}"></div>
+          <span class="brief-cat" style="color:${c.hex}">${c.name}</span>
+          <span class="brief-headline" style="color:var(--text-muted)">Loading…</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  await Promise.allSettled(sections.map(async c=>{
+    try{
+      const items=await fetchRssFeeds([c._rss[0]]);
+      const row=document.getElementById('dbrf-'+c.id);if(!row)return;
+      const first=items[0];
+      if(!first){row.remove();return;}
+      const ts=first.pub&&first.pub.getTime()>0?ago(first.pub):'';
+      const artId=storeArt(first);
+      row.innerHTML=`
+        <div class="brief-dot" style="background:${c.hex}"></div>
+        <span class="brief-cat" style="color:${c.hex}">${c.name}</span>
+        <span class="brief-headline">${esc(first.title)}</span>
+        ${ts?`<span class="brief-age">${ts}</span>`:''}`;
+      row.onclick=()=>cardClick(artId,c.hex);
+    }catch{
+      const row=document.getElementById('dbrf-'+c.id);if(row)row.remove();
+    }
+  }));
+  const list=document.getElementById('brief-list');
+  if(list&&!list.children.length){el.innerHTML='';return;}
+  const timeEl=document.getElementById('brief-time');
+  if(timeEl)timeEl.textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+
 buildNav();
 DBG.info('INIT','MERIDIAN v3.0 · RSS + GDELT · 7 tabs · Nifty 50 Performance subtab');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · ReliefWeb');
 DBG.info('KEYS','Keyboard: 1-7 = tabs · R = refresh · Esc = modal · ⎘ copy log');
+
+/* ── hash routing init ── */
+(function initHashRouting(){
+  function applyHash(){
+    const hash=(location.hash||'').replace('#','');
+    if(hash&&document.getElementById('panel-'+hash)){
+      switchTab(hash);
+    }
+  }
+  applyHash();
+  window.addEventListener('hashchange',applyHash);
+})();
+
+/* ── logo market glow ── */
+updateLogoGlow();
+setInterval(updateLogoGlow,60000);
+
 loadHome();
 </script>
 </body>
