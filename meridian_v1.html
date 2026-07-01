@@ -43,7 +43,7 @@
       /* Per-section accent colours */
       --clr-home:#C8A86B;--clr-world:#D94F4F;--clr-markets:#1D9E75;
       --clr-economy:#2B7FFF;--clr-techai:#8B5CE8;--clr-india:#E07A3A;
-      --clr-crisis:#C83850;--clr-tamilnadu:#14B8A6;--clr-search:#5A8FA6;
+      --clr-crisis:#C83850;--clr-tamilnadu:#14B8A6;--clr-climate:#38BDF8;--clr-search:#5A8FA6;
     }
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -789,6 +789,164 @@
     .search-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 20px;gap:16px;color:var(--text-muted)}
     .se-ico{font-size:40px;opacity:.12}
     .se-msg{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.8px;text-align:center}
+
+    /* ── CLIMATE TAB ── */
+    #panel-climate .panel-banner{background:linear-gradient(135deg,rgba(56,189,248,.08) 0%,transparent 65%);border-bottom:1px solid rgba(56,189,248,.1)}
+
+    /* Hero */
+    .clim-hero{position:relative;border-radius:18px;overflow:hidden;margin-bottom:18px;min-height:220px;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 24px 20px;background:var(--clim-grad,linear-gradient(160deg,#0F172A 0%,#1A2942 45%,#0C1420 100%));transition:background 1.2s ease}
+    .clim-hero::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.22);pointer-events:none;z-index:0}
+    .clim-hero-glass{position:absolute;inset:0;background:rgba(255,255,255,.025);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:none;z-index:0}
+    .clim-hero>*{position:relative;z-index:1}
+    .clim-rain-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
+    .clim-raindrop{position:absolute;top:-6%;width:1px;background:linear-gradient(180deg,transparent 0%,rgba(147,197,253,.45) 100%);border-radius:1px;animation:climRainFall linear infinite}
+    @keyframes climRainFall{0%{transform:translateY(0) rotate(12deg);opacity:0}8%{opacity:1}90%{opacity:.7}100%{transform:translateY(115vh) rotate(12deg);opacity:0}}
+
+    /* Weather icon animations */
+    .clim-ico-wrap{font-size:54px;line-height:1;margin-bottom:8px;display:inline-block}
+    .clim-ico-sun{display:inline-block;animation:sunSpin 22s linear infinite;filter:drop-shadow(0 0 14px rgba(251,191,36,.7))}
+    @keyframes sunSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    .clim-ico-storm{display:inline-block;animation:stormFlicker 2.2s ease-in-out infinite}
+    @keyframes stormFlicker{0%,100%{transform:scale(1);filter:drop-shadow(0 0 6px rgba(139,92,232,.5))}40%{transform:scale(1.06);filter:drop-shadow(0 0 18px rgba(139,92,232,.9))}75%{transform:scale(.97);filter:drop-shadow(0 0 3px rgba(139,92,232,.3))}}
+    .clim-ico-cloud{display:inline-block;animation:cloudDrift 4s ease-in-out infinite}
+    @keyframes cloudDrift{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+    .clim-ico-rain-pulse{display:inline-block;animation:cloudDrift 3s ease-in-out infinite,rainPulse 1.8s ease-in-out infinite}
+    @keyframes rainPulse{0%,100%{filter:drop-shadow(0 0 4px rgba(96,165,250,.4))}50%{filter:drop-shadow(0 0 12px rgba(96,165,250,.8))}}
+    .clim-ico-snow{display:inline-block;animation:snowSpin 8s linear infinite}
+    @keyframes snowSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    .clim-ico-fog{display:inline-block;animation:fogPulse 3s ease-in-out infinite}
+    @keyframes fogPulse{0%,100%{opacity:.7}50%{opacity:1}}
+
+    /* Temperature */
+    .clim-temp{font-family:'Cormorant Garamond',serif;font-size:76px;font-weight:700;line-height:1;letter-spacing:-4px;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.4)}
+    .clim-temp-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:6px}
+    .clim-feels{font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.8px;padding-bottom:14px}
+    .clim-cond{font-size:13px;font-weight:500;color:rgba(255,255,255,.88);letter-spacing:.3px;margin-bottom:12px}
+    .clim-loc-name{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.45);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:16px}
+
+    /* Metrics bar */
+    .clim-metrics-bar{display:flex;align-items:center;gap:0;flex-wrap:wrap;background:rgba(0,0,0,.25);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:0.5px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden}
+    .clim-m{display:flex;flex-direction:column;align-items:center;padding:8px 14px;gap:2px;flex:1;min-width:70px}
+    .clim-m-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:#fff}
+    .clim-m-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,.4);letter-spacing:.7px;text-transform:uppercase}
+    .clim-m-sep{width:0.5px;background:rgba(255,255,255,.08);align-self:stretch}
+
+    /* Search controls */
+    .clim-controls{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+    .clim-search-input{flex:1;min-width:160px;background:rgba(255,255,255,.04);border:0.5px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:12px;font-family:'Inter',sans-serif;outline:none;transition:border-color .18s}
+    .clim-search-input:focus{border-color:var(--clr-climate)}
+    .clim-search-input::placeholder{color:var(--text-muted)}
+    .clim-search-btn,.clim-geo-btn{background:rgba(56,189,248,.1);border:0.5px solid rgba(56,189,248,.25);border-radius:8px;padding:8px 13px;color:var(--clr-climate);font-size:11px;font-weight:600;font-family:'Inter',sans-serif;transition:var(--t);white-space:nowrap}
+    .clim-search-btn:hover,.clim-geo-btn:hover{background:rgba(56,189,248,.18);border-color:rgba(56,189,248,.5)}
+    .clim-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+    .clim-preset-chip{background:rgba(255,255,255,.03);border:0.5px solid var(--border);border-radius:20px;padding:4px 11px;font-size:10px;color:var(--text-sub);font-family:'JetBrains Mono',monospace;letter-spacing:.4px;cursor:pointer;transition:var(--t)}
+    .clim-preset-chip:hover{border-color:var(--clr-climate);color:var(--clr-climate);background:rgba(56,189,248,.06)}
+
+    /* Panel cards */
+    .clim-panel{background:rgba(255,255,255,.03);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:14px}
+    .clim-ph{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:0.5px solid rgba(255,255,255,.06);background:rgba(255,255,255,.015)}
+    .clim-ph-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-sub)}
+    .clim-ph-badge{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--clr-climate);letter-spacing:.5px}
+
+    /* Hourly scroll */
+    .clim-hourly-scroll{display:flex;gap:8px;overflow-x:auto;padding:14px 16px;scrollbar-width:none}
+    .clim-hourly-scroll::-webkit-scrollbar{display:none}
+    .clim-hour{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:52px;padding:8px 4px;border-radius:10px;transition:background .18s}
+    .clim-hour:hover{background:rgba(255,255,255,.04)}
+    .clim-hour-now{background:rgba(56,189,248,.08);border:0.5px solid rgba(56,189,248,.2)}
+    .clim-h-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.5px}
+    .clim-h-ico{font-size:18px;line-height:1}
+    .clim-h-temp{font-size:12px;font-weight:600;color:var(--text)}
+    .clim-h-bar{width:3px;height:30px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;position:relative}
+    .clim-h-bar-fill{position:absolute;bottom:0;width:100%;background:linear-gradient(180deg,var(--clr-climate),rgba(56,189,248,.3));border-radius:2px;transition:height 1s ease}
+    .clim-h-rain-pct{font-family:'JetBrains Mono',monospace;font-size:7px;color:rgba(96,165,250,.7)}
+
+    /* Two-col grid */
+    .clim-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .clim-three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px}
+
+    /* 7-day forecast */
+    .clim-days-body{padding:6px 0}
+    .clim-day{display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:0.5px solid rgba(255,255,255,.04);transition:background .18s}
+    .clim-day:last-child{border-bottom:none}
+    .clim-day:hover{background:rgba(255,255,255,.03)}
+    .clim-day-name{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--text-sub);letter-spacing:.5px;min-width:32px}
+    .clim-day-ico{font-size:16px;min-width:22px;text-align:center}
+    .clim-day-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+    .clim-day-bar{height:100%;background:linear-gradient(90deg,rgba(56,189,248,.4),var(--clr-climate));border-radius:2px;transform:scaleX(0);transform-origin:left;animation:dayBarIn .9s ease forwards}
+    @keyframes dayBarIn{from{transform:scaleX(0)}to{transform:scaleX(var(--bar-scale,1))}}
+    .clim-day-range{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text);white-space:nowrap;min-width:68px;text-align:right}
+    .clim-day-rain{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(96,165,250,.6);min-width:30px;text-align:right}
+
+    /* Sun arc panel */
+    .clim-sun-body{padding:16px}
+    .clim-sun-svg{width:100%;height:auto;overflow:visible}
+    .clim-sun-arc-track{fill:none;stroke:rgba(255,255,255,.06);stroke-width:2;stroke-linecap:round}
+    .clim-sun-arc-fill{fill:none;stroke:url(#sunGrad);stroke-width:2.5;stroke-linecap:round;transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)}
+    .clim-sun-dot{fill:#FBBF24;filter:drop-shadow(0 0 6px rgba(251,191,36,.8));transition:cx 1.4s ease,cy 1.4s ease}
+    .clim-sun-times{display:flex;justify-content:space-between;padding:0 8px;margin-top:6px}
+    .clim-sun-t{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.5px}
+
+    /* AQI panel */
+    .clim-aqi-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
+    .clim-aqi-svg{width:100%;max-width:170px;height:auto;overflow:visible}
+    .clim-aqi-arc-track{fill:none;stroke:rgba(255,255,255,.05);stroke-width:3;stroke-linecap:round}
+    .clim-aqi-arc{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)}
+    .clim-aqi-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;text-anchor:middle;dominant-baseline:middle}
+    .clim-aqi-sub{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.8px;text-anchor:middle;fill:var(--text-muted)}
+    .clim-aqi-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:4px 10px;border-radius:20px}
+    .clim-aqi-pills{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+    .clim-aqi-pill{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);background:rgba(255,255,255,.04);border:0.5px solid var(--border);border-radius:6px;padding:3px 8px;letter-spacing:.4px}
+
+    /* Wind compass */
+    .clim-compass-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px}
+    .clim-compass-ring{width:110px;height:110px;border-radius:50%;border:1px solid rgba(255,255,255,.08);position:relative;background:rgba(255,255,255,.02);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+    .clim-cd{position:absolute;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.5px}
+    .clim-cd-n{top:4px;left:50%;transform:translateX(-50%)}
+    .clim-cd-s{bottom:4px;left:50%;transform:translateX(-50%)}
+    .clim-cd-e{right:6px;top:50%;transform:translateY(-50%)}
+    .clim-cd-w{left:6px;top:50%;transform:translateY(-50%)}
+    .clim-needle-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform 1.4s cubic-bezier(.4,0,.2,1)}
+    .clim-needle{width:3px;height:50px;border-radius:2px;position:relative}
+    .clim-needle-n{background:linear-gradient(180deg,rgba(96,165,250,1) 0%,rgba(96,165,250,.2) 100%);border-radius:2px 2px 0 0;height:25px}
+    .clim-needle-s{background:linear-gradient(0deg,rgba(255,255,255,.15) 0%,transparent 100%);border-radius:0 0 2px 2px;height:25px}
+    .clim-compass-center{width:8px;height:8px;border-radius:50%;background:var(--clr-climate);box-shadow:0 0 10px rgba(56,189,248,.7);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+    .clim-wind-vals{text-align:center}
+    .clim-wind-speed{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text)}
+    .clim-wind-dir{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.8px;margin-top:2px}
+
+    /* Precipitation panel */
+    .clim-precip-body{padding:14px 16px}
+    .clim-precip-chart{display:flex;align-items:flex-end;gap:4px;height:70px;margin-bottom:10px}
+    .clim-precip-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+    .clim-precip-bar-wrap{flex:1;display:flex;align-items:flex-end;width:100%;min-height:4px}
+    .clim-precip-bar{width:100%;background:linear-gradient(180deg,var(--clr-climate),rgba(56,189,248,.25));border-radius:3px 3px 0 0;min-height:3px;transform:scaleY(0);transform-origin:bottom;animation:precipBarIn .8s ease forwards}
+    @keyframes precipBarIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+    .clim-precip-day{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--text-muted);letter-spacing:.3px}
+    .clim-precip-summary{display:flex;gap:16px;flex-wrap:wrap;padding-top:10px;border-top:0.5px solid rgba(255,255,255,.05)}
+    .clim-em{display:flex;flex-direction:column;gap:2px}
+    .clim-em-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text)}
+    .clim-em-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase}
+
+    /* Extra metrics grid */
+    .clim-extra-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px}
+    .clim-xm{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 6px;background:rgba(255,255,255,.02);border:0.5px solid rgba(255,255,255,.05);border-radius:10px}
+    .clim-xm-ico{font-size:16px;line-height:1}
+    .clim-xm-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--text)}
+    .clim-xm-lbl{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase;text-align:center}
+
+    /* Climate loading / error */
+    .clim-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 20px;gap:14px;color:var(--text-muted)}
+    .clim-load-ico{font-size:36px;opacity:.2;animation:cloudDrift 3s ease-in-out infinite}
+    .clim-load-txt{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px}
+    .clim-news-section{margin-top:4px}
+
+    @media(max-width:860px){
+      .clim-two-col,.clim-three-col{grid-template-columns:1fr}
+      .clim-extra-metrics{grid-template-columns:repeat(2,1fr)}
+      .clim-temp{font-size:58px}
+    }
+
     /* ── RECENCY PULSE BADGE ── */
     .c-recency{display:inline-flex;align-items:center;gap:3px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:.5px;flex-shrink:0}
     .c-recency.live{background:rgba(226,75,74,.1);color:var(--neg);border:1px solid rgba(226,75,74,.25)}
@@ -940,6 +1098,7 @@
   <div id="panel-techai"  class="panel"></div>
   <div id="panel-india"   class="panel"></div>
   <div id="panel-tamilnadu" class="panel"></div>
+  <div id="panel-climate"  class="panel"></div>
   <div id="panel-crisis"   class="panel"></div>
   <div id="panel-search"   class="panel"></div>
 
@@ -1278,8 +1437,10 @@ const CATS = [
     _rss:[
       {url:'https://news.google.com/rss/search?q=%22Tamil+Nadu%22+OR+Chennai+news+latest&hl=en-IN&gl=IN&ceid=IN:en', name:'TN General'},
       {url:'https://news.google.com/rss/search?q=DMK+OR+AIADMK+OR+TVK+OR+%22MK+Stalin%22+OR+%22Edappadi+Palanisami%22+OR+%22Stalin%22+Tamil&hl=en-IN&gl=IN&ceid=IN:en', name:'TN Politics'},
-      {url:'https://news.google.com/rss/search?q=%22Tamil+Nadu%22+weather+OR+cyclone+OR+rainfall+OR+Chennai+flood+OR+drought+TN&hl=en-IN&gl=IN&ceid=IN:en', name:'TN Climate'}
     ]},
+
+  // Climate — weather dashboard powered by Open-Meteo
+  { id:'climate', name:'Climate', ico:'⛅', hex:'#38BDF8', _climate:true },
 
   // Crisis Watch — USGS earthquakes + RSS disaster/conflict news + ReliefWeb
   { id:'crisis',  name:'Crisis Watch', ico:'◬', hex:'#E84C74' },
@@ -2203,7 +2364,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
   const keys=['1','2','3','4','5','6','7','8','9','0'];
-  const tabIds=['home','world','markets','economy','techai','india','tamilnadu','crisis','search'];
+  const tabIds=['home','world','markets','economy','techai','india','tamilnadu','climate','crisis','search'];
   const idx=keys.indexOf(e.key);
   if(idx>=0&&tabIds[idx]){switchTab(tabIds[idx]);return;}
   if(e.key==='r'||e.key==='R')manualRefresh();
@@ -3531,10 +3692,475 @@ async function loadCrisisWatch(){
 }
 
 /* ════════════════════════════════════════
+   CLIMATE TAB — Open-Meteo weather dashboard
+════════════════════════════════════════ */
+const CLIM_PRESETS=[
+  {name:'Chennai',   lat:13.0827, lon:80.2707},
+  {name:'Mumbai',    lat:19.076,  lon:72.8777},
+  {name:'Delhi',     lat:28.6139, lon:77.209 },
+  {name:'Bangalore', lat:12.9716, lon:77.5946},
+  {name:'Kolkata',   lat:22.5726, lon:88.3639},
+  {name:'London',    lat:51.5074, lon:-0.1278},
+  {name:'New York',  lat:40.7128, lon:-74.006},
+];
+
+const WMO_INFO={
+  0:{l:'Clear sky',g:'clear'},
+  1:{l:'Mainly clear',g:'clear'}, 2:{l:'Partly cloudy',g:'cloudy'}, 3:{l:'Overcast',g:'cloudy'},
+  45:{l:'Fog',g:'fog'}, 48:{l:'Icy fog',g:'fog'},
+  51:{l:'Light drizzle',g:'rain'}, 53:{l:'Drizzle',g:'rain'}, 55:{l:'Heavy drizzle',g:'rain'},
+  61:{l:'Light rain',g:'rain'}, 63:{l:'Rain',g:'rain'}, 65:{l:'Heavy rain',g:'rain'},
+  66:{l:'Freezing rain',g:'rain'}, 67:{l:'Heavy freezing rain',g:'rain'},
+  71:{l:'Light snow',g:'snow'}, 73:{l:'Snow',g:'snow'}, 75:{l:'Heavy snow',g:'snow'}, 77:{l:'Snow grains',g:'snow'},
+  80:{l:'Light showers',g:'rain'}, 81:{l:'Showers',g:'rain'}, 82:{l:'Heavy showers',g:'rain'},
+  85:{l:'Snow showers',g:'snow'}, 86:{l:'Heavy snow showers',g:'snow'},
+  95:{l:'Thunderstorm',g:'storm'}, 96:{l:'Thunderstorm w/ hail',g:'storm'}, 99:{l:'Thunderstorm w/ heavy hail',g:'storm'},
+};
+
+function wmoInfo(c){return WMO_INFO[c]||{l:'Unknown',g:'cloudy'}}
+
+function wmoIcon(c,isDay){
+  const g=wmoInfo(c).g;
+  if(g==='clear')return isDay?'☀️':'🌙';
+  if(g==='storm')return'⛈️';
+  if(g==='snow')return'❄️';
+  if(g==='fog')return'🌫️';
+  if(g==='rain'){if(c<=55)return'🌦️';if(c<=67)return'🌧️';return'🌦️';}
+  return isDay?'⛅':'🌥️';
+}
+
+function wmoIconCls(g){
+  if(g==='clear')return'clim-ico-sun';
+  if(g==='storm')return'clim-ico-storm';
+  if(g==='snow')return'clim-ico-snow';
+  if(g==='fog')return'clim-ico-fog';
+  if(g==='rain')return'clim-ico-rain-pulse';
+  return'clim-ico-cloud';
+}
+
+function weatherGradient(g,isDay){
+  if(!isDay)return'linear-gradient(160deg,#0F172A 0%,#1A2942 45%,#0C1420 100%)';
+  const m={
+    clear:'linear-gradient(160deg,#F97316 0%,#FBBF24 20%,#38BDF8 65%,#0369A1 100%)',
+    cloudy:'linear-gradient(160deg,#334155 0%,#475569 55%,#1E3A5F 100%)',
+    rain:'linear-gradient(160deg,#1E3A5F 0%,#2D4A6B 45%,#1E293B 100%)',
+    storm:'linear-gradient(160deg,#1E1B4B 0%,#312E81 45%,#0F172A 100%)',
+    fog:'linear-gradient(160deg,#374151 0%,#6B7280 70%,#4B5563 100%)',
+    snow:'linear-gradient(160deg,#93C5FD 0%,#E2E8F0 70%,#CBD5E1 100%)',
+  };
+  return m[g]||m.cloudy;
+}
+
+function aqiInfo(v){
+  if(v<=50) return{lbl:'Good',col:'#1D9E75'};
+  if(v<=100)return{lbl:'Moderate',col:'#FBBF24'};
+  if(v<=150)return{lbl:'Unhealthy for Sensitive',col:'#F97316'};
+  if(v<=200)return{lbl:'Unhealthy',col:'#E24B4A'};
+  if(v<=300)return{lbl:'Very Unhealthy',col:'#8B5CE8'};
+  return{lbl:'Hazardous',col:'#C83850'};
+}
+
+const _WIND_DIRS=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+function windDir(deg){return _WIND_DIRS[Math.round(((deg%360)+360)%360/22.5)%16]}
+
+function fmtHr(iso){
+  const d=new Date(iso);
+  return d.getHours()===0?'12a':d.getHours()<12?d.getHours()+'a':d.getHours()===12?'12p':(d.getHours()-12)+'p';
+}
+
+function climRainHTML(n=20){
+  let h='';
+  for(let i=0;i<n;i++){
+    const left=(Math.random()*96+2).toFixed(1)+'%';
+    const h2=(Math.random()*55+25).toFixed(0)+'px';
+    const spd=(Math.random()*1.2+0.6).toFixed(2)+'s';
+    const del=-(Math.random()*2).toFixed(2)+'s';
+    h+=`<div class="clim-raindrop" style="left:${left};height:${h2};animation-duration:${spd};animation-delay:${del}"></div>`;
+  }
+  return h;
+}
+
+let _climLoc={lat:13.0827,lon:80.2707,name:'Chennai, IN'};
+
+async function climGeocode(q){
+  const url=`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`;
+  const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
+  if(!r.ok)throw new Error('Geocode HTTP '+r.status);
+  const d=await r.json();
+  if(!d.results||!d.results.length)throw new Error('Location not found: '+q);
+  const loc=d.results[0];
+  return{lat:loc.latitude,lon:loc.longitude,name:`${loc.name}${loc.country_code?', '+loc.country_code:''}`};
+}
+
+async function fetchOpenMeteo(lat,lon){
+  const base='https://api.open-meteo.com/v1/forecast';
+  const cur='temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,uv_index,surface_pressure,is_day';
+  const hrly='temperature_2m,precipitation_probability,weather_code';
+  const dly='weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,sunrise,sunset,uv_index_max,wind_speed_10m_max';
+  const wUrl=`${base}?latitude=${lat}&longitude=${lon}&current=${cur}&hourly=${hrly}&daily=${dly}&timezone=auto&forecast_days=7`;
+  const aUrl=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm10,pm2_5`;
+  const [wr,ar]=await Promise.all([
+    fetch(wUrl,{signal:AbortSignal.timeout(10000)}),
+    fetch(aUrl,{signal:AbortSignal.timeout(10000)}),
+  ]);
+  if(!wr.ok)throw new Error('Weather API HTTP '+wr.status);
+  const w=await wr.json();
+  let a=null;
+  if(ar.ok)a=await ar.json();
+  return{w,a};
+}
+
+const CLIMATE_NEWS_RSS=[
+  {url:'https://news.google.com/rss/search?q=climate+change+OR+global+warming+OR+extreme+weather+OR+flood+OR+drought+OR+heatwave&hl=en&gl=US&ceid=US:en', name:'Climate News'},
+  {url:'https://news.google.com/rss/search?q=monsoon+OR+cyclone+OR+El+Nino+OR+La+Nina+weather+2025&hl=en-IN&gl=IN&ceid=IN:en', name:'Weather Alerts'},
+];
+
+const DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function renderClimateData(w,a,locName){
+  const c=w.current;
+  const hr=w.hourly;
+  const dy=w.daily;
+  const isDay=c.is_day===1;
+  const info=wmoInfo(c.weather_code);
+  const grad=weatherGradient(info.g,isDay);
+  const isRain=info.g==='rain';
+  const iconCls=wmoIconCls(info.g)+(info.g==='clear'&&!isDay?' clim-ico-fog':'');
+
+  // hourly — next 24 slots from current hour
+  const now=new Date();
+  const curHr=now.getHours();
+  const hrTimes=hr.time||[];
+  let startIdx=hrTimes.findIndex(t=>new Date(t).getHours()===curHr&&new Date(t).toDateString()===now.toDateString());
+  if(startIdx<0)startIdx=0;
+  const hrSlots=hrTimes.slice(startIdx,startIdx+24);
+  const maxHrTemp=Math.max(...(hr.temperature_2m||[]).slice(startIdx,startIdx+24));
+  const minHrTemp=Math.min(...(hr.temperature_2m||[]).slice(startIdx,startIdx+24));
+  const hrRange=Math.max(maxHrTemp-minHrTemp,1);
+
+  let hourlyHTML='';
+  hrSlots.forEach((t,i)=>{
+    const idx=startIdx+i;
+    const temp=Math.round(hr.temperature_2m[idx]||0);
+    const rainP=hr.precipitation_probability?Math.round(hr.precipitation_probability[idx]||0):0;
+    const wc=hr.weather_code?hr.weather_code[idx]:0;
+    const ih=new Date(t).getHours();
+    const isNight=ih<6||ih>=20;
+    const ico=wmoIcon(wc,!isNight);
+    const barH=((temp-minHrTemp)/hrRange)*100;
+    const isCur=i===0;
+    hourlyHTML+=`<div class="clim-hour${isCur?' clim-hour-now':''}">
+      <div class="clim-h-time">${isCur?'NOW':fmtHr(t)}</div>
+      <div class="clim-h-ico">${ico}</div>
+      <div class="clim-h-temp">${temp}°</div>
+      <div class="clim-h-bar"><div class="clim-h-bar-fill" style="height:${barH}%"></div></div>
+      ${rainP>20?`<div class="clim-h-rain-pct">${rainP}%</div>`:'<div class="clim-h-rain-pct" style="opacity:0">0%</div>'}
+    </div>`;
+  });
+
+  // 7-day forecast
+  const dTimes=dy.time||[];
+  const dMax=dy.temperature_2m_max||[];
+  const dMin=dy.temperature_2m_min||[];
+  const dRain=dy.precipitation_sum||[];
+  const dRainP=dy.precipitation_probability_max||[];
+  const dWC=dy.weather_code||[];
+  const dSR=dy.sunrise||[];
+  const dSS=dy.sunset||[];
+  const absMin=Math.min(...dMin);
+  const absMax=Math.max(...dMax);
+  const absRange=Math.max(absMax-absMin,1);
+
+  let daysHTML='';
+  dTimes.forEach((t,i)=>{
+    const d=new Date(t+'T12:00:00');
+    const name=i===0?'TODAY':DAY_NAMES[d.getDay()];
+    const ico=wmoIcon(dWC[i]||0,true);
+    const scale=((dMax[i]-absMin)/absRange).toFixed(3);
+    const range=`${Math.round(dMin[i])}° / ${Math.round(dMax[i])}°`;
+    const rp=dRainP[i]||0;
+    daysHTML+=`<div class="clim-day">
+      <div class="clim-day-name">${name}</div>
+      <div class="clim-day-ico">${ico}</div>
+      <div class="clim-day-bar-wrap"><div class="clim-day-bar" style="--bar-scale:${scale};animation-delay:${i*0.07}s"></div></div>
+      <div class="clim-day-range">${range}</div>
+      <div class="clim-day-rain">${rp>10?rp+'%':''}</div>
+    </div>`;
+  });
+
+  // Sun arc
+  let sunHTML='';
+  if(dSR[0]&&dSS[0]){
+    const sr=new Date(dSR[0]),ss=new Date(dSS[0]);
+    const nowMs=now.getTime();
+    const dayLen=ss-sr;
+    let p=Math.max(0,Math.min(1,(nowMs-sr)/dayLen));
+    if(!isDay)p=nowMs<sr?0:1;
+    const PI=Math.PI, r=88, cx=100, cy=92;
+    const arcLen=(PI*r).toFixed(1);
+    const fillLen=(p*PI*r).toFixed(1);
+    const dotX=(cx+r*Math.cos(PI*(1-p))).toFixed(2);
+    const dotY=(cy-r*Math.sin(PI*(1-p))).toFixed(2);
+    const srStr=sr.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
+    const ssStr=ss.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
+    sunHTML=`
+    <svg class="clim-sun-svg" viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#F97316"/>
+          <stop offset="100%" stop-color="#FBBF24"/>
+        </linearGradient>
+      </defs>
+      <path class="clim-sun-arc-track" d="M12,92 A88,88 0 0,1 188,92"/>
+      <path class="clim-sun-arc-fill" d="M12,92 A88,88 0 0,1 188,92" stroke-dasharray="${fillLen} ${arcLen}"/>
+      <circle class="clim-sun-dot" cx="${dotX}" cy="${dotY}" r="5"/>
+      <text x="12" y="108" fill="rgba(255,255,255,.35)" font-family="JetBrains Mono,monospace" font-size="8">${srStr}</text>
+      <text x="188" y="108" fill="rgba(255,255,255,.35)" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="end">${ssStr}</text>
+    </svg>`;
+  }
+
+  // AQI
+  let aqiHTML='',aqiPillsHTML='';
+  const aqi=a&&a.current?a.current.us_aqi:null;
+  if(aqi!=null){
+    const ai=aqiInfo(aqi);
+    const aqiPct=Math.min(aqi/300,1);
+    const PI=Math.PI, r=80;
+    const arcLen=(PI*r).toFixed(1);
+    const fillLen=(aqiPct*PI*r).toFixed(1);
+    aqiHTML=`
+    <svg class="clim-aqi-svg" viewBox="0 0 200 115" xmlns="http://www.w3.org/2000/svg">
+      <path class="clim-aqi-arc-track" d="M20,102 A80,80 0 0,1 180,102"/>
+      <path class="clim-aqi-arc" d="M20,102 A80,80 0 0,1 180,102" stroke="${ai.col}" stroke-dasharray="${fillLen} ${arcLen}"/>
+      <text class="clim-aqi-val" x="100" y="80" fill="${ai.col}">${aqi}</text>
+      <text class="clim-aqi-sub" x="100" y="96">US AQI</text>
+    </svg>
+    <div class="clim-aqi-lbl" style="background:${ai.col}22;color:${ai.col};border:0.5px solid ${ai.col}44">${ai.lbl}</div>`;
+    const pm10=a.current.pm10,pm25=a.current.pm2_5;
+    aqiPillsHTML=`
+    <div class="clim-aqi-pills">
+      ${pm25!=null?`<div class="clim-aqi-pill">PM2.5 · ${pm25.toFixed(1)}</div>`:''}
+      ${pm10!=null?`<div class="clim-aqi-pill">PM10 · ${pm10.toFixed(1)}</div>`:''}
+    </div>`;
+  } else {
+    aqiHTML='<div style="padding:20px;text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--text-muted)">AQI unavailable</div>';
+  }
+
+  // Wind compass
+  const wspd=c.wind_speed_10m||0;
+  const wdeg=c.wind_direction_10m||0;
+  const wdir=windDir(wdeg);
+
+  // Precipitation 7-day bars
+  const precipVals=dRain.map(v=>v||0);
+  const maxPrecip=Math.max(...precipVals,0.1);
+  let precipCols='';
+  precipVals.forEach((v,i)=>{
+    const d=new Date((dTimes[i]||'')+'T12:00:00');
+    const name=i===0?'TOD':DAY_NAMES[d.getDay()];
+    const barH=((v/maxPrecip)*100).toFixed(1)+'%';
+    precipCols+=`<div class="clim-precip-col">
+      <div class="clim-precip-bar-wrap" style="height:60px">
+        <div class="clim-precip-bar" style="height:${barH};animation-delay:${i*0.08}s"></div>
+      </div>
+      <div class="clim-precip-day">${name}</div>
+    </div>`;
+  });
+  const totalPrecip=precipVals.reduce((a,b)=>a+b,0).toFixed(1);
+  const maxDayPrecip=maxPrecip.toFixed(1);
+
+  return `
+  <div class="clim-hero" style="--clim-grad:${grad}" id="clim-hero-el">
+    <div class="clim-hero-glass"></div>
+    ${isRain||info.g==='storm'?'<div class="clim-rain-canvas" id="clim-rain">'+climRainHTML(18)+'</div>':''}
+    <div class="clim-loc-name">📍 ${esc(locName)}</div>
+    <div class="clim-temp-row">
+      <div class="clim-ico-wrap"><span class="${iconCls}">${wmoIcon(c.weather_code,isDay)}</span></div>
+      <div class="clim-temp">${Math.round(c.temperature_2m)}°</div>
+    </div>
+    <div class="clim-cond">${info.l}</div>
+    <div class="clim-feels">Feels like ${Math.round(c.apparent_temperature)}°C</div>
+    <div class="clim-metrics-bar">
+      <div class="clim-m"><div class="clim-m-val">${c.relative_humidity_2m}%</div><div class="clim-m-lbl">Humidity</div></div>
+      <div class="clim-m-sep"></div>
+      <div class="clim-m"><div class="clim-m-val">${Math.round(wspd)} km/h</div><div class="clim-m-lbl">Wind</div></div>
+      <div class="clim-m-sep"></div>
+      <div class="clim-m"><div class="clim-m-val">${c.uv_index||0}</div><div class="clim-m-lbl">UV Index</div></div>
+      <div class="clim-m-sep"></div>
+      <div class="clim-m"><div class="clim-m-val">${Math.round(c.surface_pressure||1013)} hPa</div><div class="clim-m-lbl">Pressure</div></div>
+      <div class="clim-m-sep"></div>
+      <div class="clim-m"><div class="clim-m-val">${c.precipitation||0} mm</div><div class="clim-m-lbl">Precip</div></div>
+    </div>
+  </div>
+
+  <div class="clim-panel">
+    <div class="clim-ph"><div class="clim-ph-title">Hourly Forecast</div><div class="clim-ph-badge">24 HRS</div></div>
+    <div class="clim-hourly-scroll">${hourlyHTML}</div>
+  </div>
+
+  <div class="clim-two-col">
+    <div class="clim-panel">
+      <div class="clim-ph"><div class="clim-ph-title">7-Day Forecast</div><div class="clim-ph-badge">DAILY</div></div>
+      <div class="clim-days-body">${daysHTML}</div>
+    </div>
+    <div class="clim-panel">
+      <div class="clim-ph"><div class="clim-ph-title">Sun Arc</div><div class="clim-ph-badge">${isDay?'DAYLIGHT':'NIGHT'}</div></div>
+      <div class="clim-sun-body">${sunHTML||'<div style="padding:20px;text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--text-muted)">Sun data unavailable</div>'}</div>
+    </div>
+  </div>
+
+  <div class="clim-three-col">
+    <div class="clim-panel">
+      <div class="clim-ph"><div class="clim-ph-title">Air Quality</div><div class="clim-ph-badge">AQI</div></div>
+      <div class="clim-aqi-body">${aqiHTML}${aqiPillsHTML}</div>
+    </div>
+    <div class="clim-panel">
+      <div class="clim-ph"><div class="clim-ph-title">Wind</div><div class="clim-ph-badge">${wdir}</div></div>
+      <div class="clim-compass-body">
+        <div class="clim-compass-ring">
+          <div class="clim-cd clim-cd-n">N</div>
+          <div class="clim-cd clim-cd-s">S</div>
+          <div class="clim-cd clim-cd-e">E</div>
+          <div class="clim-cd clim-cd-w">W</div>
+          <div class="clim-needle-wrap" id="clim-needle" style="transform:rotate(${wdeg}deg)">
+            <div class="clim-needle"><div class="clim-needle-n"></div><div class="clim-needle-s"></div></div>
+          </div>
+          <div class="clim-compass-center"></div>
+        </div>
+        <div class="clim-wind-vals">
+          <div class="clim-wind-speed">${Math.round(wspd)} <span style="font-size:13px;font-weight:400;color:var(--text-muted)">km/h</span></div>
+          <div class="clim-wind-dir">${wdir} · ${wdeg}°</div>
+        </div>
+      </div>
+    </div>
+    <div class="clim-panel">
+      <div class="clim-ph"><div class="clim-ph-title">Precipitation</div><div class="clim-ph-badge">7 DAYS</div></div>
+      <div class="clim-precip-body">
+        <div class="clim-precip-chart">${precipCols}</div>
+        <div class="clim-precip-summary">
+          <div class="clim-em"><div class="clim-em-val">${totalPrecip} mm</div><div class="clim-em-lbl">Weekly Total</div></div>
+          <div class="clim-em"><div class="clim-em-val">${maxDayPrecip} mm</div><div class="clim-em-lbl">Peak Day</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="clim-panel clim-news-section" id="clim-news-panel">
+    <div class="clim-ph"><div class="clim-ph-title">Climate News</div><div class="clim-ph-badge">RSS</div></div>
+    <div id="clim-news-body" style="padding:16px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)">Loading...</div>
+  </div>
+  `;
+}
+
+async function loadClimateTab(){
+  const p=document.getElementById('panel-climate');
+  if(!p)return;
+  const c=cat('climate');
+  const hex=c?.hex||'#38BDF8';
+  p.innerHTML=`
+  <div class="panel-banner">
+    <div class="cat-head">
+      <div class="cat-head-row">
+        <div class="cat-title-row">
+          <div class="tab-ico" style="color:${hex}">⛅</div>
+          <div class="panel-title" style="color:${hex}">Climate</div>
+        </div>
+      </div>
+      <div class="cat-sub">Live weather powered by Open-Meteo</div>
+    </div>
+  </div>
+  <div class="clim-controls">
+    <input class="clim-search-input" id="clim-inp" placeholder="Search city or location…" onkeydown="if(event.key==='Enter')doClimateSearch()">
+    <button class="clim-search-btn" onclick="doClimateSearch()">Search</button>
+    <button class="clim-geo-btn" onclick="doClimateGeo()">📍 My Location</button>
+  </div>
+  <div class="clim-presets">${CLIM_PRESETS.map(pr=>`<button class="clim-preset-chip" onclick="setClimLocation(${pr.lat},${pr.lon},'${pr.name}')">${pr.name}</button>`).join('')}</div>
+  <div id="clim-weather-body">
+    <div class="clim-loading"><div class="clim-load-ico">⛅</div><div class="clim-load-txt">Fetching weather…</div></div>
+  </div>`;
+  await _loadClimateWeather();
+  _loadClimateNews();
+}
+
+async function _loadClimateWeather(){
+  const el=document.getElementById('clim-weather-body');
+  if(!el)return;
+  el.innerHTML='<div class="clim-loading"><div class="clim-load-ico">⛅</div><div class="clim-load-txt">Fetching weather…</div></div>';
+  try{
+    const {w,a}=await fetchOpenMeteo(_climLoc.lat,_climLoc.lon);
+    el.innerHTML=renderClimateData(w,a,_climLoc.name);
+    // animate compass needle with slight delay for CSS transition
+    setTimeout(()=>{
+      const n=document.getElementById('clim-needle');
+      if(n)n.style.transform=`rotate(${w.current.wind_direction_10m||0}deg)`;
+    },120);
+    // load news into embedded slot
+    _loadClimateNews();
+  }catch(e){
+    el.innerHTML=`<div class="clim-loading"><div class="clim-load-ico">⚠</div><div class="clim-load-txt">Weather unavailable · ${esc(e.message)}</div></div>`;
+  }
+}
+
+async function _loadClimateNews(){
+  const el=document.getElementById('clim-news-body');
+  if(!el)return;
+  try{
+    const feeds=await Promise.allSettled(CLIMATE_NEWS_RSS.map(f=>fetchRSS(f.url).then(items=>items.map(it=>normalizeRssItem(it,f.name)))));
+    let arts=[];
+    feeds.forEach(r=>{if(r.status==='fulfilled')arts=arts.concat(r.value);});
+    arts=deduplicate(arts).sort((a,b)=>(b.pub||0)-(a.pub||0)).slice(0,12);
+    if(!arts.length){el.innerHTML='<div style="padding:16px;text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--text-muted)">No climate news available.</div>';return;}
+    const frag=arts.map(a=>artCardHTML(a,'climate')).join('');
+    el.innerHTML=`<div class="art-grid" style="padding:14px">${frag}</div>`;
+  }catch(e){
+    if(el)el.innerHTML=`<div style="padding:16px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)">Climate news unavailable</div>`;
+  }
+}
+
+async function doClimateSearch(){
+  const inp=document.getElementById('clim-inp');
+  const q=inp?inp.value.trim():'';
+  if(!q)return;
+  const el=document.getElementById('clim-weather-body');
+  if(el)el.innerHTML='<div class="clim-loading"><div class="clim-load-ico">⛅</div><div class="clim-load-txt">Locating…</div></div>';
+  try{
+    const loc=await climGeocode(q);
+    _climLoc=loc;
+    await _loadClimateWeather();
+  }catch(e){
+    if(el)el.innerHTML=`<div class="clim-loading"><div class="clim-load-ico">⚠</div><div class="clim-load-txt">${esc(e.message)}</div></div>`;
+  }
+}
+
+async function setClimLocation(lat,lon,name){
+  _climLoc={lat,lon,name};
+  const inp=document.getElementById('clim-inp');
+  if(inp)inp.value='';
+  await _loadClimateWeather();
+}
+
+async function doClimateGeo(){
+  if(!navigator.geolocation){alert('Geolocation not supported.');return;}
+  const el=document.getElementById('clim-weather-body');
+  if(el)el.innerHTML='<div class="clim-loading"><div class="clim-load-ico">📍</div><div class="clim-load-txt">Detecting location…</div></div>';
+  navigator.geolocation.getCurrentPosition(
+    async pos=>{
+      _climLoc={lat:pos.coords.latitude,lon:pos.coords.longitude,name:'Your Location'};
+      await _loadClimateWeather();
+    },
+    err=>{
+      if(el)el.innerHTML=`<div class="clim-loading"><div class="clim-load-ico">⚠</div><div class="clim-load-txt">Location denied · ${esc(err.message)}</div></div>`;
+    },
+    {timeout:8000,enableHighAccuracy:false}
+  );
+}
+
+/* ════════════════════════════════════════
    LOAD CATEGORY — DISPATCHER
 ════════════════════════════════════════ */
 async function loadCat(id){
   if(id==='search')  return loadSearchTab();
+  if(id==='climate') return loadClimateTab();
   if(id==='crisis')  return loadCrisisWatch();
   if(id==='markets') return loadMarketsPanel();
   const c=cat(id);
