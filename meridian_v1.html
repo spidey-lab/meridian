@@ -794,7 +794,7 @@
     #panel-climate .panel-banner{background:linear-gradient(135deg,rgba(56,189,248,.08) 0%,transparent 65%);border-bottom:1px solid rgba(56,189,248,.1)}
 
     /* Hero */
-    .clim-hero{position:relative;border-radius:18px;overflow:hidden;margin-bottom:18px;min-height:220px;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 24px 20px;background:var(--clim-grad,linear-gradient(160deg,#0F172A 0%,#1A2942 45%,#0C1420 100%));transition:background 1.2s ease}
+    .clim-hero{position:relative;border-radius:18px;overflow:hidden;min-height:220px;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 24px 20px;background:var(--clim-grad,linear-gradient(160deg,#0F172A 0%,#1A2942 45%,#0C1420 100%));transition:background 1.2s ease}
     .clim-hero::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.22);pointer-events:none;z-index:0}
     .clim-hero-glass{position:absolute;inset:0;background:rgba(255,255,255,.025);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:none;z-index:0}
     .clim-hero>*{position:relative;z-index:1}
@@ -860,6 +860,12 @@
     .clim-h-bar{width:3px;height:30px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;position:relative}
     .clim-h-bar-fill{position:absolute;bottom:0;width:100%;background:linear-gradient(180deg,var(--clr-climate),rgba(56,189,248,.3));border-radius:2px;transition:height 1s ease}
     .clim-h-rain-pct{font-family:'JetBrains Mono',monospace;font-size:7px;color:rgba(96,165,250,.7)}
+
+    /* Top hero row: hero card left (fixed), hourly right (fill) */
+    .clim-top-row{display:grid;grid-template-columns:340px 1fr;gap:14px;margin-bottom:14px;align-items:stretch}
+    .clim-hero{position:relative;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 24px 20px;background:var(--clim-grad,linear-gradient(160deg,#0F172A 0%,#1A2942 45%,#0C1420 100%));transition:background 1.2s ease}
+    .clim-hourly-panel{display:flex;flex-direction:column;overflow:hidden}
+    .clim-hourly-panel .clim-hourly-scroll{flex:1;align-content:flex-start}
 
     /* Two-col grid */
     .clim-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
@@ -942,6 +948,7 @@
     .clim-news-section{margin-top:4px}
 
     @media(max-width:860px){
+      .clim-top-row{grid-template-columns:1fr}
       .clim-two-col,.clim-three-col{grid-template-columns:1fr}
       .clim-extra-metrics{grid-template-columns:repeat(2,1fr)}
       .clim-temp{font-size:58px}
@@ -3970,32 +3977,33 @@ function renderClimateData(w,a,locName){
   const maxDayPrecip=maxPrecip.toFixed(1);
 
   return `
-  <div class="clim-hero" style="--clim-grad:${grad}" id="clim-hero-el">
-    <div class="clim-hero-glass"></div>
-    ${isRain||info.g==='storm'?'<div class="clim-rain-canvas" id="clim-rain">'+climRainHTML(18)+'</div>':''}
-    <div class="clim-loc-name">📍 ${esc(locName)}</div>
-    <div class="clim-temp-row">
-      <div class="clim-ico-wrap"><span class="${iconCls}">${wmoIcon(c.weather_code,isDay)}</span></div>
-      <div class="clim-temp">${Math.round(c.temperature_2m)}°</div>
+  <div class="clim-top-row">
+    <div class="clim-hero" style="--clim-grad:${grad}" id="clim-hero-el">
+      <div class="clim-hero-glass"></div>
+      ${isRain||info.g==='storm'?'<div class="clim-rain-canvas" id="clim-rain">'+climRainHTML(18)+'</div>':''}
+      <div class="clim-loc-name">📍 ${esc(locName)}</div>
+      <div class="clim-temp-row">
+        <div class="clim-ico-wrap"><span class="${iconCls}">${wmoIcon(c.weather_code,isDay)}</span></div>
+        <div class="clim-temp">${Math.round(c.temperature_2m)}°</div>
+      </div>
+      <div class="clim-cond">${info.l}</div>
+      <div class="clim-feels">Feels like ${Math.round(c.apparent_temperature)}°C</div>
+      <div class="clim-metrics-bar">
+        <div class="clim-m"><div class="clim-m-val">${c.relative_humidity_2m}%</div><div class="clim-m-lbl">Humidity</div></div>
+        <div class="clim-m-sep"></div>
+        <div class="clim-m"><div class="clim-m-val">${Math.round(wspd)} km/h</div><div class="clim-m-lbl">Wind</div></div>
+        <div class="clim-m-sep"></div>
+        <div class="clim-m"><div class="clim-m-val">${c.uv_index||0}</div><div class="clim-m-lbl">UV Index</div></div>
+        <div class="clim-m-sep"></div>
+        <div class="clim-m"><div class="clim-m-val">${Math.round(c.surface_pressure||1013)} hPa</div><div class="clim-m-lbl">Pressure</div></div>
+        <div class="clim-m-sep"></div>
+        <div class="clim-m"><div class="clim-m-val">${c.precipitation||0} mm</div><div class="clim-m-lbl">Precip</div></div>
+      </div>
     </div>
-    <div class="clim-cond">${info.l}</div>
-    <div class="clim-feels">Feels like ${Math.round(c.apparent_temperature)}°C</div>
-    <div class="clim-metrics-bar">
-      <div class="clim-m"><div class="clim-m-val">${c.relative_humidity_2m}%</div><div class="clim-m-lbl">Humidity</div></div>
-      <div class="clim-m-sep"></div>
-      <div class="clim-m"><div class="clim-m-val">${Math.round(wspd)} km/h</div><div class="clim-m-lbl">Wind</div></div>
-      <div class="clim-m-sep"></div>
-      <div class="clim-m"><div class="clim-m-val">${c.uv_index||0}</div><div class="clim-m-lbl">UV Index</div></div>
-      <div class="clim-m-sep"></div>
-      <div class="clim-m"><div class="clim-m-val">${Math.round(c.surface_pressure||1013)} hPa</div><div class="clim-m-lbl">Pressure</div></div>
-      <div class="clim-m-sep"></div>
-      <div class="clim-m"><div class="clim-m-val">${c.precipitation||0} mm</div><div class="clim-m-lbl">Precip</div></div>
+    <div class="clim-panel clim-hourly-panel">
+      <div class="clim-ph"><div class="clim-ph-title">Hourly Forecast</div><div class="clim-ph-badge">24 HRS</div></div>
+      <div class="clim-hourly-scroll" style="flex-wrap:wrap;align-content:flex-start">${hourlyHTML}</div>
     </div>
-  </div>
-
-  <div class="clim-panel">
-    <div class="clim-ph"><div class="clim-ph-title">Hourly Forecast</div><div class="clim-ph-badge">24 HRS</div></div>
-    <div class="clim-hourly-scroll">${hourlyHTML}</div>
   </div>
 
   <div class="clim-two-col">
@@ -4105,7 +4113,7 @@ async function _loadClimateNews(){
   const el=document.getElementById('clim-news-body');
   if(!el)return;
   try{
-    const feeds=await Promise.allSettled(CLIMATE_NEWS_RSS.map(f=>fetchRSS(f.url).then(items=>items.map(it=>normalizeRssItem(it,f.name)))));
+    const feeds=await Promise.allSettled(CLIMATE_NEWS_RSS.map(f=>fetchRSS(f.url).then(r=>(r.items||[]).map(it=>normalizeRssItem(it,f.name)))));
     let arts=[];
     feeds.forEach(r=>{if(r.status==='fulfilled')arts=arts.concat(r.value);});
     arts=deduplicate(arts).sort((a,b)=>(b.pub||0)-(a.pub||0)).slice(0,12);
