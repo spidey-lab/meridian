@@ -794,7 +794,7 @@
     #panel-climate .panel-banner{background:linear-gradient(135deg,rgba(56,189,248,.08) 0%,transparent 65%);border-bottom:1px solid rgba(56,189,248,.1)}
 
     /* Hero */
-    .clim-hero{position:relative;border-radius:18px;overflow:hidden;min-height:240px;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 24px 20px;background:var(--clim-grad,linear-gradient(160deg,#0F172A 0%,#1A2942 45%,#0C1420 100%));transition:background 1.2s ease}
+    .clim-hero{position:relative;border-radius:18px;overflow:hidden;min-height:360px;display:flex;flex-direction:column;justify-content:flex-end;padding:28px 30px 26px;background:var(--clim-grad,linear-gradient(160deg,#0F172A 0%,#1A2942 45%,#0C1420 100%));transition:background 1.2s ease}
     .clim-hero::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.22);pointer-events:none;z-index:0}
     .clim-hero-glass{position:absolute;inset:0;background:rgba(255,255,255,.025);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:none;z-index:0}
     .clim-hero>*:not(.clim-sky){position:relative;z-index:1}
@@ -887,13 +887,12 @@
     .clim-h-bar-fill{position:absolute;bottom:0;width:100%;background:linear-gradient(180deg,var(--clr-climate),rgba(56,189,248,.3));border-radius:2px;transition:height 1s ease}
     .clim-h-rain-pct{font-family:'JetBrains Mono',monospace;font-size:7px;color:rgba(96,165,250,.7)}
 
-    /* Top hero row: equal halves */
-    .clim-top-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;align-items:stretch}
+    /* Top hero row: hero card alone, full width */
+    .clim-top-row{margin-bottom:14px}
     .clim-hourly-panel{display:flex;flex-direction:column}
     .clim-hourly-panel .clim-hourly-scroll{flex:1;align-content:flex-start}
 
-    /* Two-col grid */
-    .clim-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    /* Three-col grid (used for hourly/sun-arc/7-day row and aqi/wind/precip row) */
     .clim-three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px}
 
     /* 7-day forecast */
@@ -973,10 +972,10 @@
     .clim-news-section{margin-top:4px}
 
     @media(max-width:860px){
-      .clim-top-row{grid-template-columns:1fr}
-      .clim-two-col,.clim-three-col{grid-template-columns:1fr}
+      .clim-three-col{grid-template-columns:1fr}
       .clim-extra-metrics{grid-template-columns:repeat(2,1fr)}
       .clim-temp{font-size:58px}
+      .clim-hero{min-height:280px;padding:22px 22px 20px}
     }
 
     /* ── RECENCY PULSE BADGE ── */
@@ -3818,7 +3817,10 @@ function climMoonSVG(phase){
   const shadowX=waxing?cx-illum*2*r:cx+illum*2*r;
   return`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" class="clim-sky-moon"><defs><mask id="moonMask"><circle cx="${cx}" cy="${cy}" r="${r}" fill="white"/><circle cx="${shadowX.toFixed(1)}" cy="${cy}" r="${r}" fill="black"/></mask></defs><circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(240,236,210,.92)" mask="url(#moonMask)"/></svg>`;
 }
+// Density scale — hero card is now full-width, so scenes need proportionally fuller elements
+const SKY_SCALE=1.35;
 function _skyCloud(x,y,col,op,w,spd,del){
+  w=Math.round(w*SKY_SCALE);
   const ch=Math.round(w*.33);
   const b1w=Math.round(w*.44),b1h=Math.round(ch*1.6),b1l=Math.round(w*.18);
   const b2w=Math.round(w*.3),b2h=Math.round(ch*1.3),b2r=Math.round(w*.2);
@@ -3832,6 +3834,8 @@ function _skyCloud(x,y,col,op,w,spd,del){
 }
 // _skyRain(n, col, w, maxH) — w=stroke width px, maxH=max drop height px
 function _skyRain(n,col,w=1,maxH=28){
+  n=Math.round(n*SKY_SCALE);
+  maxH=Math.round(maxH*1.25);
   let h='';
   for(let i=0;i<n;i++){
     const l=(Math.random()*95+2).toFixed(1)+'%';
@@ -3844,9 +3848,11 @@ function _skyRain(n,col,w=1,maxH=28){
 }
 // _skyLightning(n, intensity) — sky flash only
 function _skyLightning(n,intensity=1.0){
+  n=Math.ceil(n*1.25);
+  intensity=intensity*1.12;
   let h='';
   for(let i=0;i<n;i++){
-    const cyc=(3+Math.random()*3.5).toFixed(1)+'s';
+    const cyc=(2.6+Math.random()*3.1).toFixed(1)+'s';
     const del=(Math.random()*4.5).toFixed(1)+'s';
     const fOp=Math.min(1,(0.78*intensity)).toFixed(2);
     h+=`<div class="clim-sky-flash" style="--cyc:${cyc};--del:${del};opacity:${fOp}"></div>`;
@@ -3866,6 +3872,7 @@ function _skyFog(colorBase='rgba(242,242,238',maxOp=.09){
 }
 /// _skySnow(n, type) — type: 'light'|'normal'|'heavy'|'grain'|'blizzard'
 function _skySnow(n,type='normal'){
+  n=Math.round(n*SKY_SCALE);
   const isBZ=type==='blizzard';
   const chars=type==='grain'?['·','·','•']:['❄','❅','❆'];
   const baseS=isBZ?7:type==='heavy'?10:type==='grain'?5:7;
@@ -3881,27 +3888,28 @@ function _skySnow(n,type='normal'){
     const dx=isBZ?(-(Math.random()*80+100)).toFixed(0)+'px':((Math.random()*32-16)).toFixed(0)+'px';
     const rot=(Math.random()*360).toFixed(0)+'deg';
     const op=(Math.random()*.3+.6).toFixed(2);
-    h+=`<div class="clim-sky-flake" style="left:${l};font-size:${sz};color:rgba(255,255,255,${op});--spd:${spd}s;--del:${del}s;--dx:${dx};--rot:${rot};--op:${op}">${chars[i%3]}</div>`;
+    h+=`<div class="clim-sky-flake" style="left:${l};font-size:${sz};color:rgba(255,255,255,${op});--spd:${spd};--del:${del};--dx:${dx};--rot:${rot};--op:${op}">${chars[i%3]}</div>`;
   }
   return h;
 }
 // _skySun(bri) — bri: 0.0–1.0 brightness (0=hidden, 1=full clear-sky sun)
 function _skySun(bri=1.0){
-  const dist=36,cx=74,cy=22;
+  const dist=48,cx=74,cy=22;
   let rays='';
-  for(let i=0;i<10;i++){
-    const len=(Math.random()*24+50).toFixed(0);
-    const w=(Math.random()*1.3+1.1).toFixed(1);
-    const ang=i*36;
+  for(let i=0;i<12;i++){
+    const len=(Math.random()*30+64).toFixed(0);
+    const w=(Math.random()*1.6+1.4).toFixed(1);
+    const ang=i*30;
     const rOp=(0.28*bri).toFixed(2);
     rays+=`<div class="clim-sky-ray" style="position:absolute;width:${w}px;height:${len}px;top:-${parseInt(len)+dist}px;left:-${(parseFloat(w)/2).toFixed(1)}px;transform:rotate(${ang}deg);transform-origin:50% calc(100% + ${dist}px);opacity:${rOp}"></div>`;
   }
   const sOp=(0.65+bri*0.35).toFixed(2);
-  const sSz=Math.round(54+bri*10);
+  const sSz=Math.round(70+bri*14);
   return`<div class="clim-sky-sun" style="left:${cx}%;top:${cy}%;width:${sSz}px;height:${sSz}px;transform:translate(-50%,-50%);opacity:${sOp}"></div>`+
     `<div class="clim-sky-ray-wrap" style="left:${cx}%;top:${cy}%">${rays}</div>`;
 }
 function _skyStars(n,maxOp=.8){
+  n=Math.round(n*1.2);
   let h='';
   for(let i=0;i<n;i++){
     const l=(Math.random()*94+2).toFixed(1)+'%';
@@ -3910,7 +3918,7 @@ function _skyStars(n,maxOp=.8){
     const dur=(Math.random()*2.5+1.5).toFixed(1)+'s';
     const del=-(Math.random()*4).toFixed(1)+'s';
     const op=(Math.random()*maxOp*.45+maxOp*.55).toFixed(2);
-    h+=`<div class="clim-sky-star" style="left:${l};top:${t};width:${sz};height:${sz};--dur:${dur}s;--del:${del}s;--op:${op}"></div>`;
+    h+=`<div class="clim-sky-star" style="left:${l};top:${t};width:${sz};height:${sz};--dur:${dur};--del:${del};--op:${op}"></div>`;
   }
   return h;
 }
@@ -3935,6 +3943,7 @@ function _skyFogSunDisc(){
   return`<div style="position:absolute;left:50%;top:26%;width:76px;height:76px;margin-left:-38px;background:radial-gradient(circle,rgba(255,248,215,.56) 0%,rgba(255,236,160,.26) 42%,rgba(255,220,100,.10) 66%,transparent 80%);filter:blur(18px);border-radius:50%;animation:skysSunGlow 7s ease-in-out infinite"></div>`;
 }
 function _skyWindStreaks(n){
+  n=Math.round(n*SKY_SCALE);
   let h='';
   for(let i=0;i<n;i++){
     const top=(Math.random()*84+2).toFixed(1)+'%';
@@ -3942,11 +3951,12 @@ function _skyWindStreaks(n){
     const w=(Math.random()*90+28).toFixed(0)+'px';
     const spd=(Math.random()*2+2).toFixed(1)+'s';
     const del=-(Math.random()*6).toFixed(1)+'s';
-    h+=`<div class="clim-sky-windstreak" style="top:${top};left:${left};width:${w};--spd:${spd}s;--del:${del}s"></div>`;
+    h+=`<div class="clim-sky-windstreak" style="top:${top};left:${left};width:${w};--spd:${spd};--del:${del}"></div>`;
   }
   return h;
 }
 function _skyIceSparkles(n){
+  n=Math.round(n*1.25);
   let h='';
   for(let i=0;i<n;i++){
     const top=(Math.random()*84+4).toFixed(1)+'%';
@@ -3954,7 +3964,7 @@ function _skyIceSparkles(n){
     const sz=(Math.random()*2+1.2).toFixed(1)+'px';
     const dur=(Math.random()*2+1.4).toFixed(1)+'s';
     const del=-(Math.random()*4).toFixed(1)+'s';
-    h+=`<div style="position:absolute;top:${top};left:${left};width:${sz};height:${sz};background:#d6eaff;border-radius:50%;animation:skysIceGlint ${dur}s ease-in-out infinite ${del}s both"></div>`;
+    h+=`<div style="position:absolute;top:${top};left:${left};width:${sz};height:${sz};background:#d6eaff;border-radius:50%;animation:skysIceGlint ${dur} ease-in-out infinite ${del} both"></div>`;
   }
   return h;
 }
@@ -3969,9 +3979,10 @@ function climSkyHTML(code,isDay){
       // Clear sky — full bright sun, no clouds
       h+=_skySun(1.0);
     }else if(code===1){
-      // Mainly clear — bright sun, 1 faint wispy cloud
+      // Mainly clear — bright sun, 2 faint wispy clouds
       h+=_skySun(.88);
       h+=_skyCloud(6,48,'rgba(255,255,255,.9)',.19,106,115,-18);
+      h+=_skyCloud(58,40,'rgba(255,255,255,.9)',.16,86,102,-52);
     }else if(code===2){
       // Partly cloudy — dimmed sun, crepuscular rays, 2 medium clouds
       h+=_skySun(.68);
@@ -4028,6 +4039,7 @@ function climSkyHTML(code,isDay){
       h+=_skyCloud(0,20,'rgba(44,56,72,.9)',.80,150,76,-28);
       h+=_skyCloud(36,22,'rgba(46,58,74,.9)',.78,178,62,-34);
       h+=_skyRain(50,'rgba(147,197,253,.66)',2,36);
+      h+=_skyWindStreaks(6);
     }else if(code===66){
       // Freezing light rain — 3 icy-tinted clouds, 20 drops
       h+=_skyCloud(6,-1,'rgba(90,108,128,.95)',.70,164,62,-24);
@@ -4087,6 +4099,7 @@ function climSkyHTML(code,isDay){
       h+=_skyCloud(0,20,'rgba(40,52,68,.9)',.80,152,74,-28);
       h+=_skyCloud(38,22,'rgba(42,54,70,.9)',.78,180,60,-34);
       h+=_skyRain(52,'rgba(147,197,253,.64)',2,36);
+      h+=_skyWindStreaks(7);
     }else if(code===85){
       // Snow showers — 3 clouds, 26 flakes (burst pattern)
       h+=_skyCloud(5,-2,'rgba(155,168,184,.95)',.66,164,68,-24);
@@ -4134,6 +4147,7 @@ function climSkyHTML(code,isDay){
     }else{
       h+=_skySun(.7);
       h+=_skyCloud(3,44,'rgba(255,255,255,.9)',.24,120,92,-20);
+      h+=_skyCloud(52,38,'rgba(255,255,255,.9)',.20,96,108,-46);
     }
   }else{
     // Night — determine star/moon visibility per code
@@ -4153,6 +4167,7 @@ function climSkyHTML(code,isDay){
     // Cloud / weather layers
     if(code===1){
       h+=_skyCloud(4,36,'rgba(18,24,52,.80)',.30,110,114,-18);
+      h+=_skyCloud(56,30,'rgba(18,24,52,.80)',.26,90,100,-50);
     }else if(code===2){
       h+=_skyCloud(0,4,'rgba(16,22,48,.78)',.60,150,70,-22);
       h+=_skyCloud(46,-3,'rgba(14,20,44,.75)',.56,128,90,-35);
@@ -4197,6 +4212,7 @@ function climSkyHTML(code,isDay){
       h+=_skyCloud(0,20,'rgba(2,5,16,.90)',.86,150,74,-28);
       h+=_skyCloud(34,22,'rgba(3,6,17,.88)',.84,175,62,-34);
       h+=_skyRain(50,'rgba(147,197,253,.60)',2,36);
+      h+=_skyWindStreaks(6);
     }else if(code===66){
       h+=_skyCloud(6,-1,'rgba(10,14,30,.88)',.72,160,62,-24);
       h+=_skyCloud(44,-3,'rgba(8,12,28,.86)',.68,147,80,-38);
@@ -4247,6 +4263,7 @@ function climSkyHTML(code,isDay){
       h+=_skyCloud(0,20,'rgba(1,3,13,.90)',.84,150,74,-28);
       h+=_skyCloud(38,22,'rgba(2,4,14,.88)',.82,178,60,-34);
       h+=_skyRain(52,'rgba(147,197,253,.60)',2,36);
+      h+=_skyWindStreaks(7);
     }else if(code===85){
       h+=_skyCloud(5,-2,'rgba(18,25,42,.84)',.70,160,68,-24);
       h+=_skyCloud(40,-4,'rgba(15,22,38,.82)',.74,194,78,-38);
@@ -4505,20 +4522,20 @@ function renderClimateData(w,a,locName){
         <div class="clim-m"><div class="clim-m-val">${c.precipitation||0} mm</div><div class="clim-m-lbl">Precip</div></div>
       </div>
     </div>
+  </div>
+
+  <div class="clim-three-col">
     <div class="clim-panel clim-hourly-panel">
       <div class="clim-ph"><div class="clim-ph-title">Hourly Forecast</div><div class="clim-ph-badge">10 HRS</div></div>
       <div class="clim-hourly-scroll">${hourlyHTML}</div>
     </div>
-  </div>
-
-  <div class="clim-two-col">
-    <div class="clim-panel">
-      <div class="clim-ph"><div class="clim-ph-title">7-Day Forecast</div><div class="clim-ph-badge">DAILY</div></div>
-      <div class="clim-days-body">${daysHTML}</div>
-    </div>
     <div class="clim-panel">
       <div class="clim-ph"><div class="clim-ph-title">Sun Arc</div><div class="clim-ph-badge">${isDay?'DAYLIGHT':'NIGHT'}</div></div>
       <div class="clim-sun-body">${sunHTML||'<div style="padding:20px;text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--text-muted)">Sun data unavailable</div>'}</div>
+    </div>
+    <div class="clim-panel">
+      <div class="clim-ph"><div class="clim-ph-title">7-Day Forecast</div><div class="clim-ph-badge">DAILY</div></div>
+      <div class="clim-days-body">${daysHTML}</div>
     </div>
   </div>
 
