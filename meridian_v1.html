@@ -816,6 +816,7 @@
     @keyframes skysRainDrop{0%{transform:translateY(-10px) rotate(10deg);opacity:0}7%{opacity:.85}92%{opacity:.5}100%{transform:translateY(110vh) rotate(10deg);opacity:0}}
     .clim-sky-flash{position:absolute;inset:0;animation:skysFlash var(--cyc,5s) ease-in infinite var(--del,0s)}
     @keyframes skysFlash{0%,87%,96%,100%{background:transparent}88%{background:rgba(215,228,255,.22)}89%{background:transparent}90%{background:rgba(215,228,255,.10)}91%{background:transparent}}
+    @media(max-width:768px){@keyframes skysFlash{0%,87%,96%,100%{background:transparent}88%{background:rgba(215,228,255,.52)}89%{background:transparent}90%{background:rgba(215,228,255,.26)}91%{background:transparent}}}
 
     .clim-sky-fog{position:absolute;border-radius:60px;filter:blur(18px);animation:skysFog var(--spd,20s) ease-in-out infinite alternate var(--del,0s)}
     @keyframes skysFog{from{transform:translateX(var(--from,-40px))}to{transform:translateX(var(--to,40px))}}
