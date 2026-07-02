@@ -797,10 +797,32 @@
     .clim-hero{position:relative;border-radius:18px;overflow:hidden;min-height:240px;display:flex;flex-direction:column;justify-content:flex-end;padding:22px 24px 20px;background:var(--clim-grad,linear-gradient(160deg,#0F172A 0%,#1A2942 45%,#0C1420 100%));transition:background 1.2s ease}
     .clim-hero::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.22);pointer-events:none;z-index:0}
     .clim-hero-glass{position:absolute;inset:0;background:rgba(255,255,255,.025);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:none;z-index:0}
-    .clim-hero>*{position:relative;z-index:1}
-    .clim-rain-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
-    .clim-raindrop{position:absolute;top:-6%;width:1px;background:linear-gradient(180deg,transparent 0%,rgba(147,197,253,.45) 100%);border-radius:1px;animation:climRainFall linear infinite}
-    @keyframes climRainFall{0%{transform:translateY(0) rotate(12deg);opacity:0}8%{opacity:1}90%{opacity:.7}100%{transform:translateY(115vh) rotate(12deg);opacity:0}}
+    .clim-hero>*:not(.clim-sky){position:relative;z-index:1}
+    /* Sky scene */
+    .clim-sky{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+    .clim-sky::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,rgba(0,0,0,.18) 52%,transparent 100%);pointer-events:none}
+    .clim-sky-sun{position:absolute;border-radius:50%;background:radial-gradient(circle at 38% 38%,#FEFCE8 0%,#FDE68A 36%,#F59E0B 72%,transparent 100%);animation:skysSunGlow 4s ease-in-out infinite}
+    @keyframes skysSunGlow{0%,100%{box-shadow:0 0 30px 12px rgba(251,191,36,.4),0 0 62px 30px rgba(251,191,36,.16)}50%{box-shadow:0 0 44px 20px rgba(251,191,36,.54),0 0 88px 44px rgba(251,191,36,.22)}}
+    .clim-sky-ray-wrap{position:absolute;width:0;height:0;animation:skysRayRot 36s linear infinite;transform-origin:0 0}
+    @keyframes skysRayRot{to{transform:rotate(360deg)}}
+    .clim-sky-ray{position:absolute;background:linear-gradient(to top,transparent,rgba(251,191,36,.28));border-radius:2px}
+    .clim-sky-star{position:absolute;border-radius:50%;background:#fff;animation:skysStarTwink var(--dur,3s) ease-in-out infinite var(--del,0s) both}
+    @keyframes skysStarTwink{0%,100%{opacity:var(--op,.6);transform:scale(1)}50%{opacity:.05;transform:scale(.38)}}
+    .clim-sky-shoot{position:absolute;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.92) 50%,transparent);border-radius:1px;animation:skyShoot 16s ease-in infinite var(--del,2s);opacity:0}
+    @keyframes skyShoot{0%,80%{opacity:0;transform:rotate(-28deg) translateX(0)}81%{opacity:1}88%{opacity:0;transform:rotate(-28deg) translateX(-260px)}100%{opacity:0}}
+    .clim-sky-cloud{position:absolute;animation:skysCloudDrift var(--spd,70s) linear infinite var(--del,0s)}
+    @keyframes skysCloudDrift{from{transform:translateX(var(--from,-400px))}to{transform:translateX(var(--to,1700px))}}
+    .clim-sky-raindrop{position:absolute;border-radius:1px;animation:skysRainDrop linear infinite}
+    @keyframes skysRainDrop{0%{transform:translateY(-10px) rotate(10deg);opacity:0}7%{opacity:.85}92%{opacity:.5}100%{transform:translateY(110vh) rotate(10deg);opacity:0}}
+    .clim-sky-flash{position:absolute;inset:0;animation:skysFlash var(--cyc,5s) ease-in infinite var(--del,0s)}
+    @keyframes skysFlash{0%,90%,95%,100%{background:transparent}91%{background:rgba(139,92,232,.2)}93%{background:rgba(139,92,232,.08)}}
+    .clim-sky-bolt{position:absolute;opacity:0;filter:drop-shadow(0 0 10px #C4B5FD);animation:skysBolt var(--cyc,5s) ease-in infinite var(--del,0s)}
+    @keyframes skysBolt{0%,90%,95%,100%{opacity:0}91%,92%{opacity:1}93%{opacity:.4}}
+    .clim-sky-fog{position:absolute;border-radius:60px;filter:blur(18px);animation:skysFog var(--spd,20s) ease-in-out infinite alternate var(--del,0s)}
+    @keyframes skysFog{from{transform:translateX(var(--from,-40px))}to{transform:translateX(var(--to,40px))}}
+    .clim-sky-flake{position:absolute;top:-22px;animation:skysSnow var(--spd,5s) linear infinite var(--del,0s)}
+    @keyframes skysSnow{0%{transform:translateX(0) rotate(0deg);opacity:0}8%{opacity:var(--op,.8)}90%{opacity:var(--op,.6)}100%{transform:translateX(var(--dx,20px)) rotate(var(--rot,360deg));opacity:0;top:105%}}
+    .clim-sky-moon{filter:drop-shadow(0 0 12px rgba(240,236,210,.42))}
 
     /* Weather icon animations */
     .clim-ico-wrap{font-size:54px;line-height:1;margin-bottom:8px;display:inline-block}
@@ -3782,16 +3804,149 @@ function fmtHr(iso){
   return d.getHours()===0?'12a':d.getHours()<12?d.getHours()+'a':d.getHours()===12?'12p':(d.getHours()-12)+'p';
 }
 
-function climRainHTML(n=20){
+function moonPhaseDay(){
+  return((Date.now()-new Date('2000-01-06T18:14:00Z').getTime())/864e5)%29.53058867;
+}
+function climMoonSVG(phase){
+  const sz=54,r=26,cx=27,cy=27;
+  const illum=phase<14.77?phase/14.77:(29.53-phase)/14.76;
+  const waxing=phase<14.77;
+  const shadowX=waxing?cx-illum*2*r:cx+illum*2*r;
+  return`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" class="clim-sky-moon"><defs><mask id="moonMask"><circle cx="${cx}" cy="${cy}" r="${r}" fill="white"/><circle cx="${shadowX.toFixed(1)}" cy="${cy}" r="${r}" fill="black"/></mask></defs><circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(240,236,210,.92)" mask="url(#moonMask)"/></svg>`;
+}
+function _skyCloud(x,y,col,op,w,spd,del){
+  const ch=Math.round(w*.33);
+  const b1w=Math.round(w*.44),b1h=Math.round(ch*1.6),b1l=Math.round(w*.18);
+  const b2w=Math.round(w*.3),b2h=Math.round(ch*1.3),b2r=Math.round(w*.2);
+  const from=-(w+30),to=1700;
+  return`<div class="clim-sky-cloud" style="left:${x}%;top:${y}%;--spd:${spd}s;--del:${del}s;--from:${from}px;--to:${to}px;opacity:${op}">`+
+    `<div style="position:relative;width:${w}px;height:${ch}px">`+
+    `<div style="position:absolute;inset:0;background:${col};border-radius:${ch}px"></div>`+
+    `<div style="position:absolute;width:${b1w}px;height:${b1h}px;background:${col};border-radius:50%;bottom:0;left:${b1l}px"></div>`+
+    `<div style="position:absolute;width:${b2w}px;height:${b2h}px;background:${col};border-radius:50%;bottom:0;right:${b2r}px"></div>`+
+    `</div></div>`;
+}
+function _skyRain(n,col){
   let h='';
   for(let i=0;i<n;i++){
-    const left=(Math.random()*96+2).toFixed(1)+'%';
-    const h2=(Math.random()*55+25).toFixed(0)+'px';
-    const spd=(Math.random()*1.2+0.6).toFixed(2)+'s';
-    const del=-(Math.random()*2).toFixed(2)+'s';
-    h+=`<div class="clim-raindrop" style="left:${left};height:${h2};animation-duration:${spd};animation-delay:${del}"></div>`;
+    const l=(Math.random()*95+2).toFixed(1)+'%';
+    const ht=(Math.random()*42+16).toFixed(0)+'px';
+    const spd=(Math.random()*.75+.35).toFixed(2)+'s';
+    const del=-(Math.random()*2.5).toFixed(2)+'s';
+    h+=`<div class="clim-sky-raindrop" style="left:${l};top:0;width:1px;height:${ht};background:linear-gradient(180deg,transparent,${col});animation-duration:${spd};animation-delay:${del}"></div>`;
   }
   return h;
+}
+function _skyLightning(n){
+  let h='';
+  const bolt=`<svg width="26" height="52" viewBox="0 0 26 52" fill="none"><polyline points="15,1 5,27 13,27 7,51 23,19 13,19 21,1" fill="rgba(255,255,210,.9)" stroke="rgba(196,181,253,.7)" stroke-width=".5"/></svg>`;
+  for(let i=0;i<n;i++){
+    const cyc=(Math.random()*4+3.5).toFixed(1)+'s';
+    const del=(Math.random()*3.5).toFixed(1)+'s';
+    const bx=(Math.random()*62+10).toFixed(0)+'%';
+    h+=`<div class="clim-sky-flash" style="--cyc:${cyc};--del:${del}"></div>`;
+    h+=`<div class="clim-sky-bolt" style="left:${bx};top:8%;--cyc:${cyc};--del:${del}">${bolt}</div>`;
+  }
+  return h;
+}
+function _skyFog(){
+  let h='';
+  [[14,.07,16,0],[28,.09,22,4.2],[45,.06,19,8.5],[60,.1,25,2.1],[75,.07,21,6.4]].forEach(([y,op,spd,del])=>{
+    const w=(Math.random()*22+58).toFixed(0);
+    const from=(Math.random()>.5?-48:48);
+    h+=`<div class="clim-sky-fog" style="left:${(Math.random()*12).toFixed(0)}%;top:${y}%;width:${w}%;height:34px;background:rgba(255,255,255,${op});--spd:${spd}s;--del:${del}s;--from:${from}px;--to:${-from}px"></div>`;
+  });
+  return h;
+}
+function _skySnow(n){
+  const chars=['❄','❅','❆'];
+  let h='';
+  for(let i=0;i<n;i++){
+    const l=(Math.random()*93+2).toFixed(1)+'%';
+    const sz=(Math.random()*6+7).toFixed(0)+'px';
+    const spd=(Math.random()*3.5+3).toFixed(1)+'s';
+    const del=-(Math.random()*6).toFixed(1)+'s';
+    const dx=((Math.random()*34-17)).toFixed(0)+'px';
+    const rot=(Math.random()*360).toFixed(0)+'deg';
+    const op=(Math.random()*.35+.55).toFixed(2);
+    h+=`<div class="clim-sky-flake" style="left:${l};font-size:${sz};color:rgba(255,255,255,${op});--spd:${spd}s;--del:${del}s;--dx:${dx};--rot:${rot};--op:${op}">${chars[i%3]}</div>`;
+  }
+  return h;
+}
+function _skySun(){
+  const dist=36,cx=74,cy=22;
+  let rays='';
+  for(let i=0;i<10;i++){
+    const len=(Math.random()*24+50).toFixed(0);
+    const w=(Math.random()*1.3+1.1).toFixed(1);
+    const ang=i*36;
+    rays+=`<div class="clim-sky-ray" style="position:absolute;width:${w}px;height:${len}px;top:-${parseInt(len)+dist}px;left:-${(parseFloat(w)/2).toFixed(1)}px;transform:rotate(${ang}deg);transform-origin:50% calc(100% + ${dist}px)"></div>`;
+  }
+  return`<div class="clim-sky-sun" style="left:${cx}%;top:${cy}%;width:64px;height:64px;transform:translate(-50%,-50%)"></div>`+
+    `<div class="clim-sky-ray-wrap" style="left:${cx}%;top:${cy}%">${rays}</div>`;
+}
+function climSkyHTML(g,isDay){
+  let h='<div class="clim-sky">';
+  if(!isDay){
+    const phase=moonPhaseDay();
+    for(let i=0;i<52;i++){
+      const l=(Math.random()*94+2).toFixed(1)+'%';
+      const t=(Math.random()*68+2).toFixed(1)+'%';
+      const sz=(Math.random()*1.5+.5).toFixed(1)+'px';
+      const dur=(Math.random()*2.5+1.5).toFixed(1)+'s';
+      const del=-(Math.random()*4).toFixed(1)+'s';
+      const op=(Math.random()*.42+.35).toFixed(2);
+      h+=`<div class="clim-sky-star" style="left:${l};top:${t};width:${sz};height:${sz};--dur:${dur}s;--del:${del}s;--op:${op}"></div>`;
+    }
+    h+=`<div style="position:absolute;right:12%;top:8%">${climMoonSVG(phase)}</div>`;
+    h+=`<div class="clim-sky-shoot" style="right:8%;top:20%;width:140px;--del:4s"></div>`;
+    if(g==='rain'||g==='storm'){
+      h+=_skyCloud(0,0,'rgba(15,18,35,.9)',.9,140,65,-28);
+      h+=_skyCloud(38,-4,'rgba(12,15,32,.92)',.92,160,80,-42);
+      h+=_skyRain(g==='storm'?28:18,'rgba(147,197,253,.55)');
+      if(g==='storm')h+=_skyLightning(3);
+    }else if(g==='cloudy'){
+      h+=_skyCloud(4,8,'rgba(25,30,50,.72)',.72,118,58,-22);
+      h+=_skyCloud(50,2,'rgba(20,25,45,.75)',.74,98,72,-36);
+    }else if(g==='fog'){
+      h+=_skyFog();
+    }else if(g==='snow'){
+      h+=_skyCloud(0,-2,'rgba(35,45,65,.78)',.78,148,68,-30);
+      h+=_skySnow(20);
+    }
+  }else{
+    if(g==='clear'){
+      h+=_skySun();
+      h+=_skyCloud(2,42,'rgba(255,255,255,.9)',.28,128,98,-20);
+      h+=_skyCloud(50,58,'rgba(255,255,255,.9)',.22,102,114,-36);
+    }else if(g==='cloudy'){
+      h+=_skySun();
+      h+=_skyCloud(0,4,'rgba(210,222,232,.95)',.6,162,70,-24);
+      h+=_skyCloud(40,-2,'rgba(190,205,218,.95)',.65,202,84,-40);
+      h+=_skyCloud(16,30,'rgba(200,215,226,.95)',.55,138,96,-16);
+    }else if(g==='rain'){
+      h+=_skyCloud(0,0,'rgba(72,88,106,.92)',.8,170,62,-26);
+      h+=_skyCloud(36,-4,'rgba(60,76,92,.92)',.85,212,78,-44);
+      h+=_skyCloud(66,3,'rgba(66,82,98,.9)',.78,152,56,-18);
+      h+=_skyRain(22,'rgba(147,197,253,.52)');
+    }else if(g==='storm'){
+      h+=_skyCloud(0,-4,'rgba(28,22,48,.92)',.9,182,56,-30);
+      h+=_skyCloud(32,-8,'rgba(22,18,42,.95)',.93,232,68,-46);
+      h+=_skyCloud(62,1,'rgba(25,20,45,.9)',.88,162,48,-22);
+      h+=_skyRain(32,'rgba(147,197,253,.62)');
+      h+=_skyLightning(3);
+    }else if(g==='fog'){
+      h+=_skyFog();
+    }else if(g==='snow'){
+      h+=_skyCloud(0,-1,'rgba(185,200,218,.95)',.72,190,72,-30);
+      h+=_skyCloud(42,-4,'rgba(175,192,212,.95)',.68,160,84,-40);
+      h+=_skySnow(28);
+    }else{
+      h+=_skySun();
+      h+=_skyCloud(3,44,'rgba(255,255,255,.9)',.24,118,90,-20);
+    }
+  }
+  return h+'</div>';
 }
 
 let _climLoc={lat:13.0827,lon:80.2707,name:'Chennai, IN'};
@@ -3987,7 +4142,7 @@ function renderClimateData(w,a,locName){
   <div class="clim-top-row">
     <div class="clim-hero" style="--clim-grad:${grad}" id="clim-hero-el">
       <div class="clim-hero-glass"></div>
-      ${isRain||info.g==='storm'?'<div class="clim-rain-canvas" id="clim-rain">'+climRainHTML(18)+'</div>':''}
+      ${climSkyHTML(info.g,isDay)}
       <div class="clim-loc-name">📍 ${esc(locName)}</div>
       <div class="clim-temp-row">
         <div class="clim-ico-wrap"><span class="${iconCls}">${wmoIcon(c.weather_code,isDay)}</span></div>
