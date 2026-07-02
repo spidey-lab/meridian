@@ -1177,7 +1177,7 @@
 ════════════════════════════════════════ */
 const GDELT     = 'https://api.gdeltproject.org/api/v2/doc/doc';
 const GDELT_CTX = 'https://api.gdeltproject.org/api/v2/context/context';
-const CACHE_TTL = 15 * 60 * 1000;
+const CACHE_TTL = 5 * 60 * 1000;
 const LS_PFX    = 'mer18_';
 const LS_READ   = 'mer18_read';
 const LS_THEME  = 'mer18_theme';
@@ -1399,47 +1399,48 @@ function isTrusted(domain){
 }
 
 const CATS = [
-  // Home — RSS: top headlines from AP + BBC
+  // Home — AP breaking + Guardian (fast editorial) + Al Jazeera (high-volume)
   { id:'home',    name:'Home',           ico:'◈', hex:'#D4A843',
     _rss:[
-      {url:'https://feeds.apnews.com/rss/apf-topnews',         name:'AP News'},
-      {url:'https://feeds.bbci.co.uk/news/world/rss.xml',      name:'BBC World'}
+      {url:'https://feeds.apnews.com/rss/apf-topnews',                    name:'AP News'},
+      {url:'https://www.theguardian.com/world/rss',                       name:'The Guardian'},
+      {url:'https://www.aljazeera.com/xml/rss/all.xml',                   name:'Al Jazeera'},
     ]},
 
-  // World Conflicts — Google News RSS: armed conflict + geopolitics
+  // World Conflicts — past 12h Google News: armed conflict + geopolitics
   { id:'world',   name:'World Conflicts', ico:'◎', hex:'#E05252',
     _rss:[
-      {url:'https://news.google.com/rss/search?q=war+OR+conflict+OR+ceasefire+OR+Ukraine+OR+Gaza+OR+NATO+OR+%22India+Pakistan%22+OR+sanctions+OR+%22South+China+Sea%22+OR+%22Middle+East%22&hl=en&gl=US&ceid=US:en', name:'Google News'}
+      {url:'https://news.google.com/rss/search?q=war+OR+conflict+OR+ceasefire+OR+Ukraine+OR+Gaza+OR+NATO+OR+%22India+Pakistan%22+OR+sanctions+OR+%22South+China+Sea%22+OR+%22Middle+East%22&hl=en&gl=US&ceid=US:en&tbs=qdr:h12', name:'Google News'}
     ]},
 
-  // Economy — RSS: global business + India markets + energy
+  // Economy — AP Business + ET Markets + past-day Google News business
   { id:'economy', name:'Economy',         ico:'◆', hex:'#26A67A',
     _rss:[
-      {url:'https://feeds.apnews.com/rss/apf-business',                               name:'AP Business'},
-      {url:'https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms',    name:'ET Markets'},
-      {url:'https://oilprice.com/rss/main',                                           name:'OilPrice'}
+      {url:'https://feeds.apnews.com/rss/apf-business',                                                                                                             name:'AP Business'},
+      {url:'https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms',                                                                                  name:'ET Markets'},
+      {url:'https://news.google.com/rss/search?q=economy+OR+inflation+OR+interest+rates+OR+GDP+OR+trade+war+OR+tariffs+OR+Federal+Reserve+OR+RBI&hl=en&gl=US&ceid=US:en&tbs=qdr:d', name:'Economy Today'},
     ]},
 
-  // Tech & AI — RSS: TechCrunch AI + MIT Tech Review + Ars Technica
+  // Tech & AI — TechCrunch + MIT Tech Review + past-day AI news
   { id:'techai',  name:'Tech & AI',       ico:'◉', hex:'#9B6FE8',
     _rss:[
-      {url:'https://techcrunch.com/category/artificial-intelligence/feed/', name:'TechCrunch AI'},
-      {url:'https://www.technologyreview.com/feed/',                        name:'MIT Tech Review'},
-      {url:'https://feeds.arstechnica.com/arstechnica/index',               name:'Ars Technica'}
+      {url:'https://techcrunch.com/category/artificial-intelligence/feed/',                                                                                          name:'TechCrunch AI'},
+      {url:'https://www.technologyreview.com/feed/',                                                                                                                 name:'MIT Tech Review'},
+      {url:'https://news.google.com/rss/search?q=artificial+intelligence+OR+ChatGPT+OR+OpenAI+OR+Gemini+OR+LLM+OR+%22machine+learning%22&hl=en&gl=US&ceid=US:en&tbs=qdr:d', name:'AI Today'},
     ]},
 
-  // India — targeted domestic queries to avoid global conflict bleed-in
+  // India — past-day domestic news
   { id:'india',   name:'India',           ico:'◀', hex:'#F0833A',
     _rss:[
-      {url:'https://news.google.com/rss/search?q=India+government+OR+Lok+Sabha+OR+Rajya+Sabha+OR+Supreme+Court+India+OR+RBI+OR+Indian+economy+OR+SEBI+OR+income+tax+India&hl=en-IN&gl=IN&ceid=IN:en', name:'India National'},
-      {url:'https://news.google.com/rss/search?q=%22Tamil+Nadu%22+OR+TVK+OR+DMK+OR+AIADMK+OR+Edappadi+OR+%22Tamil+Nadu+government%22+OR+Kollywood+OR+Karnataka+OR+Maharashtra+OR+Bengaluru+OR+Mumbai&hl=en-IN&gl=IN&ceid=IN:en', name:'States & Regions'}
+      {url:'https://news.google.com/rss/search?q=India+government+OR+Lok+Sabha+OR+Rajya+Sabha+OR+Supreme+Court+India+OR+RBI+OR+Indian+economy+OR+SEBI+OR+income+tax+India&hl=en-IN&gl=IN&ceid=IN:en&tbs=qdr:d', name:'India National'},
+      {url:'https://news.google.com/rss/search?q=%22Tamil+Nadu%22+OR+TVK+OR+DMK+OR+AIADMK+OR+Edappadi+OR+%22Tamil+Nadu+government%22+OR+Kollywood+OR+Karnataka+OR+Maharashtra+OR+Bengaluru+OR+Mumbai&hl=en-IN&gl=IN&ceid=IN:en&tbs=qdr:d', name:'States & Regions'}
     ]},
 
-  // Tamil Nadu — dedicated regional tab
+  // Tamil Nadu — past-day regional news
   { id:'tamilnadu', name:'Tamil Nadu', ico:'◈', hex:'#14B8A6',
     _rss:[
-      {url:'https://news.google.com/rss/search?q=%22Tamil+Nadu%22+OR+Chennai+news+latest&hl=en-IN&gl=IN&ceid=IN:en', name:'TN General'},
-      {url:'https://news.google.com/rss/search?q=DMK+OR+AIADMK+OR+TVK+OR+%22MK+Stalin%22+OR+%22Edappadi+Palanisami%22+OR+%22Stalin%22+Tamil&hl=en-IN&gl=IN&ceid=IN:en', name:'TN Politics'},
+      {url:'https://news.google.com/rss/search?q=%22Tamil+Nadu%22+OR+Chennai+news+latest&hl=en-IN&gl=IN&ceid=IN:en&tbs=qdr:d', name:'TN General'},
+      {url:'https://news.google.com/rss/search?q=DMK+OR+AIADMK+OR+TVK+OR+%22MK+Stalin%22+OR+%22Edappadi+Palanisami%22+OR+%22Stalin%22+Tamil&hl=en-IN&gl=IN&ceid=IN:en&tbs=qdr:d', name:'TN Politics'},
     ]},
 
   // Markets — Google Sheets / GOOGLEFINANCE
@@ -3225,9 +3226,14 @@ async function fetchRssFeeds(feeds){
     const k=(a.title||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').substring(0,55);
     if(seen.has(k))return false;seen.add(k);return true;
   });
-  DBG.stats.art+=deduped.length;DBG._st();
+  // Age filter: prefer articles within 48h; fallback to all if too few remain
+  const cutoff=Date.now()-48*3600*1000;
+  const fresh=deduped.filter(a=>!a.pub||a.pub.getTime()===0||a.pub.getTime()>cutoff);
+  const final=fresh.length>=8?fresh:deduped;
+  DBG.stats.art+=final.length;DBG._st();
   if(deduped.length<items.length)DBG.info('RSS',`Deduped ${items.length-deduped.length} duplicate(s)`);
-  return deduped;
+  if(fresh.length<deduped.length)DBG.info('RSS',`Age filter: ${deduped.length-fresh.length} older articles hidden`);
+  return final;
 }
 
 /* ── RSS Card HTML ── */
@@ -3817,8 +3823,8 @@ async function fetchOpenMeteo(lat,lon){
 }
 
 const CLIMATE_NEWS_RSS=[
-  {url:'https://news.google.com/rss/search?q=climate+change+OR+global+warming+OR+extreme+weather+OR+flood+OR+drought+OR+heatwave&hl=en&gl=US&ceid=US:en', name:'Climate News'},
-  {url:'https://news.google.com/rss/search?q=monsoon+OR+cyclone+OR+El+Nino+OR+La+Nina+weather+2025&hl=en-IN&gl=IN&ceid=IN:en', name:'Weather Alerts'},
+  {url:'https://news.google.com/rss/search?q=climate+change+OR+global+warming+OR+extreme+weather+OR+flood+OR+drought+OR+heatwave&hl=en&gl=US&ceid=US:en&tbs=qdr:d', name:'Climate News'},
+  {url:'https://news.google.com/rss/search?q=monsoon+OR+cyclone+OR+El+Nino+OR+La+Nina+weather&hl=en-IN&gl=IN&ceid=IN:en&tbs=qdr:d', name:'Weather Alerts'},
 ];
 
 const DAY_NAMES=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
