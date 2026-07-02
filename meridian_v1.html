@@ -2100,7 +2100,7 @@ function renderErr(el,msg,fn){
 }
 
 /* ════════════════════════════════════════
-   LOAD HOME — RSS feeds (Reuters + BBC)
+   LOAD HOME — RSS feeds (AP + Guardian + Al Jazeera)
 ════════════════════════════════════════ */
 async function loadHome(){
   const hero=document.getElementById('home-hero');
@@ -2109,7 +2109,7 @@ async function loadHome(){
   grid.innerHTML=`<div class="progress-wrap"><div class="p-msg p-dots">Fetching latest headlines</div></div>`;
   document.getElementById('homeDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const sub=document.getElementById('home-sub');
-  DBG.info('HOME','Loading RSS feeds (Reuters + BBC)…');
+  DBG.info('HOME','Loading RSS feeds (AP + Guardian + Al Jazeera)…');
   try{
     const items=await fetchRssFeeds(cat('home')._rss);
     const seen=new Set();
@@ -3552,8 +3552,8 @@ function gdacsTickerHTML(alerts){
 
 /* ── News RSS feeds for Crisis tab ── */
 const CRISIS_NEWS_RSS=[
-  {url:'https://news.google.com/rss/search?q=natural+disaster+OR+cyclone+OR+flood+OR+earthquake+OR+tsunami+OR+volcano&hl=en-IN&gl=IN&ceid=IN:en', name:'Global Crisis'},
-  {url:'https://news.google.com/rss/search?q=India+disaster+OR+cyclone+India+OR+flood+India+OR+%22Tamil+Nadu%22+cyclone+OR+landslide+India+OR+earthquake+India&hl=en-IN&gl=IN&ceid=IN:en', name:'India & TN Crisis'}
+  {url:'https://news.google.com/rss/search?q=natural+disaster+OR+cyclone+OR+flood+OR+earthquake+OR+tsunami+OR+volcano&hl=en-IN&gl=IN&ceid=IN:en&tbs=qdr:d', name:'Global Crisis'},
+  {url:'https://news.google.com/rss/search?q=India+disaster+OR+cyclone+India+OR+flood+India+OR+%22Tamil+Nadu%22+cyclone+OR+landslide+India+OR+earthquake+India&hl=en-IN&gl=IN&ceid=IN:en&tbs=qdr:d', name:'India & TN Crisis'}
 ];
 
 async function loadCrisisWatch(){
