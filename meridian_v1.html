@@ -815,9 +815,9 @@
     .clim-sky-raindrop{position:absolute;border-radius:1px;animation:skysRainDrop linear infinite}
     @keyframes skysRainDrop{0%{transform:translateY(-10px) rotate(10deg);opacity:0}7%{opacity:.85}92%{opacity:.5}100%{transform:translateY(110vh) rotate(10deg);opacity:0}}
     .clim-sky-flash{position:absolute;inset:0;animation:skysFlash var(--cyc,5s) ease-in infinite var(--del,0s)}
-    @keyframes skysFlash{0%,90%,95%,100%{background:transparent}91%{background:rgba(139,92,232,.2)}93%{background:rgba(139,92,232,.08)}}
-    .clim-sky-bolt{position:absolute;opacity:0;filter:drop-shadow(0 0 10px #C4B5FD);animation:skysBolt var(--cyc,5s) ease-in infinite var(--del,0s)}
-    @keyframes skysBolt{0%,90%,95%,100%{opacity:0}91%,92%{opacity:1}93%{opacity:.4}}
+    @keyframes skysFlash{0%,87%,96%,100%{background:transparent}88%{background:rgba(215,228,255,.22)}89%{background:transparent}90%{background:rgba(215,228,255,.10)}91%{background:transparent}}
+    .clim-sky-bloom{position:absolute;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,255,248,.95) 0%,rgba(200,218,255,.38) 48%,transparent 100%);opacity:0;animation:skysBloom var(--cyc,5s) ease-in infinite var(--del,0s)}
+    @keyframes skysBloom{0%,87%,96%,100%{opacity:0;transform:translate(-50%,-50%) scale(.5)}88%{opacity:1;transform:translate(-50%,-50%) scale(1.3)}89%{opacity:.12;transform:translate(-50%,-50%) scale(.85)}90%{opacity:.65;transform:translate(-50%,-50%) scale(1.05)}91%{opacity:0;transform:translate(-50%,-50%) scale(.75)}}
     .clim-sky-fog{position:absolute;border-radius:60px;filter:blur(18px);animation:skysFog var(--spd,20s) ease-in-out infinite alternate var(--del,0s)}
     @keyframes skysFog{from{transform:translateX(var(--from,-40px))}to{transform:translateX(var(--to,40px))}}
     .clim-sky-flake{position:absolute;top:-22px;animation:skysSnow var(--spd,5s) linear infinite var(--del,0s)}
@@ -3826,125 +3826,386 @@ function _skyCloud(x,y,col,op,w,spd,del){
     `<div style="position:absolute;width:${b2w}px;height:${b2h}px;background:${col};border-radius:50%;bottom:0;right:${b2r}px"></div>`+
     `</div></div>`;
 }
-function _skyRain(n,col){
+// _skyRain(n, col, w, maxH) — w=stroke width px, maxH=max drop height px
+function _skyRain(n,col,w=1,maxH=28){
   let h='';
   for(let i=0;i<n;i++){
     const l=(Math.random()*95+2).toFixed(1)+'%';
-    const ht=(Math.random()*42+16).toFixed(0)+'px';
-    const spd=(Math.random()*.75+.35).toFixed(2)+'s';
+    const ht=(Math.random()*(maxH-10)+10).toFixed(0)+'px';
+    const spd=(Math.random()*.7+.3).toFixed(2)+'s';
     const del=-(Math.random()*2.5).toFixed(2)+'s';
-    h+=`<div class="clim-sky-raindrop" style="left:${l};top:0;width:1px;height:${ht};background:linear-gradient(180deg,transparent,${col});animation-duration:${spd};animation-delay:${del}"></div>`;
+    h+=`<div class="clim-sky-raindrop" style="left:${l};top:0;width:${w}px;height:${ht};background:linear-gradient(180deg,transparent,${col});animation-duration:${spd};animation-delay:${del}"></div>`;
   }
   return h;
 }
-function _skyLightning(n){
+// _skyLightning(n, intensity) — flash + localized bloom only, no icon
+function _skyLightning(n,intensity=1.0){
   let h='';
-  const bolt=`<svg width="26" height="52" viewBox="0 0 26 52" fill="none"><polyline points="15,1 5,27 13,27 7,51 23,19 13,19 21,1" fill="rgba(255,255,210,.9)" stroke="rgba(196,181,253,.7)" stroke-width=".5"/></svg>`;
   for(let i=0;i<n;i++){
-    const cyc=(Math.random()*4+3.5).toFixed(1)+'s';
-    const del=(Math.random()*3.5).toFixed(1)+'s';
-    const bx=(Math.random()*62+10).toFixed(0)+'%';
-    h+=`<div class="clim-sky-flash" style="--cyc:${cyc};--del:${del}"></div>`;
-    h+=`<div class="clim-sky-bolt" style="left:${bx};top:8%;--cyc:${cyc};--del:${del}">${bolt}</div>`;
+    const cyc=(3.5+Math.random()*4).toFixed(1)+'s';
+    const del=(Math.random()*4.5).toFixed(1)+'s';
+    const fOp=Math.min(1,(0.78*intensity)).toFixed(2);
+    h+=`<div class="clim-sky-flash" style="--cyc:${cyc};--del:${del};opacity:${fOp}"></div>`;
+    const bx=(10+Math.random()*68).toFixed(0)+'%';
+    const by=(2+Math.random()*22).toFixed(0)+'%';
+    const bSz=(55+Math.random()*65*intensity).toFixed(0)+'px';
+    h+=`<div class="clim-sky-bloom" style="left:${bx};top:${by};width:${bSz};height:${bSz};--cyc:${cyc};--del:${del}"></div>`;
   }
   return h;
 }
-function _skyFog(){
+// _skyFog(colorBase, maxOp) — colorBase is rgba prefix without closing paren
+function _skyFog(colorBase='rgba(242,242,238',maxOp=.09){
   let h='';
-  [[14,.07,16,0],[28,.09,22,4.2],[45,.06,19,8.5],[60,.1,25,2.1],[75,.07,21,6.4]].forEach(([y,op,spd,del])=>{
+  [[13,16,0],[27,22,4.2],[44,19,8.5],[60,25,2.1],[74,21,6.4]].forEach(([y,spd,del])=>{
     const w=(Math.random()*22+58).toFixed(0);
-    const from=(Math.random()>.5?-48:48);
-    h+=`<div class="clim-sky-fog" style="left:${(Math.random()*12).toFixed(0)}%;top:${y}%;width:${w}%;height:34px;background:rgba(255,255,255,${op});--spd:${spd}s;--del:${del}s;--from:${from}px;--to:${-from}px"></div>`;
+    const op=(Math.random()*maxOp*.45+maxOp*.65).toFixed(3);
+    const from=(Math.random()>.5?-50:50);
+    h+=`<div class="clim-sky-fog" style="left:${(Math.random()*12).toFixed(0)}%;top:${y}%;width:${w}%;height:36px;background:${colorBase},${op});--spd:${spd}s;--del:${del}s;--from:${from}px;--to:${-from}px"></div>`;
   });
   return h;
 }
-function _skySnow(n){
-  const chars=['❄','❅','❆'];
+// _skySnow(n, type) — type: 'light'|'normal'|'heavy'|'grain'
+function _skySnow(n,type='normal'){
+  const chars=type==='grain'?['·','·','•']:['❄','❅','❆'];
+  const baseS=type==='heavy'?10:type==='grain'?5:7;
+  const rngS=type==='heavy'?7:type==='grain'?2:5;
+  const basSpd=type==='heavy'?2:type==='grain'?1.8:3;
+  const rngSpd=type==='heavy'?2.5:type==='grain'?1.5:3;
   let h='';
   for(let i=0;i<n;i++){
     const l=(Math.random()*93+2).toFixed(1)+'%';
-    const sz=(Math.random()*6+7).toFixed(0)+'px';
-    const spd=(Math.random()*3.5+3).toFixed(1)+'s';
-    const del=-(Math.random()*6).toFixed(1)+'s';
-    const dx=((Math.random()*34-17)).toFixed(0)+'px';
+    const sz=(Math.random()*rngS+baseS).toFixed(0)+'px';
+    const spd=(Math.random()*rngSpd+basSpd).toFixed(1)+'s';
+    const del=-(Math.random()*6.5).toFixed(1)+'s';
+    const dx=((Math.random()*32-16)).toFixed(0)+'px';
     const rot=(Math.random()*360).toFixed(0)+'deg';
-    const op=(Math.random()*.35+.55).toFixed(2);
+    const op=(Math.random()*.3+.6).toFixed(2);
     h+=`<div class="clim-sky-flake" style="left:${l};font-size:${sz};color:rgba(255,255,255,${op});--spd:${spd}s;--del:${del}s;--dx:${dx};--rot:${rot};--op:${op}">${chars[i%3]}</div>`;
   }
   return h;
 }
-function _skySun(){
+// _skySun(bri) — bri: 0.0–1.0 brightness (0=hidden, 1=full clear-sky sun)
+function _skySun(bri=1.0){
   const dist=36,cx=74,cy=22;
   let rays='';
   for(let i=0;i<10;i++){
     const len=(Math.random()*24+50).toFixed(0);
     const w=(Math.random()*1.3+1.1).toFixed(1);
     const ang=i*36;
-    rays+=`<div class="clim-sky-ray" style="position:absolute;width:${w}px;height:${len}px;top:-${parseInt(len)+dist}px;left:-${(parseFloat(w)/2).toFixed(1)}px;transform:rotate(${ang}deg);transform-origin:50% calc(100% + ${dist}px)"></div>`;
+    const rOp=(0.28*bri).toFixed(2);
+    rays+=`<div class="clim-sky-ray" style="position:absolute;width:${w}px;height:${len}px;top:-${parseInt(len)+dist}px;left:-${(parseFloat(w)/2).toFixed(1)}px;transform:rotate(${ang}deg);transform-origin:50% calc(100% + ${dist}px);opacity:${rOp}"></div>`;
   }
-  return`<div class="clim-sky-sun" style="left:${cx}%;top:${cy}%;width:64px;height:64px;transform:translate(-50%,-50%)"></div>`+
+  const sOp=(0.65+bri*0.35).toFixed(2);
+  const sSz=Math.round(54+bri*10);
+  return`<div class="clim-sky-sun" style="left:${cx}%;top:${cy}%;width:${sSz}px;height:${sSz}px;transform:translate(-50%,-50%);opacity:${sOp}"></div>`+
     `<div class="clim-sky-ray-wrap" style="left:${cx}%;top:${cy}%">${rays}</div>`;
 }
-function climSkyHTML(g,isDay){
+function _skyStars(n,maxOp=.8){
+  let h='';
+  for(let i=0;i<n;i++){
+    const l=(Math.random()*94+2).toFixed(1)+'%';
+    const t=(Math.random()*68+2).toFixed(1)+'%';
+    const sz=(Math.random()*1.5+.5).toFixed(1)+'px';
+    const dur=(Math.random()*2.5+1.5).toFixed(1)+'s';
+    const del=-(Math.random()*4).toFixed(1)+'s';
+    const op=(Math.random()*maxOp*.45+maxOp*.55).toFixed(2);
+    h+=`<div class="clim-sky-star" style="left:${l};top:${t};width:${sz};height:${sz};--dur:${dur}s;--del:${del}s;--op:${op}"></div>`;
+  }
+  return h;
+}
+function _skyMoonEl(){
+  return`<div style="position:absolute;right:12%;top:8%">${climMoonSVG(moonPhaseDay())}</div>`;
+}
+function _skyShootEl(){
+  return`<div class="clim-sky-shoot" style="right:8%;top:20%;width:140px;--del:4s"></div>`;
+}
+// Per-code sky scene builder
+function climSkyHTML(code,isDay){
   let h='<div class="clim-sky">';
-  if(!isDay){
-    const phase=moonPhaseDay();
-    for(let i=0;i<52;i++){
-      const l=(Math.random()*94+2).toFixed(1)+'%';
-      const t=(Math.random()*68+2).toFixed(1)+'%';
-      const sz=(Math.random()*1.5+.5).toFixed(1)+'px';
-      const dur=(Math.random()*2.5+1.5).toFixed(1)+'s';
-      const del=-(Math.random()*4).toFixed(1)+'s';
-      const op=(Math.random()*.42+.35).toFixed(2);
-      h+=`<div class="clim-sky-star" style="left:${l};top:${t};width:${sz};height:${sz};--dur:${dur}s;--del:${del}s;--op:${op}"></div>`;
-    }
-    h+=`<div style="position:absolute;right:12%;top:8%">${climMoonSVG(phase)}</div>`;
-    h+=`<div class="clim-sky-shoot" style="right:8%;top:20%;width:140px;--del:4s"></div>`;
-    if(g==='rain'||g==='storm'){
-      h+=_skyCloud(0,0,'rgba(15,18,35,.9)',.9,140,65,-28);
-      h+=_skyCloud(38,-4,'rgba(12,15,32,.92)',.92,160,80,-42);
-      h+=_skyRain(g==='storm'?28:18,'rgba(147,197,253,.55)');
-      if(g==='storm')h+=_skyLightning(3);
-    }else if(g==='cloudy'){
-      h+=_skyCloud(4,8,'rgba(25,30,50,.72)',.72,118,58,-22);
-      h+=_skyCloud(50,2,'rgba(20,25,45,.75)',.74,98,72,-36);
-    }else if(g==='fog'){
-      h+=_skyFog();
-    }else if(g==='snow'){
-      h+=_skyCloud(0,-2,'rgba(35,45,65,.78)',.78,148,68,-30);
-      h+=_skySnow(20);
+  if(isDay){
+    if(code===0){
+      // Clear sky — full bright sun, no clouds
+      h+=_skySun(1.0);
+    }else if(code===1){
+      // Mainly clear — bright sun, 1 faint wispy cloud
+      h+=_skySun(.88);
+      h+=_skyCloud(6,48,'rgba(255,255,255,.9)',.19,106,115,-18);
+    }else if(code===2){
+      // Partly cloudy — dimmed sun, 2 medium clouds passing through
+      h+=_skySun(.68);
+      h+=_skyCloud(0,5,'rgba(235,242,248,.95)',.52,158,74,-22);
+      h+=_skyCloud(46,-4,'rgba(228,238,248,.95)',.48,134,92,-36);
+    }else if(code===3){
+      // Overcast — no sun, 4 heavy grey clouds blanketing the sky
+      h+=_skyCloud(0,-4,'rgba(152,165,178,.95)',.74,180,60,-24);
+      h+=_skyCloud(32,-8,'rgba(142,156,170,.95)',.80,218,72,-38);
+      h+=_skyCloud(60,-2,'rgba(148,161,175,.95)',.72,164,55,-18);
+      h+=_skyCloud(0,24,'rgba(136,150,164,.95)',.66,196,82,-30);
+    }else if(code===45){
+      h+=_skyFog('rgba(242,242,238',.10);
+    }else if(code===48){
+      // Icy fog — cooler blue-white tint
+      h+=_skyFog('rgba(208,222,242',.11);
+    }else if(code===51){
+      // Light drizzle — thin light clouds, 7 sparse fine drops
+      h+=_skyCloud(6,1,'rgba(155,170,183,.92)',.56,150,74,-22);
+      h+=_skyRain(7,'rgba(147,197,253,.36)',1,14);
+    }else if(code===53){
+      // Drizzle — 2 medium-grey clouds, 12 fine drops
+      h+=_skyCloud(0,-2,'rgba(132,147,160,.93)',.64,170,66,-26);
+      h+=_skyCloud(44,1,'rgba(128,143,157,.9)',.60,144,84,-36);
+      h+=_skyRain(12,'rgba(147,197,253,.42)',1,18);
+    }else if(code===55){
+      // Heavy drizzle — 3 darker clouds, 18 drops
+      h+=_skyCloud(0,-3,'rgba(108,122,137,.95)',.72,175,62,-28);
+      h+=_skyCloud(36,-5,'rgba(102,117,132,.95)',.70,154,76,-38);
+      h+=_skyCloud(64,0,'rgba(106,120,135,.9)',.68,134,60,-20);
+      h+=_skyRain(18,'rgba(147,197,253,.46)',1,20);
+    }else if(code===61){
+      // Light rain — 2 solid grey clouds, 13 drops
+      h+=_skyCloud(0,-1,'rgba(90,105,120,.95)',.72,166,60,-24);
+      h+=_skyCloud(38,-4,'rgba(85,100,115,.95)',.76,200,74,-40);
+      h+=_skyRain(13,'rgba(147,197,253,.50)',1,24);
+    }else if(code===63){
+      // Rain — 3 dark clouds, 23 drops
+      h+=_skyCloud(0,-3,'rgba(72,88,104,.95)',.80,174,58,-28);
+      h+=_skyCloud(32,-6,'rgba(66,82,98,.95)',.85,220,70,-44);
+      h+=_skyCloud(62,0,'rgba(70,86,102,.95)',.78,158,52,-20);
+      h+=_skyRain(23,'rgba(147,197,253,.54)',1,28);
+    }else if(code===65){
+      // Heavy rain — 4 very dark clouds, 33 thick drops
+      h+=_skyCloud(0,-5,'rgba(50,62,78,.95)',.87,184,55,-30);
+      h+=_skyCloud(28,-8,'rgba(44,56,72,.95)',.91,232,68,-46);
+      h+=_skyCloud(56,-2,'rgba(48,60,76,.95)',.85,170,50,-22);
+      h+=_skyCloud(0,20,'rgba(44,56,72,.9)',.80,150,76,-28);
+      h+=_skyRain(33,'rgba(147,197,253,.62)',1.5,36);
+    }else if(code===66){
+      // Freezing light rain — icy blue-tinted drops
+      h+=_skyCloud(6,-1,'rgba(90,108,128,.95)',.70,164,62,-24);
+      h+=_skyCloud(44,-3,'rgba(85,102,122,.9)',.68,150,80,-38);
+      h+=_skyRain(14,'rgba(200,225,255,.52)',1,22);
+    }else if(code===67){
+      // Heavy freezing rain — more ice-blue drops, 3 dark clouds
+      h+=_skyCloud(0,-4,'rgba(60,78,100,.95)',.82,182,58,-30);
+      h+=_skyCloud(30,-7,'rgba(55,72,94,.95)',.87,222,68,-44);
+      h+=_skyCloud(58,-1,'rgba(58,75,97,.9)',.80,162,52,-20);
+      h+=_skyRain(27,'rgba(200,225,255,.58)',1.5,30);
+    }else if(code===71){
+      // Light snow — 2 light grey clouds, 14 small flakes
+      h+=_skyCloud(2,-1,'rgba(185,198,212,.95)',.62,160,70,-24);
+      h+=_skyCloud(46,-3,'rgba(178,192,208,.9)',.58,142,88,-36);
+      h+=_skySnow(14,'light');
+    }else if(code===73){
+      // Snow — 3 medium clouds, 22 normal flakes
+      h+=_skyCloud(0,-2,'rgba(168,182,198,.95)',.68,172,66,-26);
+      h+=_skyCloud(34,-5,'rgba(160,175,192,.95)',.72,208,78,-40);
+      h+=_skyCloud(62,0,'rgba(165,178,195,.9)',.65,152,58,-20);
+      h+=_skySnow(22,'normal');
+    }else if(code===75){
+      // Heavy snow — 4 dark snow clouds, 35 large fast flakes
+      h+=_skyCloud(0,-4,'rgba(145,158,175,.95)',.76,184,62,-28);
+      h+=_skyCloud(28,-7,'rgba(138,152,170,.95)',.81,226,75,-42);
+      h+=_skyCloud(56,-1,'rgba(142,155,172,.95)',.74,166,55,-22);
+      h+=_skyCloud(0,20,'rgba(136,148,166,.9)',.70,152,80,-30);
+      h+=_skySnow(35,'heavy');
+    }else if(code===77){
+      // Snow grains — 2 clouds, 44 dense tiny grain dots
+      h+=_skyCloud(0,-2,'rgba(172,185,200,.9)',.65,166,68,-24);
+      h+=_skyCloud(40,-4,'rgba(165,178,194,.9)',.62,150,84,-36);
+      h+=_skySnow(44,'grain');
+    }else if(code===80){
+      // Light showers — 2 medium-dark clouds, 13 drops
+      h+=_skyCloud(8,-1,'rgba(105,120,136,.9)',.65,160,66,-22);
+      h+=_skyCloud(50,0,'rgba(98,114,130,.9)',.62,140,86,-34);
+      h+=_skyRain(13,'rgba(147,197,253,.48)',1,22);
+    }else if(code===81){
+      // Showers — 3 dark clouds, 24 drops
+      h+=_skyCloud(0,-3,'rgba(75,90,108,.95)',.78,174,60,-26);
+      h+=_skyCloud(32,-6,'rgba(68,84,102,.95)',.83,212,72,-42);
+      h+=_skyCloud(60,0,'rgba(72,88,106,.9)',.76,152,54,-18);
+      h+=_skyRain(24,'rgba(147,197,253,.55)',1,28);
+    }else if(code===82){
+      // Heavy showers — 4 very dark clouds, 35 thick fast drops
+      h+=_skyCloud(0,-5,'rgba(48,60,76,.95)',.87,186,54,-30);
+      h+=_skyCloud(26,-8,'rgba(42,54,70,.95)',.91,234,66,-46);
+      h+=_skyCloud(52,-2,'rgba(45,57,73,.95)',.85,170,50,-22);
+      h+=_skyCloud(0,20,'rgba(40,52,68,.9)',.80,152,74,-28);
+      h+=_skyRain(35,'rgba(147,197,253,.62)',1.5,36);
+    }else if(code===85){
+      // Snow showers — 3 clouds, 26 flakes (burst pattern)
+      h+=_skyCloud(5,-2,'rgba(155,168,184,.95)',.66,164,68,-24);
+      h+=_skyCloud(42,-4,'rgba(148,162,178,.95)',.70,198,78,-38);
+      h+=_skyCloud(0,22,'rgba(152,165,182,.9)',.62,142,62,-20);
+      h+=_skySnow(26,'normal');
+    }else if(code===86){
+      // Heavy snow showers — 4 heavy clouds, 40 large fast flakes
+      h+=_skyCloud(0,-4,'rgba(135,148,165,.95)',.74,182,62,-28);
+      h+=_skyCloud(26,-7,'rgba(128,142,160,.95)',.79,222,74,-42);
+      h+=_skyCloud(52,-1,'rgba(132,145,162,.95)',.72,164,55,-20);
+      h+=_skyCloud(0,22,'rgba(128,140,158,.9)',.68,150,80,-30);
+      h+=_skySnow(40,'heavy');
+    }else if(code===95){
+      // Thunderstorm — 4 near-black purple-grey clouds, 28 drops, 2 flashes
+      h+=_skyCloud(0,-5,'rgba(28,22,46,.95)',.91,188,54,-30);
+      h+=_skyCloud(26,-9,'rgba(22,18,40,.97)',.95,240,66,-46);
+      h+=_skyCloud(52,-2,'rgba(25,20,43,.95)',.91,172,50,-22);
+      h+=_skyCloud(0,18,'rgba(20,16,38,.92)',.86,154,72,-28);
+      h+=_skyRain(28,'rgba(155,205,255,.62)',1.5,38);
+      h+=_skyLightning(2,.9);
+    }else if(code===96){
+      // Thunderstorm w/ hail — darker, heavier, 3 flashes
+      h+=_skyCloud(0,-5,'rgba(24,18,43,.97)',.93,192,52,-30);
+      h+=_skyCloud(24,-10,'rgba(18,14,36,.98)',.97,244,64,-46);
+      h+=_skyCloud(50,-2,'rgba(22,17,40,.96)',.93,174,48,-22);
+      h+=_skyCloud(0,16,'rgba(18,14,35,.93)',.88,156,70,-28);
+      h+=_skyRain(34,'rgba(155,205,255,.65)',1.5,38);
+      h+=_skyLightning(3,1.1);
+    }else if(code===99){
+      // Thunderstorm w/ heavy hail — maximum darkness, 4 intense flashes
+      h+=_skyCloud(0,-6,'rgba(20,15,38,.98)',.95,196,50,-30);
+      h+=_skyCloud(22,-11,'rgba(14,10,30,.99)',.98,250,62,-46);
+      h+=_skyCloud(48,-3,'rgba(18,13,36,.97)',.95,178,46,-22);
+      h+=_skyCloud(0,14,'rgba(15,10,32,.94)',.91,160,68,-28);
+      h+=_skyRain(42,'rgba(155,205,255,.68)',2,38);
+      h+=_skyLightning(4,1.4);
+    }else{
+      h+=_skySun(.7);
+      h+=_skyCloud(3,44,'rgba(255,255,255,.9)',.24,120,92,-20);
     }
   }else{
-    if(g==='clear'){
-      h+=_skySun();
-      h+=_skyCloud(2,42,'rgba(255,255,255,.9)',.28,128,98,-20);
-      h+=_skyCloud(50,58,'rgba(255,255,255,.9)',.22,102,114,-36);
-    }else if(g==='cloudy'){
-      h+=_skySun();
-      h+=_skyCloud(0,4,'rgba(210,222,232,.95)',.6,162,70,-24);
-      h+=_skyCloud(40,-2,'rgba(190,205,218,.95)',.65,202,84,-40);
-      h+=_skyCloud(16,30,'rgba(200,215,226,.95)',.55,138,96,-16);
-    }else if(g==='rain'){
-      h+=_skyCloud(0,0,'rgba(72,88,106,.92)',.8,170,62,-26);
-      h+=_skyCloud(36,-4,'rgba(60,76,92,.92)',.85,212,78,-44);
-      h+=_skyCloud(66,3,'rgba(66,82,98,.9)',.78,152,56,-18);
-      h+=_skyRain(22,'rgba(147,197,253,.52)');
-    }else if(g==='storm'){
-      h+=_skyCloud(0,-4,'rgba(28,22,48,.92)',.9,182,56,-30);
-      h+=_skyCloud(32,-8,'rgba(22,18,42,.95)',.93,232,68,-46);
-      h+=_skyCloud(62,1,'rgba(25,20,45,.9)',.88,162,48,-22);
-      h+=_skyRain(32,'rgba(147,197,253,.62)');
-      h+=_skyLightning(3);
-    }else if(g==='fog'){
-      h+=_skyFog();
-    }else if(g==='snow'){
-      h+=_skyCloud(0,-1,'rgba(185,200,218,.95)',.72,190,72,-30);
-      h+=_skyCloud(42,-4,'rgba(175,192,212,.95)',.68,160,84,-40);
-      h+=_skySnow(28);
-    }else{
-      h+=_skySun();
-      h+=_skyCloud(3,44,'rgba(255,255,255,.9)',.24,118,90,-20);
+    // Night — determine star/moon visibility per code
+    const nb={0:{s:52,m:true,sh:true},1:{s:45,m:true,sh:true},2:{s:30,m:true,sh:false},3:{s:4,m:false,sh:false},
+      45:{s:0,m:false,sh:false},48:{s:0,m:false,sh:false},
+      51:{s:14,m:true,sh:false},53:{s:7,m:false,sh:false},55:{s:0,m:false,sh:false},
+      61:{s:0,m:false,sh:false},63:{s:0,m:false,sh:false},65:{s:0,m:false,sh:false},
+      66:{s:0,m:false,sh:false},67:{s:0,m:false,sh:false},
+      71:{s:18,m:true,sh:false},73:{s:8,m:false,sh:false},75:{s:0,m:false,sh:false},77:{s:6,m:false,sh:false},
+      80:{s:10,m:true,sh:false},81:{s:0,m:false,sh:false},82:{s:0,m:false,sh:false},
+      85:{s:10,m:false,sh:false},86:{s:0,m:false,sh:false},
+      95:{s:0,m:false,sh:false},96:{s:0,m:false,sh:false},99:{s:0,m:false,sh:false}}[code]||{s:20,m:true,sh:false};
+    if(nb.s>0)h+=_skyStars(nb.s,.8);
+    if(nb.m)h+=_skyMoonEl();
+    if(nb.sh)h+=_skyShootEl();
+    // Cloud / weather layers
+    if(code===1){
+      h+=_skyCloud(4,36,'rgba(18,24,52,.80)',.30,110,114,-18);
+    }else if(code===2){
+      h+=_skyCloud(0,4,'rgba(16,22,48,.78)',.60,150,70,-22);
+      h+=_skyCloud(46,-3,'rgba(14,20,44,.75)',.56,128,90,-35);
+    }else if(code===3){
+      h+=_skyCloud(0,-3,'rgba(8,12,24,.92)',.91,182,58,-24);
+      h+=_skyCloud(30,-7,'rgba(6,10,22,.94)',.95,224,70,-38);
+      h+=_skyCloud(58,-1,'rgba(7,11,23,.92)',.91,166,53,-18);
+      h+=_skyCloud(0,22,'rgba(6,10,22,.88)',.86,192,78,-30);
+    }else if(code===45){
+      h+=_skyFog('rgba(238,238,232',.08);
+    }else if(code===48){
+      h+=_skyFog('rgba(202,218,238',.09);
+    }else if(code===51){
+      h+=_skyCloud(5,2,'rgba(12,16,36,.88)',.60,144,74,-22);
+      h+=_skyCloud(50,-1,'rgba(10,14,32,.85)',.55,120,88,-34);
+      h+=_skyRain(7,'rgba(147,197,253,.34)',1,14);
+    }else if(code===53){
+      h+=_skyCloud(0,-2,'rgba(10,14,30,.90)',.70,164,66,-26);
+      h+=_skyCloud(42,0,'rgba(8,12,28,.88)',.65,140,84,-36);
+      h+=_skyRain(12,'rgba(147,197,253,.40)',1,18);
+    }else if(code===55){
+      h+=_skyCloud(0,-3,'rgba(8,12,26,.92)',.78,168,62,-28);
+      h+=_skyCloud(34,-5,'rgba(6,10,24,.90)',.76,150,76,-38);
+      h+=_skyCloud(63,0,'rgba(7,11,25,.88)',.72,132,60,-20);
+      h+=_skyRain(18,'rgba(147,197,253,.44)',1,20);
+    }else if(code===61){
+      h+=_skyCloud(0,-1,'rgba(8,12,26,.90)',.74,162,60,-24);
+      h+=_skyCloud(36,-4,'rgba(6,10,24,.92)',.78,198,72,-40);
+      h+=_skyRain(13,'rgba(147,197,253,.46)',1,24);
+    }else if(code===63){
+      h+=_skyCloud(0,-3,'rgba(6,10,22,.92)',.84,170,58,-28);
+      h+=_skyCloud(30,-6,'rgba(4,8,20,.94)',.88,218,70,-44);
+      h+=_skyCloud(60,0,'rgba(5,9,21,.92)',.82,156,52,-20);
+      h+=_skyRain(23,'rgba(147,197,253,.50)',1,28);
+    }else if(code===65){
+      h+=_skyCloud(0,-5,'rgba(4,7,18,.94)',.90,182,55,-30);
+      h+=_skyCloud(26,-8,'rgba(2,5,16,.96)',.94,230,66,-46);
+      h+=_skyCloud(54,-2,'rgba(3,6,17,.94)',.90,167,50,-22);
+      h+=_skyCloud(0,20,'rgba(2,5,16,.90)',.86,150,74,-28);
+      h+=_skyRain(33,'rgba(147,197,253,.56)',1.5,36);
+    }else if(code===66){
+      h+=_skyCloud(6,-1,'rgba(10,14,30,.88)',.72,160,62,-24);
+      h+=_skyCloud(44,-3,'rgba(8,12,28,.86)',.68,147,80,-38);
+      h+=_skyRain(14,'rgba(200,225,255,.48)',1,22);
+    }else if(code===67){
+      h+=_skyCloud(0,-4,'rgba(6,10,24,.92)',.84,177,58,-30);
+      h+=_skyCloud(28,-7,'rgba(4,8,22,.94)',.88,218,68,-44);
+      h+=_skyCloud(56,-1,'rgba(5,9,23,.90)',.82,157,52,-20);
+      h+=_skyRain(27,'rgba(200,225,255,.54)',1.5,30);
+    }else if(code===71){
+      h+=_skyCloud(2,-1,'rgba(28,35,52,.82)',.65,157,70,-24);
+      h+=_skyCloud(46,-3,'rgba(24,32,48,.80)',.60,138,88,-36);
+      h+=_skySnow(14,'light');
+    }else if(code===73){
+      h+=_skyCloud(0,-2,'rgba(22,30,46,.86)',.72,170,66,-26);
+      h+=_skyCloud(32,-5,'rgba(18,26,42,.88)',.76,206,78,-40);
+      h+=_skyCloud(60,0,'rgba(20,28,44,.84)',.68,148,58,-20);
+      h+=_skySnow(22,'normal');
+    }else if(code===75){
+      h+=_skyCloud(0,-4,'rgba(15,22,38,.90)',.80,180,62,-28);
+      h+=_skyCloud(26,-7,'rgba(12,18,34,.92)',.84,222,75,-42);
+      h+=_skyCloud(54,-1,'rgba(13,20,36,.90)',.78,162,55,-22);
+      h+=_skyCloud(0,20,'rgba(11,17,33,.88)',.74,150,80,-30);
+      h+=_skySnow(35,'heavy');
+    }else if(code===77){
+      h+=_skyCloud(0,-2,'rgba(20,28,44,.84)',.68,160,68,-24);
+      h+=_skyCloud(36,-4,'rgba(17,25,40,.82)',.65,144,84,-36);
+      h+=_skySnow(44,'grain');
+    }else if(code===80){
+      h+=_skyCloud(8,-1,'rgba(8,12,26,.88)',.68,156,66,-22);
+      h+=_skyCloud(50,0,'rgba(6,10,24,.86)',.64,134,86,-34);
+      h+=_skyRain(13,'rgba(147,197,253,.44)',1,22);
+    }else if(code===81){
+      h+=_skyCloud(0,-3,'rgba(5,9,21,.92)',.82,170,60,-26);
+      h+=_skyCloud(30,-6,'rgba(3,7,19,.94)',.86,210,72,-42);
+      h+=_skyCloud(58,0,'rgba(4,8,20,.90)',.80,149,54,-18);
+      h+=_skyRain(24,'rgba(147,197,253,.50)',1,28);
+    }else if(code===82){
+      h+=_skyCloud(0,-5,'rgba(3,6,16,.94)',.88,184,54,-30);
+      h+=_skyCloud(24,-8,'rgba(2,4,14,.96)',.92,232,66,-46);
+      h+=_skyCloud(52,-2,'rgba(2,5,15,.94)',.88,167,50,-22);
+      h+=_skyCloud(0,20,'rgba(1,3,13,.90)',.84,150,74,-28);
+      h+=_skyRain(35,'rgba(147,197,253,.56)',1.5,36);
+    }else if(code===85){
+      h+=_skyCloud(5,-2,'rgba(18,25,42,.84)',.70,160,68,-24);
+      h+=_skyCloud(40,-4,'rgba(15,22,38,.82)',.74,194,78,-38);
+      h+=_skyCloud(0,22,'rgba(17,24,40,.80)',.66,138,62,-20);
+      h+=_skySnow(26,'normal');
+    }else if(code===86){
+      h+=_skyCloud(0,-4,'rgba(12,18,34,.88)',.78,178,62,-28);
+      h+=_skyCloud(24,-7,'rgba(9,14,30,.90)',.82,218,74,-42);
+      h+=_skyCloud(52,-1,'rgba(10,16,32,.88)',.76,160,55,-20);
+      h+=_skyCloud(0,22,'rgba(8,13,28,.84)',.72,147,80,-30);
+      h+=_skySnow(40,'heavy');
+    }else if(code===95){
+      h+=_skyCloud(0,-5,'rgba(12,8,22,.95)',.93,186,54,-30);
+      h+=_skyCloud(24,-9,'rgba(8,5,18,.97)',.96,238,64,-46);
+      h+=_skyCloud(52,-2,'rgba(10,7,20,.95)',.93,170,50,-22);
+      h+=_skyCloud(0,18,'rgba(7,4,16,.92)',.88,152,70,-28);
+      h+=_skyRain(28,'rgba(155,205,255,.58)',1.5,38);
+      h+=_skyLightning(2,.85);
+    }else if(code===96){
+      h+=_skyCloud(0,-5,'rgba(10,6,20,.97)',.95,190,52,-30);
+      h+=_skyCloud(22,-10,'rgba(6,4,16,.98)',.97,242,62,-46);
+      h+=_skyCloud(50,-2,'rgba(8,5,18,.96)',.95,172,48,-22);
+      h+=_skyCloud(0,16,'rgba(6,3,15,.93)',.90,154,68,-28);
+      h+=_skyRain(34,'rgba(155,205,255,.62)',1.5,38);
+      h+=_skyLightning(3,1.1);
+    }else if(code===99){
+      h+=_skyCloud(0,-6,'rgba(8,4,17,.98)',.96,194,50,-30);
+      h+=_skyCloud(20,-11,'rgba(4,2,12,.99)',.98,248,60,-46);
+      h+=_skyCloud(46,-3,'rgba(6,3,14,.97)',.96,176,46,-22);
+      h+=_skyCloud(0,14,'rgba(4,2,12,.94)',.92,158,66,-28);
+      h+=_skyRain(42,'rgba(155,205,255,.65)',2,38);
+      h+=_skyLightning(4,1.4);
     }
+    // codes 0 already fully handled above (stars+moon+shoot, no clouds)
   }
   return h+'</div>';
 }
@@ -4142,7 +4403,7 @@ function renderClimateData(w,a,locName){
   <div class="clim-top-row">
     <div class="clim-hero" style="--clim-grad:${grad}" id="clim-hero-el">
       <div class="clim-hero-glass"></div>
-      ${climSkyHTML(info.g,isDay)}
+      ${climSkyHTML(c.weather_code,isDay)}
       <div class="clim-loc-name">📍 ${esc(locName)}</div>
       <div class="clim-temp-row">
         <div class="clim-ico-wrap"><span class="${iconCls}">${wmoIcon(c.weather_code,isDay)}</span></div>
