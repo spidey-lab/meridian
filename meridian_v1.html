@@ -3226,9 +3226,11 @@ async function fetchRssFeeds(feeds){
     const k=(a.title||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').substring(0,55);
     if(seen.has(k))return false;seen.add(k);return true;
   });
-  // Age filter: prefer articles within 48h; fallback to all if too few remain
+  // Age filter: keep only articles with a valid, parseable date within 48h.
+  // Articles with epoch/zero date (failed parse) are treated as unknown-age and excluded.
+  // Falls back to the full deduped list only if fewer than 8 fresh articles survive.
   const cutoff=Date.now()-48*3600*1000;
-  const fresh=deduped.filter(a=>!a.pub||a.pub.getTime()===0||a.pub.getTime()>cutoff);
+  const fresh=deduped.filter(a=>a.pub&&a.pub.getTime()>0&&a.pub.getTime()>cutoff);
   const final=fresh.length>=8?fresh:deduped;
   DBG.stats.art+=final.length;DBG._st();
   if(deduped.length<items.length)DBG.info('RSS',`Deduped ${items.length-deduped.length} duplicate(s)`);
