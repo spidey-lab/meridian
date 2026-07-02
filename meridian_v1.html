@@ -874,10 +874,11 @@
     .clim-ph-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-sub)}
     .clim-ph-badge{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--clr-climate);letter-spacing:.5px}
 
-    /* Hourly scroll */
-    .clim-hourly-scroll{display:flex;gap:8px;overflow-x:auto;padding:14px 16px;scrollbar-width:none}
-    .clim-hourly-scroll::-webkit-scrollbar{display:none}
-    .clim-hour{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:52px;padding:8px 4px;border-radius:10px;transition:background .18s}
+    /* Hourly — stacks to fill available height, only scrolls if it truly doesn't fit */
+    .clim-hourly-scroll{display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px;overflow-y:auto;overflow-x:hidden;align-content:flex-start;max-height:420px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent}
+    .clim-hourly-scroll::-webkit-scrollbar{width:5px}
+    .clim-hourly-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+    .clim-hour{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1 1 60px;max-width:82px;padding:8px 4px;border-radius:10px;transition:background .18s}
     .clim-hour:hover{background:rgba(255,255,255,.04)}
     .clim-hour-now{background:rgba(56,189,248,.08);border:0.5px solid rgba(56,189,248,.2)}
     .clim-h-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.5px}
@@ -908,52 +909,73 @@
     .clim-day-range{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text);white-space:nowrap;min-width:68px;text-align:right}
     .clim-day-rain{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(96,165,250,.6);min-width:30px;text-align:right}
 
-    /* Sun arc panel */
-    .clim-sun-body{padding:16px}
+    /* Sun / moon arc panel — full day+night cycle ring */
+    .clim-sun-body{padding:16px 16px 12px}
     .clim-sun-svg{width:100%;height:auto;overflow:visible}
-    .clim-sun-arc-track{fill:none;stroke:rgba(255,255,255,.06);stroke-width:2;stroke-linecap:round}
-    .clim-sun-arc-fill{fill:none;stroke:url(#sunGrad);stroke-width:2.5;stroke-linecap:round;transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)}
-    .clim-sun-dot{fill:#FBBF24;filter:drop-shadow(0 0 6px rgba(251,191,36,.8));transition:cx 1.4s ease,cy 1.4s ease}
-    .clim-sun-times{display:flex;justify-content:space-between;padding:0 8px;margin-top:6px}
-    .clim-sun-t{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.5px}
+    .clim-sun-arc-track{fill:none;stroke:rgba(251,191,36,.10);stroke-width:2;stroke-linecap:round}
+    .clim-sun-arc-fill{fill:none;stroke:url(#sunGrad);stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 0 3px rgba(251,191,36,.5));transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)}
+    .clim-sun-dot{fill:url(#sunDotGrad);filter:drop-shadow(0 0 7px rgba(251,191,36,.85));transition:cx 1.4s ease,cy 1.4s ease}
+    .clim-moon-arc-track{fill:none;stroke:rgba(165,180,252,.08);stroke-width:2;stroke-linecap:round}
+    .clim-moon-arc-fill{fill:none;stroke:url(#moonGrad);stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 0 3px rgba(165,180,252,.4));transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)}
+    .clim-arc-horizon{stroke:rgba(255,255,255,.10);stroke-width:1;stroke-dasharray:2 3}
+    .clim-moon-dot-bg{filter:drop-shadow(0 0 6px rgba(129,140,248,.7));transition:cx 1.4s ease,cy 1.4s ease}
+    .clim-arc-moon-wrap{transition:transform 1.4s ease}
+    .clim-arc-star{fill:#fff;animation:skysStarTwink var(--dur,3s) ease-in-out infinite var(--del,0s) both}
+    .clim-sun-times{display:flex;justify-content:space-between;padding:0 6px;margin-top:2px}
+    .clim-sun-t{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--text-muted);letter-spacing:.5px}
+    .clim-moon-times{display:flex;justify-content:space-between;padding:0 6px;margin-top:2px}
+    .clim-moon-t{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(165,180,252,.55);letter-spacing:.5px}
 
-    /* AQI panel */
+    /* AQI panel — segmented EPA-band gauge with value marker */
     .clim-aqi-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
     .clim-aqi-svg{width:100%;max-width:170px;height:auto;overflow:visible}
-    .clim-aqi-arc-track{fill:none;stroke:rgba(255,255,255,.05);stroke-width:3;stroke-linecap:round}
-    .clim-aqi-arc{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)}
-    .clim-aqi-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;text-anchor:middle;dominant-baseline:middle}
+    .clim-aqi-band{fill:none;stroke-width:6;stroke-linecap:butt;opacity:.9}
+    .clim-aqi-marker{stroke:#0B1220;stroke-width:2.5;filter:drop-shadow(0 0 5px rgba(0,0,0,.5));transition:cx 1.4s cubic-bezier(.4,0,.2,1),cy 1.4s cubic-bezier(.4,0,.2,1)}
+    .clim-aqi-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;text-anchor:middle;dominant-baseline:middle}
     .clim-aqi-sub{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.8px;text-anchor:middle;fill:var(--text-muted)}
     .clim-aqi-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:4px 10px;border-radius:20px}
     .clim-aqi-pills{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
-    .clim-aqi-pill{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);background:rgba(255,255,255,.04);border:0.5px solid var(--border);border-radius:6px;padding:3px 8px;letter-spacing:.4px}
+    .clim-aqi-pill{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);background:rgba(255,255,255,.04);border:0.5px solid var(--border);border-radius:6px;padding:3px 8px 3px 6px;letter-spacing:.4px}
+    .clim-aqi-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
 
-    /* Wind compass */
+    /* Wind compass — graduated ring, SVG needle, Beaufort label */
     .clim-compass-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px}
-    .clim-compass-ring{width:110px;height:110px;border-radius:50%;border:1px solid rgba(255,255,255,.08);position:relative;background:rgba(255,255,255,.02);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-    .clim-cd{position:absolute;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.5px}
-    .clim-cd-n{top:4px;left:50%;transform:translateX(-50%)}
-    .clim-cd-s{bottom:4px;left:50%;transform:translateX(-50%)}
-    .clim-cd-e{right:6px;top:50%;transform:translateY(-50%)}
-    .clim-cd-w{left:6px;top:50%;transform:translateY(-50%)}
+    .clim-compass-ring{width:128px;height:128px;border-radius:50%;border:1px solid rgba(255,255,255,.09);position:relative;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.05),rgba(255,255,255,.01) 70%);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:inset 0 0 18px rgba(0,0,0,.25)}
+    .clim-compass-ticks{position:absolute;inset:0}
+    .clim-tick{position:absolute;left:50%;top:2px;width:1px;height:7px;background:rgba(255,255,255,.16);transform-origin:50% 62px}
+    .clim-tick-major{height:9px;background:rgba(255,255,255,.28)}
+    .clim-cd{position:absolute;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.5px}
+    .clim-cd-n{top:5px;left:50%;transform:translateX(-50%);color:rgba(96,165,250,.85)}
+    .clim-cd-s{bottom:5px;left:50%;transform:translateX(-50%)}
+    .clim-cd-e{right:7px;top:50%;transform:translateY(-50%)}
+    .clim-cd-w{left:7px;top:50%;transform:translateY(-50%)}
+    .clim-cd-sub{font-size:7px;font-weight:600;color:rgba(255,255,255,.22);letter-spacing:.3px}
+    .clim-cd-ne{top:20px;right:20px}
+    .clim-cd-se{bottom:20px;right:20px}
+    .clim-cd-sw{bottom:20px;left:20px}
+    .clim-cd-nw{top:20px;left:20px}
     .clim-needle-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform 1.4s cubic-bezier(.4,0,.2,1)}
-    .clim-needle{width:3px;height:50px;border-radius:2px;position:relative}
-    .clim-needle-n{background:linear-gradient(180deg,rgba(96,165,250,1) 0%,rgba(96,165,250,.2) 100%);border-radius:2px 2px 0 0;height:25px}
-    .clim-needle-s{background:linear-gradient(0deg,rgba(255,255,255,.15) 0%,transparent 100%);border-radius:0 0 2px 2px;height:25px}
-    .clim-compass-center{width:8px;height:8px;border-radius:50%;background:var(--clr-climate);box-shadow:0 0 10px rgba(56,189,248,.7);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+    .clim-needle-svg{filter:drop-shadow(0 1px 3px rgba(0,0,0,.4))}
+    .clim-compass-center{width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7DD3FC,var(--clr-climate));box-shadow:0 0 10px rgba(56,189,248,.7);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border:1.5px solid rgba(11,18,32,.6)}
     .clim-wind-vals{text-align:center}
-    .clim-wind-speed{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text)}
+    .clim-wind-speed{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--text)}
     .clim-wind-dir{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.8px;margin-top:2px}
+    .clim-wind-bft{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--clr-climate);letter-spacing:.6px;margin-top:4px;padding:2px 9px;border-radius:10px;background:rgba(56,189,248,.08);border:0.5px solid rgba(56,189,248,.18);display:inline-block}
 
     /* Precipitation panel */
     .clim-precip-body{padding:14px 16px}
-    .clim-precip-chart{display:flex;align-items:flex-end;gap:4px;height:70px;margin-bottom:10px}
+    .clim-precip-chart-wrap{position:relative}
+    .clim-precip-avg-line{position:absolute;left:0;right:0;border-top:1px dashed rgba(255,255,255,.16);z-index:1}
+    .clim-precip-avg-line span{position:absolute;right:0;top:-13px;font-family:'JetBrains Mono',monospace;font-size:6.5px;color:rgba(255,255,255,.32);letter-spacing:.5px}
+    .clim-precip-chart{display:flex;align-items:flex-end;gap:4px;height:70px;margin-bottom:10px;position:relative}
     .clim-precip-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
-    .clim-precip-bar-wrap{flex:1;display:flex;align-items:flex-end;width:100%;min-height:4px}
-    .clim-precip-bar{width:100%;background:linear-gradient(180deg,var(--clr-climate),rgba(56,189,248,.25));border-radius:3px 3px 0 0;min-height:3px;transform:scaleY(0);transform-origin:bottom;animation:precipBarIn .8s ease forwards}
+    .clim-precip-bar-wrap{flex:1;display:flex;align-items:flex-end;width:100%;min-height:4px;position:relative}
+    .clim-precip-peak-ico{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:9px;margin-bottom:2px}
+    .clim-precip-bar{width:100%;background:linear-gradient(180deg,#7DD3FC,var(--clr-climate) 55%,rgba(56,189,248,.3));border-radius:3px 3px 0 0;min-height:3px;transform:scaleY(0);transform-origin:bottom;animation:precipBarIn .8s ease forwards}
+    .clim-precip-bar-peak{background:linear-gradient(180deg,#BAE6FD,#38BDF8 50%,rgba(56,189,248,.4));box-shadow:0 0 10px rgba(56,189,248,.5)}
     @keyframes precipBarIn{from{transform:scaleY(0)}to{transform:scaleY(1)}}
     .clim-precip-day{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--text-muted);letter-spacing:.3px}
-    .clim-precip-summary{display:flex;gap:16px;flex-wrap:wrap;padding-top:10px;border-top:0.5px solid rgba(255,255,255,.05)}
+    .clim-precip-summary{display:flex;gap:14px;flex-wrap:wrap;padding-top:10px;border-top:0.5px solid rgba(255,255,255,.05)}
     .clim-em{display:flex;flex-direction:column;gap:2px}
     .clim-em-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text)}
     .clim-em-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:.5px;text-transform:uppercase}
@@ -3801,6 +3823,8 @@ function aqiInfo(v){
 
 const _WIND_DIRS=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
 function windDir(deg){return _WIND_DIRS[Math.round(((deg%360)+360)%360/22.5)%16]}
+const _BEAUFORT=[[1,'Calm'],[5,'Light Air'],[11,'Light Breeze'],[19,'Gentle Breeze'],[28,'Moderate Breeze'],[38,'Fresh Breeze'],[49,'Strong Breeze'],[61,'Near Gale'],[74,'Gale'],[88,'Strong Gale'],[102,'Storm'],[117,'Violent Storm'],[Infinity,'Hurricane']];
+function beaufortLabel(kmh){return _BEAUFORT.find(([max])=>kmh<=max)[1]}
 
 function fmtHr(iso){
   const d=new Date(iso);
@@ -3810,12 +3834,14 @@ function fmtHr(iso){
 function moonPhaseDay(){
   return((Date.now()-new Date('2000-01-06T18:14:00Z').getTime())/864e5)%29.53058867;
 }
-function climMoonSVG(phase){
+let _moonIdSeq=0;
+function climMoonSVG(phase,cls='clim-sky-moon',fill='rgba(240,236,210,.92)'){
   const sz=54,r=26,cx=27,cy=27;
   const illum=phase<14.77?phase/14.77:(29.53-phase)/14.76;
   const waxing=phase<14.77;
   const shadowX=waxing?cx-illum*2*r:cx+illum*2*r;
-  return`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" class="clim-sky-moon"><defs><mask id="moonMask"><circle cx="${cx}" cy="${cy}" r="${r}" fill="white"/><circle cx="${shadowX.toFixed(1)}" cy="${cy}" r="${r}" fill="black"/></mask></defs><circle cx="${cx}" cy="${cy}" r="${r}" fill="rgba(240,236,210,.92)" mask="url(#moonMask)"/></svg>`;
+  const mid=`moonMask${_moonIdSeq++}`;
+  return`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" class="${cls}"><defs><mask id="${mid}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="white"/><circle cx="${shadowX.toFixed(1)}" cy="${cy}" r="${r}" fill="black"/></mask></defs><circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" mask="url(#${mid})"/></svg>`;
 }
 // Density scale — hero card is now full-width, so scenes need proportionally fuller elements
 const SKY_SCALE=1.35;
@@ -4417,50 +4443,100 @@ function renderClimateData(w,a,locName){
     </div>`;
   });
 
-  // Sun arc
+  // Sun + moon arc — one ring, day on top, night on bottom, sharing the horizon
   let sunHTML='';
   if(dSR[0]&&dSS[0]){
     const sr=new Date(dSR[0]),ss=new Date(dSS[0]);
+    const nextSr=dSR[1]?new Date(dSR[1]):new Date(ss.getTime()+12*3600*1000);
     const nowMs=now.getTime();
+    const PI=Math.PI, r=84, cx=100, cy=100;
     const dayLen=ss-sr;
-    let p=Math.max(0,Math.min(1,(nowMs-sr)/dayLen));
-    if(!isDay)p=nowMs<sr?0:1;
-    const PI=Math.PI, r=88, cx=100, cy=92;
+    let pDay=Math.max(0,Math.min(1,(nowMs-sr)/dayLen));
+    if(!isDay)pDay=nowMs<sr?0:1;
+    const nightLen=nextSr-ss;
+    let pNight=Math.max(0,Math.min(1,(nowMs-ss)/nightLen));
+    if(isDay)pNight=nowMs<ss?0:1;
     const arcLen=(PI*r).toFixed(1);
-    const fillLen=(p*PI*r).toFixed(1);
-    const dotX=(cx+r*Math.cos(PI*(1-p))).toFixed(2);
-    const dotY=(cy-r*Math.sin(PI*(1-p))).toFixed(2);
+    const sunFillLen=(pDay*PI*r).toFixed(1);
+    const moonFillLen=(pNight*PI*r).toFixed(1);
+    const sunX=(cx+r*Math.cos(PI*(1-pDay))).toFixed(2);
+    const sunY=(cy-r*Math.sin(PI*(1-pDay))).toFixed(2);
+    const moonX=(cx+r*Math.cos(PI*(1-pNight))).toFixed(2);
+    const moonY=(cy+r*Math.sin(PI*(1-pNight))).toFixed(2);
     const srStr=sr.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
     const ssStr=ss.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
+    const nextSrStr=nextSr.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
+    let starsSVG='';
+    for(let i=0;i<9;i++){
+      const sx=(28+Math.random()*144).toFixed(1);
+      const sy=(108+Math.random()*66).toFixed(1);
+      const sr2=(Math.random()*.7+.4).toFixed(1);
+      const dur=(Math.random()*2.5+1.5).toFixed(1)+'s';
+      const del=-(Math.random()*4).toFixed(1)+'s';
+      const op=(Math.random()*.35+.35).toFixed(2);
+      starsSVG+=`<circle class="clim-arc-star" cx="${sx}" cy="${sy}" r="${sr2}" style="--dur:${dur};--del:${del};--op:${op};opacity:${op}"/>`;
+    }
+    const moonIco=climMoonSVG(moonPhaseDay(),'clim-arc-moon-ico','#4C1D95');
     sunHTML=`
-    <svg class="clim-sun-svg" viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg">
+    <svg class="clim-sun-svg" viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#F97316"/>
           <stop offset="100%" stop-color="#FBBF24"/>
         </linearGradient>
+        <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#6D28D9"/>
+          <stop offset="100%" stop-color="#A5B4FC"/>
+        </linearGradient>
+        <radialGradient id="sunDotGrad" cx="38%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#FEF9C3"/>
+          <stop offset="45%" stop-color="#FBBF24"/>
+          <stop offset="100%" stop-color="#F97316"/>
+        </radialGradient>
+        <radialGradient id="moonDotGrad" cx="38%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#EEF2FF"/>
+          <stop offset="55%" stop-color="#C7D2FE"/>
+          <stop offset="100%" stop-color="#818CF8"/>
+        </radialGradient>
       </defs>
-      <path class="clim-sun-arc-track" d="M12,92 A88,88 0 0,1 188,92"/>
-      <path class="clim-sun-arc-fill" d="M12,92 A88,88 0 0,1 188,92" stroke-dasharray="${fillLen} ${arcLen}"/>
-      <circle class="clim-sun-dot" cx="${dotX}" cy="${dotY}" r="5"/>
-      <text x="12" y="108" fill="rgba(255,255,255,.35)" font-family="JetBrains Mono,monospace" font-size="8">${srStr}</text>
-      <text x="188" y="108" fill="rgba(255,255,255,.35)" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="end">${ssStr}</text>
-    </svg>`;
+      ${starsSVG}
+      <path class="clim-moon-arc-track" d="M16,100 A84,84 0 0,0 184,100"/>
+      <path class="clim-moon-arc-fill" d="M16,100 A84,84 0 0,0 184,100" stroke-dasharray="${moonFillLen} ${arcLen}"/>
+      <path class="clim-sun-arc-track" d="M16,100 A84,84 0 0,1 184,100"/>
+      <path class="clim-sun-arc-fill" d="M16,100 A84,84 0 0,1 184,100" stroke-dasharray="${sunFillLen} ${arcLen}"/>
+      <line class="clim-arc-horizon" x1="8" y1="100" x2="192" y2="100"/>
+      <circle class="clim-sun-dot" cx="${sunX}" cy="${sunY}" r="5.5"/>
+      <circle class="clim-moon-dot-bg" cx="${moonX}" cy="${moonY}" r="9" fill="url(#moonDotGrad)"/>
+      <g class="clim-arc-moon-wrap" transform="translate(${(moonX-8).toFixed(1)},${(moonY-8).toFixed(1)})"><svg width="16" height="16" viewBox="0 0 54 54">${moonIco.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'')}</svg></g>
+    </svg>
+    <div class="clim-sun-times">
+      <div class="clim-sun-t">☀️ ${srStr}</div>
+      <div class="clim-sun-t">${ssStr} ☀️</div>
+    </div>
+    <div class="clim-moon-times">
+      <div class="clim-moon-t">🌙 ${ssStr}</div>
+      <div class="clim-moon-t">${nextSrStr} 🌙</div>
+    </div>`;
   }
 
-  // AQI
+  // AQI — segmented EPA-band gauge with a value marker (matches real AQI dial design)
   let aqiHTML='',aqiPillsHTML='';
   const aqi=a&&a.current?a.current.us_aqi:null;
   if(aqi!=null){
     const ai=aqiInfo(aqi);
     const aqiPct=Math.min(aqi/300,1);
-    const PI=Math.PI, r=80;
-    const arcLen=(PI*r).toFixed(1);
-    const fillLen=(aqiPct*PI*r).toFixed(1);
+    const PI=Math.PI, r=80, acx=100, acy=102;
+    const arcPt=p=>[(acx+r*Math.cos(PI*(1-p))).toFixed(2),(acy-r*Math.sin(PI*(1-p))).toFixed(2)];
+    const bands=[[0,.1667,'#1D9E75'],[.1667,.3333,'#FBBF24'],[.3333,.5,'#F97316'],[.5,.6667,'#E24B4A'],[.6667,1,'#8B5CE8']];
+    const bandSVG=bands.map(([p0,p1,col])=>{
+      const[x0,y0]=arcPt(p0),[x1,y1]=arcPt(p1);
+      return`<path class="clim-aqi-band" stroke="${col}" d="M${x0},${y0} A${r},${r} 0 0,1 ${x1},${y1}"/>`;
+    }).join('');
+    const[markX,markY]=arcPt(aqiPct);
     aqiHTML=`
-    <svg class="clim-aqi-svg" viewBox="0 0 200 115" xmlns="http://www.w3.org/2000/svg">
-      <path class="clim-aqi-arc-track" d="M20,102 A80,80 0 0,1 180,102"/>
-      <path class="clim-aqi-arc" d="M20,102 A80,80 0 0,1 180,102" stroke="${ai.col}" stroke-dasharray="${fillLen} ${arcLen}"/>
+    <svg class="clim-aqi-svg" viewBox="0 0 200 118" xmlns="http://www.w3.org/2000/svg">
+      ${bandSVG}
+      <circle class="clim-aqi-marker" cx="${markX}" cy="${markY}" r="6" style="fill:${ai.col}"/>
       <text class="clim-aqi-val" x="100" y="80" fill="${ai.col}">${aqi}</text>
       <text class="clim-aqi-sub" x="100" y="96">US AQI</text>
     </svg>
@@ -4468,8 +4544,8 @@ function renderClimateData(w,a,locName){
     const pm10=a.current.pm10,pm25=a.current.pm2_5;
     aqiPillsHTML=`
     <div class="clim-aqi-pills">
-      ${pm25!=null?`<div class="clim-aqi-pill">PM2.5 · ${pm25.toFixed(1)}</div>`:''}
-      ${pm10!=null?`<div class="clim-aqi-pill">PM10 · ${pm10.toFixed(1)}</div>`:''}
+      ${pm25!=null?`<div class="clim-aqi-pill"><span class="clim-aqi-dot" style="background:#38BDF8"></span>PM2.5 · ${pm25.toFixed(1)}</div>`:''}
+      ${pm10!=null?`<div class="clim-aqi-pill"><span class="clim-aqi-dot" style="background:#A5B4FC"></span>PM10 · ${pm10.toFixed(1)}</div>`:''}
     </div>`;
   } else {
     aqiHTML='<div style="padding:20px;text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--text-muted)">AQI unavailable</div>';
@@ -4479,24 +4555,37 @@ function renderClimateData(w,a,locName){
   const wspd=c.wind_speed_10m||0;
   const wdeg=c.wind_direction_10m||0;
   const wdir=windDir(wdeg);
+  const wBft=beaufortLabel(wspd);
+  let compassTicks='';
+  for(let i=0;i<12;i++){
+    const ang=i*30;
+    const major=ang%90===0;
+    compassTicks+=`<div class="clim-tick${major?' clim-tick-major':''}" style="transform:rotate(${ang}deg)"></div>`;
+  }
 
   // Precipitation 7-day bars
   const precipVals=dRain.map(v=>v||0);
   const maxPrecip=Math.max(...precipVals,0.1);
+  const avgPrecip=precipVals.reduce((a,b)=>a+b,0)/precipVals.length;
+  const avgLineTop=(100-(avgPrecip/maxPrecip)*100).toFixed(1)+'%';
+  const peakIdx=precipVals.indexOf(Math.max(...precipVals));
   let precipCols='';
   precipVals.forEach((v,i)=>{
     const d=new Date((dTimes[i]||'')+'T12:00:00');
     const name=i===0?'TOD':DAY_NAMES[d.getDay()];
     const barH=((v/maxPrecip)*100).toFixed(1)+'%';
+    const isPeak=i===peakIdx&&v>0;
     precipCols+=`<div class="clim-precip-col">
       <div class="clim-precip-bar-wrap" style="height:60px">
-        <div class="clim-precip-bar" style="height:${barH};animation-delay:${i*0.08}s"></div>
+        ${isPeak?'<div class="clim-precip-peak-ico">💧</div>':''}
+        <div class="clim-precip-bar${isPeak?' clim-precip-bar-peak':''}" style="height:${barH};animation-delay:${i*0.08}s"></div>
       </div>
       <div class="clim-precip-day">${name}</div>
     </div>`;
   });
   const totalPrecip=precipVals.reduce((a,b)=>a+b,0).toFixed(1);
   const maxDayPrecip=maxPrecip.toFixed(1);
+  const rainyDays=precipVals.filter(v=>v>=1).length;
 
   return `
   <div class="clim-top-row">
@@ -4530,7 +4619,7 @@ function renderClimateData(w,a,locName){
       <div class="clim-hourly-scroll">${hourlyHTML}</div>
     </div>
     <div class="clim-panel">
-      <div class="clim-ph"><div class="clim-ph-title">Sun Arc</div><div class="clim-ph-badge">${isDay?'DAYLIGHT':'NIGHT'}</div></div>
+      <div class="clim-ph"><div class="clim-ph-title">Sun &amp; Moon</div><div class="clim-ph-badge">${isDay?'☀️ DAY':'🌙 NIGHT'}</div></div>
       <div class="clim-sun-body">${sunHTML||'<div style="padding:20px;text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--text-muted)">Sun data unavailable</div>'}</div>
     </div>
     <div class="clim-panel">
@@ -4548,28 +4637,47 @@ function renderClimateData(w,a,locName){
       <div class="clim-ph"><div class="clim-ph-title">Wind</div><div class="clim-ph-badge">${wdir}</div></div>
       <div class="clim-compass-body">
         <div class="clim-compass-ring">
+          <div class="clim-compass-ticks">${compassTicks}</div>
           <div class="clim-cd clim-cd-n">N</div>
           <div class="clim-cd clim-cd-s">S</div>
           <div class="clim-cd clim-cd-e">E</div>
           <div class="clim-cd clim-cd-w">W</div>
+          <div class="clim-cd clim-cd-sub clim-cd-ne">NE</div>
+          <div class="clim-cd clim-cd-sub clim-cd-se">SE</div>
+          <div class="clim-cd clim-cd-sub clim-cd-sw">SW</div>
+          <div class="clim-cd clim-cd-sub clim-cd-nw">NW</div>
           <div class="clim-needle-wrap" id="clim-needle" style="transform:rotate(${wdeg}deg)">
-            <div class="clim-needle"><div class="clim-needle-n"></div><div class="clim-needle-s"></div></div>
+            <svg class="clim-needle-svg" width="14" height="52" viewBox="0 0 14 52">
+              <defs>
+                <linearGradient id="needleGradN" x1="0%" y1="100%" x2="0%" y2="0%">
+                  <stop offset="0%" stop-color="#60A5FA" stop-opacity=".15"/>
+                  <stop offset="100%" stop-color="#7DD3FC"/>
+                </linearGradient>
+              </defs>
+              <polygon points="7,0 11,22 7,18 3,22" fill="url(#needleGradN)"/>
+              <polygon points="7,52 11,30 7,34 3,30" fill="rgba(255,255,255,.16)"/>
+            </svg>
           </div>
           <div class="clim-compass-center"></div>
         </div>
         <div class="clim-wind-vals">
           <div class="clim-wind-speed">${Math.round(wspd)} <span style="font-size:13px;font-weight:400;color:var(--text-muted)">km/h</span></div>
           <div class="clim-wind-dir">${wdir} · ${wdeg}°</div>
+          <div class="clim-wind-bft">${wBft}</div>
         </div>
       </div>
     </div>
     <div class="clim-panel">
       <div class="clim-ph"><div class="clim-ph-title">Precipitation</div><div class="clim-ph-badge">7 DAYS</div></div>
       <div class="clim-precip-body">
-        <div class="clim-precip-chart">${precipCols}</div>
+        <div class="clim-precip-chart-wrap">
+          <div class="clim-precip-avg-line" style="top:${avgLineTop}"><span>AVG</span></div>
+          <div class="clim-precip-chart">${precipCols}</div>
+        </div>
         <div class="clim-precip-summary">
           <div class="clim-em"><div class="clim-em-val">${totalPrecip} mm</div><div class="clim-em-lbl">Weekly Total</div></div>
           <div class="clim-em"><div class="clim-em-val">${maxDayPrecip} mm</div><div class="clim-em-lbl">Peak Day</div></div>
+          <div class="clim-em"><div class="clim-em-val">${rainyDays}/7</div><div class="clim-em-lbl">Rainy Days</div></div>
         </div>
       </div>
     </div>
