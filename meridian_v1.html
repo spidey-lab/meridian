@@ -909,22 +909,24 @@
     .clim-day-range{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text);white-space:nowrap;min-width:68px;text-align:right}
     .clim-day-rain{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(96,165,250,.6);min-width:30px;text-align:right}
 
-    /* Sun / moon arc panel — full day+night cycle ring */
-    .clim-sun-body{padding:16px 16px 12px}
+    /* Sun / moon arc panel — compact dual concentric semicircle (outer=moon night, inner=sun day) */
+    .clim-sun-body{padding:14px 12px 10px}
     .clim-sun-svg{width:100%;height:auto;overflow:visible}
-    .clim-sun-arc-track{fill:none;stroke:rgba(251,191,36,.10);stroke-width:2;stroke-linecap:round}
-    .clim-sun-arc-fill{fill:none;stroke:url(#sunGrad);stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 0 3px rgba(251,191,36,.5));transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)}
-    .clim-sun-dot{fill:url(#sunDotGrad);filter:drop-shadow(0 0 7px rgba(251,191,36,.85));transition:cx 1.4s ease,cy 1.4s ease}
-    .clim-moon-arc-track{fill:none;stroke:rgba(165,180,252,.08);stroke-width:2;stroke-linecap:round}
-    .clim-moon-arc-fill{fill:none;stroke:url(#moonGrad);stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 0 3px rgba(165,180,252,.4));transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)}
-    .clim-arc-horizon{stroke:rgba(255,255,255,.10);stroke-width:1;stroke-dasharray:2 3}
-    .clim-moon-dot-bg{filter:drop-shadow(0 0 6px rgba(129,140,248,.7));transition:cx 1.4s ease,cy 1.4s ease}
+    .clim-sun-arc-track{fill:none;stroke:rgba(251,191,36,.10);stroke-width:3;stroke-linecap:round}
+    .clim-sun-arc-fill{fill:none;stroke:url(#sunGrad);stroke-width:3.5;stroke-linecap:round;filter:drop-shadow(0 0 4px rgba(251,191,36,.6));transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)}
+    .clim-sun-dot{fill:url(#sunDotGrad);filter:drop-shadow(0 0 8px rgba(251,191,36,.9));transition:cx 1.4s ease,cy 1.4s ease}
+    .clim-moon-arc-track{fill:none;stroke:rgba(165,180,252,.08);stroke-width:3;stroke-linecap:round}
+    .clim-moon-arc-fill{fill:none;stroke:url(#moonGrad);stroke-width:3.5;stroke-linecap:round;filter:drop-shadow(0 0 4px rgba(165,180,252,.5));transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)}
+    .clim-arc-horizon{stroke:rgba(255,255,255,.12);stroke-width:1;stroke-dasharray:3 3}
+    .clim-moon-dot-bg{filter:drop-shadow(0 0 7px rgba(129,140,248,.75));transition:cx 1.4s ease,cy 1.4s ease}
     .clim-arc-moon-wrap{transition:transform 1.4s ease}
     .clim-arc-star{fill:#fff;animation:skysStarTwink var(--dur,3s) ease-in-out infinite var(--del,0s) both}
-    .clim-sun-times{display:flex;justify-content:space-between;padding:0 6px;margin-top:2px}
-    .clim-sun-t{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--text-muted);letter-spacing:.5px}
-    .clim-moon-times{display:flex;justify-content:space-between;padding:0 6px;margin-top:2px}
-    .clim-moon-t{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(165,180,252,.55);letter-spacing:.5px}
+    .clim-arc-center-lbl{font-family:'JetBrains Mono',monospace;font-size:7px;fill:rgba(255,255,255,.18);text-anchor:middle;dominant-baseline:middle}
+    .clim-sun-times{display:flex;justify-content:space-between;align-items:center;padding:0 4px;margin-top:4px}
+    .clim-sun-t{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:rgba(251,191,36,.75);letter-spacing:.5px}
+    .clim-arc-dur{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:rgba(255,255,255,.22);letter-spacing:.3px}
+    .clim-moon-times{display:flex;justify-content:space-between;align-items:center;padding:0 4px;margin-top:3px}
+    .clim-moon-t{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(165,180,252,.6);letter-spacing:.5px}
 
     /* AQI panel — segmented EPA-band gauge with value marker */
     .clim-aqi-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px}
@@ -4443,50 +4445,71 @@ function renderClimateData(w,a,locName){
     </div>`;
   });
 
-  // Sun + moon arc — one ring, day on top, night on bottom, sharing the horizon
+  // Sun + moon arc — compact dual concentric semicircle
+  // Outer track (r=88): moon night window, sunset → next sunrise, purple
+  // Inner track (r=66): sun day window, sunrise → sunset, amber
   let sunHTML='';
   if(dSR[0]&&dSS[0]){
     const sr=new Date(dSR[0]),ss=new Date(dSS[0]);
     const nextSr=dSR[1]?new Date(dSR[1]):new Date(ss.getTime()+12*3600*1000);
     const nowMs=now.getTime();
-    const PI=Math.PI, r=84, cx=100, cy=100;
+    const PI=Math.PI, cx=100, cy=100, rs=66, rm=88;
     const dayLen=ss-sr;
     let pDay=Math.max(0,Math.min(1,(nowMs-sr)/dayLen));
     if(!isDay)pDay=nowMs<sr?0:1;
     const nightLen=nextSr-ss;
     let pNight=Math.max(0,Math.min(1,(nowMs-ss)/nightLen));
     if(isDay)pNight=nowMs<ss?0:1;
-    const arcLen=(PI*r).toFixed(1);
-    const sunFillLen=(pDay*PI*r).toFixed(1);
-    const moonFillLen=(pNight*PI*r).toFixed(1);
-    const sunX=(cx+r*Math.cos(PI*(1-pDay))).toFixed(2);
-    const sunY=(cy-r*Math.sin(PI*(1-pDay))).toFixed(2);
-    const moonX=(cx+r*Math.cos(PI*(1-pNight))).toFixed(2);
-    const moonY=(cy+r*Math.sin(PI*(1-pNight))).toFixed(2);
+    const sunArcLen=(PI*rs).toFixed(1);
+    const moonArcLen=(PI*rm).toFixed(1);
+    const sunFillLen=(pDay*PI*rs).toFixed(1);
+    const moonFillLen=(pNight*PI*rm).toFixed(1);
+    const sunX=(cx+rs*Math.cos(PI*(1-pDay))).toFixed(2);
+    const sunY=(cy-rs*Math.sin(PI*(1-pDay))).toFixed(2);
+    const moonX=(cx+rm*Math.cos(PI*(1-pNight))).toFixed(2);
+    const moonY=(cy-rm*Math.sin(PI*(1-pNight))).toFixed(2);
     const srStr=sr.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
     const ssStr=ss.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
     const nextSrStr=nextSr.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
+    const dayHrs=((ss-sr)/3600000).toFixed(1);
+    const nightHrs=((nextSr-ss)/3600000).toFixed(1);
+    // Stars scattered between the two arc tracks and a few inside the inner arc
     let starsSVG='';
-    for(let i=0;i<9;i++){
-      const sx=(28+Math.random()*144).toFixed(1);
-      const sy=(108+Math.random()*66).toFixed(1);
-      const sr2=(Math.random()*.7+.4).toFixed(1);
+    for(let i=0;i<14;i++){
+      const ang=Math.random()*PI;
+      const rad=(rs+4)+Math.random()*(rm-rs-8);
+      const sx=(cx+rad*Math.cos(ang)).toFixed(1);
+      const sy=(cy-rad*Math.sin(ang)).toFixed(1);
+      const sr2=(Math.random()*.6+.3).toFixed(1);
       const dur=(Math.random()*2.5+1.5).toFixed(1)+'s';
       const del=-(Math.random()*4).toFixed(1)+'s';
-      const op=(Math.random()*.35+.35).toFixed(2);
+      const op=(Math.random()*.45+.2).toFixed(2);
+      starsSVG+=`<circle class="clim-arc-star" cx="${sx}" cy="${sy}" r="${sr2}" style="--dur:${dur};--del:${del};--op:${op};opacity:${op}"/>`;
+    }
+    for(let i=0;i<6;i++){
+      const ang=0.25+Math.random()*(PI-0.5);
+      const rad=Math.random()*(rs-10);
+      const sx=(cx+rad*Math.cos(ang)).toFixed(1);
+      const sy=(cy-rad*Math.sin(ang)).toFixed(1);
+      const sr2=(Math.random()*.5+.2).toFixed(1);
+      const dur=(Math.random()*3+2).toFixed(1)+'s';
+      const del=-(Math.random()*5).toFixed(1)+'s';
+      const op=(Math.random()*.25+.12).toFixed(2);
       starsSVG+=`<circle class="clim-arc-star" cx="${sx}" cy="${sy}" r="${sr2}" style="--dur:${dur};--del:${del};--op:${op};opacity:${op}"/>`;
     }
     const moonIco=climMoonSVG(moonPhaseDay(),'clim-arc-moon-ico','#4C1D95');
     sunHTML=`
-    <svg class="clim-sun-svg" viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg">
+    <svg class="clim-sun-svg" viewBox="0 0 200 106" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="sunGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#F97316"/>
-          <stop offset="100%" stop-color="#FBBF24"/>
+          <stop offset="50%" stop-color="#FCD34D"/>
+          <stop offset="100%" stop-color="#F97316"/>
         </linearGradient>
         <linearGradient id="moonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#6D28D9"/>
-          <stop offset="100%" stop-color="#A5B4FC"/>
+          <stop offset="0%" stop-color="#4C1D95"/>
+          <stop offset="50%" stop-color="#A5B4FC"/>
+          <stop offset="100%" stop-color="#4C1D95"/>
         </linearGradient>
         <radialGradient id="sunDotGrad" cx="38%" cy="35%" r="65%">
           <stop offset="0%" stop-color="#FEF9C3"/>
@@ -4500,21 +4523,25 @@ function renderClimateData(w,a,locName){
         </radialGradient>
       </defs>
       ${starsSVG}
-      <path class="clim-moon-arc-track" d="M16,100 A84,84 0 0,0 184,100"/>
-      <path class="clim-moon-arc-fill" d="M16,100 A84,84 0 0,0 184,100" stroke-dasharray="${moonFillLen} ${arcLen}"/>
-      <path class="clim-sun-arc-track" d="M16,100 A84,84 0 0,1 184,100"/>
-      <path class="clim-sun-arc-fill" d="M16,100 A84,84 0 0,1 184,100" stroke-dasharray="${sunFillLen} ${arcLen}"/>
-      <line class="clim-arc-horizon" x1="8" y1="100" x2="192" y2="100"/>
-      <circle class="clim-sun-dot" cx="${sunX}" cy="${sunY}" r="5.5"/>
-      <circle class="clim-moon-dot-bg" cx="${moonX}" cy="${moonY}" r="9" fill="url(#moonDotGrad)"/>
-      <g class="clim-arc-moon-wrap" transform="translate(${(moonX-8).toFixed(1)},${(moonY-8).toFixed(1)})"><svg width="16" height="16" viewBox="0 0 54 54">${moonIco.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'')}</svg></g>
+      <path class="clim-moon-arc-track" d="M${cx-rm},${cy} A${rm},${rm} 0 0,1 ${cx+rm},${cy}"/>
+      <path class="clim-moon-arc-fill" d="M${cx-rm},${cy} A${rm},${rm} 0 0,1 ${cx+rm},${cy}" stroke-dasharray="${moonFillLen} ${moonArcLen}"/>
+      <path class="clim-sun-arc-track" d="M${cx-rs},${cy} A${rs},${rs} 0 0,1 ${cx+rs},${cy}"/>
+      <path class="clim-sun-arc-fill" d="M${cx-rs},${cy} A${rs},${rs} 0 0,1 ${cx+rs},${cy}" stroke-dasharray="${sunFillLen} ${sunArcLen}"/>
+      <line class="clim-arc-horizon" x1="4" y1="${cy}" x2="196" y2="${cy}"/>
+      <circle class="clim-sun-dot" cx="${sunX}" cy="${sunY}" r="5"/>
+      <circle class="clim-moon-dot-bg" cx="${moonX}" cy="${moonY}" r="8" fill="url(#moonDotGrad)"/>
+      <g class="clim-arc-moon-wrap" transform="translate(${(parseFloat(moonX)-6).toFixed(1)},${(parseFloat(moonY)-6).toFixed(1)})"><svg width="12" height="12" viewBox="0 0 54 54">${moonIco.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'')}</svg></g>
+      <text class="clim-arc-center-lbl" x="${cx}" y="${cy-rs/2-4}">DAY</text>
+      <text class="clim-arc-center-lbl" x="${cx}" y="${cy-rs-((rm-rs)/2)}">NIGHT</text>
     </svg>
     <div class="clim-sun-times">
-      <div class="clim-sun-t">☀️ ${srStr}</div>
-      <div class="clim-sun-t">${ssStr} ☀️</div>
+      <div class="clim-sun-t">☀ ${srStr}</div>
+      <div class="clim-arc-dur">${dayHrs}h day</div>
+      <div class="clim-sun-t">${ssStr} ☀</div>
     </div>
     <div class="clim-moon-times">
       <div class="clim-moon-t">🌙 ${ssStr}</div>
+      <div class="clim-arc-dur">${nightHrs}h night</div>
       <div class="clim-moon-t">${nextSrStr} 🌙</div>
     </div>`;
   }
