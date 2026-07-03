@@ -1219,6 +1219,179 @@
     /* ── OFFLINE PIP ── */
     .offline-pip{display:none;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--neg);border:1px solid rgba(226,75,74,.35);border-radius:14px;padding:3px 10px;letter-spacing:.5px;align-items:center;gap:5px}
     body.is-offline .offline-pip{display:inline-flex}
+
+    /* ══════════════════════════════════════════════
+       v5.0 DESIGN SYSTEM — PREMIUM RESKIN
+       Final cascade layer: re-themes every component
+    ══════════════════════════════════════════════ */
+    [data-theme="dark"]{
+      --edge-hi:rgba(255,255,255,.13);--edge-lo:rgba(255,255,255,.035);--edge-hi2:rgba(255,255,255,.08);
+      --glass:rgba(10,15,28,.72);
+      --shadow-card:0 1px 2px rgba(0,0,0,.4),0 10px 30px -12px rgba(0,0,0,.7);
+      --shadow-card-h:0 2px 4px rgba(0,0,0,.4),0 22px 44px -14px rgba(0,0,0,.8),0 0 24px -8px rgba(200,168,107,.25);
+    }
+    [data-theme="light"]{
+      --edge-hi:rgba(60,50,30,.16);--edge-lo:rgba(60,50,30,.05);--edge-hi2:rgba(60,50,30,.10);
+      --glass:rgba(247,244,239,.8);
+      --shadow-card:0 1px 2px rgba(40,30,10,.06),0 10px 26px -14px rgba(40,30,10,.18);
+      --shadow-card-h:0 2px 4px rgba(40,30,10,.07),0 20px 40px -14px rgba(40,30,10,.24),0 0 22px -8px rgba(176,143,82,.35);
+    }
+    :root{--r:16px;--r-sm:10px}
+
+    /* ── GLOBAL SCROLLBARS ── */
+    *{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+    ::-webkit-scrollbar{width:9px;height:9px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px;border:2px solid transparent;background-clip:padding-box}
+
+    /* ── HEADER: FROSTED MASTHEAD ── */
+    .hdr{height:60px;background:var(--glass);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);border-bottom:none}
+    .hdr::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--border) 12%,var(--border) 88%,transparent)}
+    .hdr{position:sticky}
+    .logo{font-size:21px}
+    .btn-hdr{padding:6px 15px;font-size:11.5px;border-radius:22px}
+
+    /* ── NAV: GLASS DOCK (desktop) ── */
+    .nav{top:60px;background:var(--glass);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);padding:9px 24px;gap:5px;border-bottom:1px solid var(--border-sub)}
+    .tab{font-size:12px;padding:7px 16px;gap:7px;border-radius:22px}
+    .tab-ico{font-size:12px;opacity:.85}
+    .tab.active{box-shadow:0 6px 20px -8px currentColor;font-weight:600}
+    .tab:hover{transform:translateY(-1px)}
+
+    /* ── CARDS: GRADIENT-HAIRLINE GLASS + LEFT TONE RIBBON ── */
+    .card,.hero-card{
+      border-radius:var(--r);border:1px solid transparent;
+      background:linear-gradient(var(--bg-card),var(--bg-card)) padding-box,
+                 linear-gradient(165deg,var(--edge-hi) 0%,var(--edge-lo) 45%,var(--edge-hi2) 100%) border-box;
+      box-shadow:var(--shadow-card);
+    }
+    .card:hover,.hero-card:hover{
+      background:linear-gradient(var(--bg-card-h),var(--bg-card-h)) padding-box,
+                 linear-gradient(165deg,var(--edge-hi) 0%,var(--edge-lo) 45%,var(--edge-hi2) 100%) border-box;
+      box-shadow:var(--shadow-card-h);
+    }
+    /* tone strip: top bar → left ribbon (clearer scan axis in a grid) */
+    .card::before,.hero-card::before{top:12px;bottom:12px;left:-1px;right:auto;width:3px;height:auto;border-radius:0 3px 3px 0}
+    /* spotlight + inner light live on ::after, driven by JS custom props */
+    .card::after,.hero-card::after{
+      content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+      background:radial-gradient(circle at var(--mx,50%) var(--my,50%),var(--spot,transparent) 0%,transparent 65%),
+                 linear-gradient(160deg,var(--card-inner-top) 0%,transparent 50%);
+    }
+    .card{padding:17px 20px}
+    .hero-card{border-radius:20px;padding:28px 32px}
+    .art-grid{gap:14px}
+
+    /* ── TYPOGRAPHY SCALE UP (readability) ── */
+    .c-title{font-size:17px;line-height:1.42;font-weight:600}
+    .hero-title{font-size:30px;letter-spacing:-.4px;line-height:1.22}
+    .hero-desc{font-size:13.5px}
+    .c-src{font-size:10px;max-width:150px}
+    .c-time{font-size:10px}
+    .c-tone{font-size:9.5px;padding:2.5px 9px}
+    .home-title{font-size:38px}
+    .cat-name{font-size:30px}
+    .section-head{font-size:10px}
+    .m-mi{font-size:10.5px}
+
+    /* ── FAVICON IDENTITY CHIP ── */
+    .c-fav{width:15px;height:15px;border-radius:4px;flex-shrink:0;background:var(--bg-surf);object-fit:cover}
+
+    /* ── HOME PANEL BANNER: deeper stage ── */
+    .panel-banner{padding:32px 28px 22px}
+
+    /* ── MODAL: READER SHEET ── */
+    .modal{border-radius:22px;border:1px solid var(--edge-hi)}
+    .m-title{font-size:27px;line-height:1.3}
+    .m-desc{font-size:15px;line-height:1.9}
+    .m-head-banner{height:6px}
+    .btn-open{background:linear-gradient(135deg,#DFC08A 0%,#C8A86B 55%,#AE8C50 100%);color:#171106;font-weight:700;padding:11px 22px;border-radius:24px;box-shadow:0 8px 20px -8px rgba(200,168,107,.55)}
+    .btn-open:hover{opacity:1;transform:translateY(-1px);box-shadow:0 12px 26px -8px rgba(200,168,107,.65)}
+    .btn-mob,.btn-mark{padding:10px 16px;border-radius:22px;font-size:12.5px}
+    @media(max-width:640px){
+      .overlay{padding:0;align-items:flex-end}
+      .modal{max-width:100%;max-height:92vh;border-radius:22px 22px 0 0;animation:sheetUp .3s cubic-bezier(.22,1,.36,1)}
+      .m-head{border-radius:22px 22px 0 0}
+      .modal::before{content:'';display:block;width:40px;height:4px;border-radius:2px;background:var(--border);margin:10px auto 0;flex-shrink:0}
+    }
+    @keyframes sheetUp{from{transform:translateY(48px);opacity:.5}to{transform:translateY(0);opacity:1}}
+
+    /* ── INPUTS ── */
+    .search-input{padding:14px 22px;font-size:15px;border-radius:28px}
+    .search-btn{border-radius:28px;padding:14px 26px;font-size:13px}
+    .gs-search-input{border-radius:24px;padding:10px 16px 10px 36px}
+    .clim-search-input{border-radius:22px;padding:9px 14px}
+
+    /* ── TODAY IN BRIEF: TIMELINE ── */
+    .brief-card{border-radius:var(--r);border:1px solid transparent;
+      background:linear-gradient(var(--bg-card),var(--bg-card)) padding-box,
+                 linear-gradient(165deg,var(--edge-hi),var(--edge-lo) 45%,var(--edge-hi2)) border-box}
+    .brief-row{position:relative;transition:background var(--t),padding-left .18s ease}
+    .brief-row:hover{padding-left:20px}
+    .brief-dot{position:relative;z-index:1;box-shadow:0 0 8px currentColor}
+    .brief-row::before{content:'';position:absolute;left:21px;top:0;bottom:0;width:1px;background:var(--border-sub)}
+    .brief-row:first-of-type::before{top:50%}
+    .brief-row:last-of-type::before{bottom:50%}
+    .brief-headline{font-size:15px}
+
+    /* ── MARKETS ── */
+    .gs-card,.gs-hero{border-radius:var(--r);box-shadow:var(--shadow-card)}
+    .gs-card:hover,.gs-hero:hover{box-shadow:var(--shadow-card-h);transform:translateY(-3px)}
+    .gs-compact{border-radius:12px}
+    .mkt-summary-strip{border-radius:var(--r)}
+    .mkt-status-chip{border-radius:var(--r)}
+    .mkt-subtab{padding:7px 18px;font-size:12px}
+    .mkt-subtab.active{box-shadow:0 6px 18px -8px currentColor}
+    .gs-sort-btn,.gs-filter-chip,.n50-sort-btn{padding:6px 14px;font-size:11px}
+    .n50-hero,.n50-hist-card{border-radius:14px}
+    .n50-table-wrap{border-radius:var(--r)}
+    .n50-table th{font-size:9px}
+    .n50-table td{font-size:12.5px}
+
+    /* ── CLIMATE ── */
+    .clim-hero{border-radius:22px}
+    .clim-panel{border-radius:18px}
+
+    /* ── CRISIS ── */
+    .crisis-panel-box,.crisis-summary-item{border-radius:var(--r)}
+    .alert-card{border-radius:14px}
+    .csi-count{font-size:24px}
+
+    /* ── SKELETON / EMPTY / ERROR ── */
+    .sk-card{border-radius:var(--r)}
+    .empty{border:1.5px dashed var(--border);border-radius:var(--r);margin:4px 0}
+    .err-box{border-radius:var(--r)}
+
+    /* ── WIRE FOOTER TICKER: GLASS RAIL ── */
+    .wt-bar{background:var(--glass);backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border-top:none;padding:7px 0}
+    .wt-bar::after{background:linear-gradient(270deg,var(--bg-surf),transparent)}
+    .wt-bar{box-shadow:0 -1px 0 var(--border),0 -8px 24px -12px rgba(0,0,0,.4)}
+    .wt-label{background:transparent;font-size:9.5px}
+
+    /* ── DEBUG: quieter until needed ── */
+    #dbg-btn{opacity:.45;transition:opacity .2s}
+    #dbg-btn:hover{opacity:1}
+
+    /* ── TOAST polish ── */
+    .toast{border:1px solid var(--edge-hi);font-size:12.5px;padding:10px 20px}
+
+    /* ── MOBILE: BOTTOM APP DOCK (component swap) ── */
+    @media(max-width:640px){
+      .nav{position:fixed;top:auto;bottom:0;left:0;right:0;z-index:220;
+        border-top:1px solid var(--border);border-bottom:none;
+        padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+        gap:2px}
+      .tab{flex-direction:column;gap:3px;padding:6px 11px;font-size:9px;border-radius:14px;letter-spacing:.2px}
+      .tab-ico{font-size:16px;opacity:.9}
+      .tab-badge{top:0;right:4px}
+      .main{padding-bottom:150px}
+      .wt-bar{bottom:calc(64px + env(safe-area-inset-bottom))}
+      #dbg-btn{bottom:calc(104px + env(safe-area-inset-bottom))}
+      .toast-wrap{bottom:calc(110px + env(safe-area-inset-bottom))}
+      .hero-card{padding:20px 22px}
+      .hero-title{font-size:24px}
+      #cmdkBtn{display:none} /* no hardware keyboard on touch — actions live in header + dock */
+    }
   </style>
 </head>
 <body>
@@ -1258,7 +1431,7 @@
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v4.1</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.0</div>
   </div>
   <div class="hdr-right">
     <span class="offline-pip"><span style="width:5px;height:5px;border-radius:50%;background:var(--neg)"></span>OFFLINE</span>
@@ -1324,7 +1497,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v4.1
+    MERIDIAN v5.0
   </div>
 </main>
 
@@ -1361,7 +1534,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v4.1 · RSS + GDELT + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v5.0 · RSS + GDELT + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -1876,6 +2049,12 @@ async function fetchDesc(article){
    UTILITIES
 ════════════════════════════════════════ */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// Source favicon chip — only for real domains; hides itself on load failure
+function favImg(domain){
+  const d=(domain||'').replace(/^www\./,'').trim();
+  if(!d||!d.includes('.')||/\s/.test(d))return'';
+  return`<img class="c-fav" src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(d)}&sz=32" alt="" loading="lazy" onerror="this.remove()">`;
+}
 function parseGdeltDate(s){
   if(!s)return new Date();
   const m=s.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/);
@@ -2202,8 +2381,12 @@ function getCardHex(card){
     const cx=rect.width/2,cy=rect.height/2;
     const dx=(x-cx)/cx,dy=(y-cy)/cy;
     const hex=getCardHex(card);
-    card.style.backgroundImage=`radial-gradient(circle at ${x}px ${y}px, ${hex}18 0%, transparent 65%)`;
-    card.style.transform=`perspective(800px) rotateX(${(-dy*4).toFixed(2)}deg) rotateY(${(dx*4).toFixed(2)}deg)`;
+    // v5: write CSS vars (consumed by ::after) so the glow composes with
+    // layered card backgrounds instead of replacing them
+    card.style.setProperty('--mx',x.toFixed(0)+'px');
+    card.style.setProperty('--my',y.toFixed(0)+'px');
+    card.style.setProperty('--spot',hex+'20');
+    card.style.transform=`perspective(800px) rotateX(${(-dy*3).toFixed(2)}deg) rotateY(${(dx*3).toFixed(2)}deg)`;
   }
   document.addEventListener('mousemove',e=>{
     lastEvt=e;
@@ -2212,7 +2395,7 @@ function getCardHex(card){
   document.addEventListener('mouseleave',e=>{
     const card=e.target.closest&&e.target.closest('.card,.hero-card');
     if(card){
-      card.style.backgroundImage='';
+      card.style.removeProperty('--spot');
       card.style.transform='';
     }
   },true);
@@ -2286,7 +2469,7 @@ function heroCardHTML(a,hex){
     <div class="hero-top">
       <div class="hero-top-left">
         <span style="font-size:13px">${flag(a.sourcecountry)}</span>
-        <span class="c-src" style="max-width:180px">${esc(src)}</span>
+        ${favImg(src)}<span class="c-src" style="max-width:180px">${esc(src)}</span>
         <span class="c-tone ${t.cls}">${t.lbl}${sc}</span>
         ${a._unverified?unvBadge:`<span class="badge-top">TOP STORY</span>`}
         ${recencyBadge(d)}
@@ -2310,7 +2493,7 @@ function cardHTML(a,hex){
     <div class="card-top">
       <div class="card-top-left">
         <span class="c-flag">${flag(a.sourcecountry)}</span>
-        <span class="c-src">${esc(src)}</span>
+        ${favImg(src)}<span class="c-src">${esc(src)}</span>
         <span class="c-tone ${t.cls}">${t.lbl}${sc}</span>
         ${unvBadge}
         ${recencyBadge(d)}
@@ -3512,7 +3695,7 @@ function rssCardHTML(a,hex){
   return`<div class="card ${t.cls}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
     <div class="card-top">
       <div class="card-top-left">
-        <span class="c-src">${esc(a._src||a.domain||'RSS')}</span>
+        ${favImg(a.domain)}<span class="c-src">${esc(a._src||a.domain||'RSS')}</span>
         <span class="c-tone ${t.cls}">${t.lbl}</span>
         ${recencyBadge(a.pub)}
       </div>
@@ -5731,7 +5914,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v4.1 · Offline PWA · Unread badges · Audio brief · Settings');
+DBG.info('INIT','MERIDIAN v5.0 · Premium design system · Offline PWA · Command palette');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 

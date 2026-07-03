@@ -4,6 +4,22 @@ A **completely free**, single-file, real-time intelligence dashboard. No account
 
 ---
 
+## v5.0 — Premium Design System
+
+A complete visual redesign of every screen, tab, card, and control — with component *swaps* where a different pattern serves better than polishing the old one:
+
+| Swap | Before → After |
+|---|---|
+| **Mobile navigation** | Cramped top pill-scroller → fixed **bottom app dock** (icon-over-label, safe-area aware, wire ticker rides above it) |
+| **Article modal on mobile** | Centered dialog → **slide-up reader sheet** with drag handle |
+| **Tone indicator** | Top edge strip → **left ribbon**, matching the grid's vertical scan axis |
+| **Source label** | Text-only → **favicon identity chip** + name (Google s2 favicons, self-removing on failure) |
+| **Card surface** | Flat border → **gradient-hairline glass** (dual-layer background-clip border) with layered depth shadows |
+
+Plus, across the board: frosted-glass masthead and dock with saturated blur, a glowing active-tab chip, larger editorial type scale (17px card titles, 30px hero headlines, 27px reader titles), gold-gradient primary CTA, "Today in Brief" rebuilt as a connected timeline with hover-indent rows, styled global scrollbars, dashed-border empty states, glass wire-ticker rail, and a quieter debug button. The cursor spotlight was re-engineered to CSS custom properties consumed by `::after`, so it now composes with the layered card backgrounds instead of overwriting them. Radius, shadow, and edge tokens are theme-aware (`--edge-*`, `--glass`, `--shadow-card*`) in both dark and light.
+
+---
+
 ## v4.1 — Apex
 
 Everything on the v4.0 roadmap, shipped:

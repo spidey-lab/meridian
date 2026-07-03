@@ -1,5 +1,5 @@
 /* MERIDIAN service worker — offline shell + data cache fallback */
-const CACHE = 'meridian-v4.1';
+const CACHE = 'meridian-v5.0';
 const SHELL = ['./', './index.html', './manifest.webmanifest'];
 
 self.addEventListener('install', e => {
