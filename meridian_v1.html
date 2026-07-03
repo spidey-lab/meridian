@@ -683,22 +683,7 @@
     .alr-sev{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--text)}
     .alr-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted)}
 
-    /* ── WIRE FEED: ROWS + SEVERITY BADGES ── */
-    .wire-scroll-list{max-height:72vh;overflow-y:auto;border:0.5px solid var(--border);border-radius:var(--r);background:var(--bg-card)}
-    .wire-row{display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:0.5px solid var(--border);text-decoration:none;transition:background var(--t)}
-    .wire-row:last-child{border-bottom:none}
-    .wire-row:hover{background:var(--bg-card-h)}
-    .wire-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-    .wire-dot.critical{background:#E24B4A;box-shadow:0 0 5px rgba(226,75,74,.6);animation:dotPulse 2s ease-in-out infinite}
-    .wire-dot.elevated{background:#F59E0B;box-shadow:0 0 4px rgba(245,158,11,.5)}
-    .wire-dot.active{background:#14B8A6;box-shadow:0 0 4px rgba(20,184,166,.4)}
-    .wire-sev-badge{font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;letter-spacing:.6px;padding:1px 6px;border-radius:2px;flex-shrink:0}
-    .wire-sev-badge.critical{background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3)}
-    .wire-sev-badge.elevated{background:rgba(245,158,11,.12);color:#F59E0B;border:0.5px solid rgba(245,158,11,.25)}
-    .wire-sev-badge.active{background:rgba(20,184,166,.12);color:#14B8A6;border:0.5px solid rgba(20,184,166,.25)}
-    .wire-headline{flex:1;font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .wire-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub);flex-shrink:0;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .wire-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);flex-shrink:0;width:56px;text-align:right}
+    /* ── WIRE FOOTER TICKER: LIVE PIP (used in the ticker label) ── */
     .wire-live-pip{display:inline-block;width:6px;height:6px;border-radius:50%;background:#E24B4A;margin-right:5px;box-shadow:0 0 5px rgba(226,75,74,.6);animation:dotPulse 2s ease-in-out infinite}
 
     /* ── CRISIS COMMAND: SEISMIC v2 (HUMAN-READABLE SCALE) ── */
@@ -1181,7 +1166,6 @@
     <div class="art-grid" id="home-grid"></div>
   </div>
 
-  <div id="panel-wire"    class="panel"></div>
   <div id="panel-world"   class="panel"></div>
   <div id="panel-markets" class="panel"></div>
   <div id="panel-economy" class="panel"></div>
@@ -1491,9 +1475,6 @@ const CATS = [
       {url:'https://www.aljazeera.com/xml/rss/all.xml',                   name:'Al Jazeera'},
     ]},
 
-  // Wire — live chronological feed, merged from Home/World/Crisis sources, severity-classified
-  { id:'wire', name:'Wire', ico:'⚡', hex:'#E24B4A' },
-
   // World Conflicts — past 12h Google News: armed conflict + geopolitics
   { id:'world',   name:'World Conflicts', ico:'◎', hex:'#E05252',
     _rss:[
@@ -1546,7 +1527,7 @@ const CATS = [
 /* ════════════════════════════════════════
    STATE
 ════════════════════════════════════════ */
-const loaded   = new Set(['home','wire']);
+const loaded   = new Set(['home']);
 const artStore = {};
 let   artCount = 0, autoTimer = null;
 
@@ -2492,12 +2473,12 @@ function manualRefresh(){
   const btn=document.getElementById('refreshBtn');
   btn.classList.add('spinning');setTimeout(()=>btn.classList.remove('spinning'),700);
   clearAllCache();Object.keys(artStore).forEach(k=>delete artStore[k]);artCount=0;
-  loadHome();loaded.forEach(id=>{if(id!=='home')loadCat(id);});
+  loadHome();loadWireFeed();loaded.forEach(id=>{if(id!=='home')loadCat(id);});
 }
 function toggleAuto(){
   clearInterval(autoTimer);autoTimer=null;
   if(document.getElementById('autoTog').checked){
-    autoTimer=setInterval(()=>{clearAllCache();loadHome();loaded.forEach(id=>{if(id!=='home')loadCat(id);});},CACHE_TTL);
+    autoTimer=setInterval(()=>{clearAllCache();loadHome();loadWireFeed();loaded.forEach(id=>{if(id!=='home')loadCat(id);});},CACHE_TTL);
     DBG.info('AUTO','ON — every 15 mins');
   } else DBG.info('AUTO','OFF');
 }
@@ -3819,57 +3800,19 @@ async function loadCrisisWatch(){
 }
 
 /* ════════════════════════════════════════
-   WIRE TAB — live chronological feed, merged sources, severity-classified
+   WIRE FOOTER TICKER — background feed, no dedicated tab
+   Merges Home/World/Crisis sources, severity-classified, powers only
+   the site-wide footer ticker (see bottom of <body>)
 ════════════════════════════════════════ */
-function wireRowHTML(a){
-  const sev=a._sev||wireSeverity(a);
-  const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
-  const tag=esc(a._src||a.domain||'—');
-  return`<a class="wire-row" href="${esc(a.url)}" target="_blank" rel="noopener">
-    <span class="wire-dot ${sev.cls}"></span>
-    <span class="wire-sev-badge ${sev.cls}">${sev.lbl}</span>
-    <span class="wire-headline">${esc(a.title)}</span>
-    <span class="wire-tag">${tag}</span>
-    <span class="wire-time">${ts}</span>
-  </a>`;
-}
-
-async function loadWireTab(){
-  const id='wire';
-  const c=cat(id);
-  const panel=document.getElementById('panel-'+id);
-  panel.innerHTML=`
-    <div class="panel-banner">
-      <div class="cat-head-row">
-        <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex};box-shadow:0 0 10px ${c.hex}"></div><div class="cat-name">${c.name}</div></div>
-        <div class="cat-meta" id="wire-meta-bar"><span class="wire-live-pip"></span>LIVE</div>
-      </div>
-    </div>
-    <div class="crisis-summary-row">
-      <div class="crisis-summary-item"><div class="csi-label" style="color:#E24B4A">Critical</div><div class="csi-count" id="wire-crit">—</div><div class="csi-sub">high-severity</div></div>
-      <div class="crisis-summary-item"><div class="csi-label" style="color:#F59E0B">Elevated</div><div class="csi-count" id="wire-elev">—</div><div class="csi-sub">watch</div></div>
-      <div class="crisis-summary-item"><div class="csi-label" style="color:#14B8A6">Active</div><div class="csi-count" id="wire-active">—</div><div class="csi-sub">tracked</div></div>
-    </div>
-    <div class="wire-scroll-list" id="wire-list">${skels(6)}</div>`;
+async function loadWireFeed(){
   try{
     const feeds=[...cat('home')._rss, ...cat('world')._rss, ...CRISIS_NEWS_RSS];
     const items=await fetchRssFeeds(feeds);
     items.forEach(a=>{ a._sev=wireSeverity(a); });
-    const critC=items.filter(a=>a._sev.cls==='critical').length;
-    const elevC=items.filter(a=>a._sev.cls==='elevated').length;
-    document.getElementById('wire-crit').textContent=critC;
-    document.getElementById('wire-elev').textContent=elevC;
-    document.getElementById('wire-active').textContent=items.length-critC-elevC;
-    const listEl=document.getElementById('wire-list');
-    listEl.innerHTML=items.length?items.map(wireRowHTML).join(''):
-      `<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No wire activity right now.</div></div>`;
-    storeSectionData(id,items);
     const tickerEl=document.getElementById('wire-footer-ticker');
     if(tickerEl)tickerEl.innerHTML=wireFooterTickerHTML(items.slice(0,20));
   }catch(e){
-    DBG.err('RSS',`loadWireTab(): ${e.message}`);
-    const listEl=document.getElementById('wire-list');
-    if(listEl)renderErr(listEl,e.message,"loadCat('wire')");
+    DBG.err('RSS',`loadWireFeed(): ${e.message}`);
   }
 }
 
@@ -4947,7 +4890,6 @@ async function loadCat(id){
   if(id==='climate') return loadClimateTab();
   if(id==='crisis')  return loadCrisisWatch();
   if(id==='markets') return loadMarketsPanel();
-  if(id==='wire')    return loadWireTab();
   const c=cat(id);
   if(c&&c._rss)      return loadRssTab(id);
   return loadCatGeneric(id);
@@ -5383,7 +5325,7 @@ updateLogoGlow();
 setInterval(updateLogoGlow,60000);
 
 loadHome();
-loadWireTab();
+loadWireFeed();
 </script>
 
 <!-- SITE-WIDE WIRE FOOTER TICKER — lives outside <main> so switchTab() never touches it -->
