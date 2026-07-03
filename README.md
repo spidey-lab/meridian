@@ -2,6 +2,24 @@
 
 A **completely free**, single-file, real-time intelligence dashboard. No accounts, no API keys, no tracking, no backend — just open data, served straight from GitHub Pages.
 
+---
+
+## v4.1 — Apex
+
+Everything on the v4.0 roadmap, shipped:
+
+| Feature | What it does |
+|---|---|
+| **Offline PWA** | A service worker caches the app shell and every successful data response. Lose connectivity and MERIDIAN keeps working from cache, with an `OFFLINE` pip in the header and toasts on connection changes. Installable to the home screen. |
+| **Per-tab unread badges** | The Daily Brief prefetch doubles as an unread scanner: each nav tab shows a red count of stories newer than your last visit. Visiting the tab clears it. No extra network cost. |
+| **Audio brief** | `▷ LISTEN` on the Today in Brief card reads the day's headlines aloud via the browser's built-in SpeechSynthesis — a hands-free morning briefing, zero external services. |
+| **Markdown export** | `⎘ COPY` exports the brief as clean Markdown (headline, category, age, link) — paste it straight into Slack, Notion, or a note. |
+| **Settings panel** | One place for default landing tab, theme, density, cache stats + clear, reading-history reset, and saved-stories management. |
+| **Clickable threads** | The cross-section keyword tags on Home now launch a live news search for that thread. |
+| **Default landing tab** | Open straight to Markets (or any tab) every morning — your call. |
+
+All of it is keyboard-reachable from the ⌘K palette.
+
 **Live tabs:** Home · World Conflicts · Economy · Tech & AI · India · Tamil Nadu · Markets (Google Finance + Nifty 50 analytics + TradingView calendar/signals/heatmap) · Climate (Open-Meteo, animated sky scenes) · Crisis Watch (GDACS + USGS + news) · Search (Google News)
 
 ---
@@ -82,10 +100,13 @@ Push to `main` → GitHub Actions deploys to Pages automatically (`.github/workf
 
 ## Roadmap ideas
 
-- Service worker for true offline reading of cached stories
-- Story clustering (same event across sections) surfaced as threads
-- Per-tab notification badges since last visit
-- Export saved stories as Markdown
+- ~~Service worker for true offline reading~~ ✅ shipped in v4.1
+- ~~Per-tab notification badges since last visit~~ ✅ shipped in v4.1
+- ~~Cross-section threads~~ ✅ clickable in v4.1
+- ~~Markdown export~~ ✅ Daily Brief export in v4.1
+- Full story clustering (same event grouped across sections into one card)
+- Push-style background refresh via Periodic Background Sync where supported
+- Saved-stories export (Markdown/OPML)
 
 ---
 

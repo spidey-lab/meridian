@@ -1188,6 +1188,37 @@
     /* ── SKIP LINK ── */
     .skip-link{position:absolute;left:-9999px;top:0;z-index:999;background:var(--gold);color:#000;padding:8px 16px;border-radius:0 0 8px 0;font-size:12px;font-weight:600}
     .skip-link:focus{left:0}
+
+    /* ════════════ v4.1 APEX LAYER ════════════ */
+
+    /* ── UNREAD BADGES ON TABS ── */
+    .tab{position:relative}
+    .tab-badge{position:absolute;top:-3px;right:0;min-width:15px;height:15px;border-radius:8px;background:var(--neg);color:#fff;font-size:8px;font-family:'JetBrains Mono',monospace;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 0 8px rgba(226,75,74,.5);pointer-events:none}
+
+    /* ── SETTINGS PANEL ── */
+    .set-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid var(--border)}
+    .set-row:last-child{border-bottom:none}
+    .set-lbl{font-size:13px;color:var(--text);font-weight:500}
+    .set-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:3px}
+    .set-sel{background:var(--bg-surf);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;padding:7px 12px;outline:none;cursor:pointer;min-width:150px}
+    .set-sel:focus{border-color:var(--gold)}
+    .set-danger-btn{background:none;border:1px solid rgba(226,75,74,.35);color:var(--neg);border-radius:16px;font-size:11px;font-weight:500;padding:6px 14px;cursor:pointer;transition:var(--t)}
+    .set-danger-btn:hover{background:rgba(226,75,74,.08)}
+    .set-stat{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
+
+    /* ── BRIEF TOOLBAR ── */
+    .brief-tools{display:flex;align-items:center;gap:6px}
+    .brief-tool-btn{background:none;border:1px solid var(--border);color:var(--text-sub);border-radius:14px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.4px;padding:3px 10px;cursor:pointer;transition:var(--t);display:inline-flex;align-items:center;gap:4px}
+    .brief-tool-btn:hover{border-color:var(--gold);color:var(--gold)}
+    .brief-tool-btn.speaking{border-color:var(--gold);color:var(--gold);background:rgba(200,168,107,.1);animation:pulse 1.6s infinite}
+
+    /* ── CLICKABLE CROSS-SECTION TAGS ── */
+    .cross-tag{cursor:pointer}
+    .cross-tag:hover .cross-keyword{color:var(--gold)}
+
+    /* ── OFFLINE PIP ── */
+    .offline-pip{display:none;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--neg);border:1px solid rgba(226,75,74,.35);border-radius:14px;padding:3px 10px;letter-spacing:.5px;align-items:center;gap:5px}
+    body.is-offline .offline-pip{display:inline-flex}
   </style>
 </head>
 <body>
@@ -1208,16 +1239,33 @@
   </div>
 </div>
 
+<!-- SETTINGS -->
+<div class="overlay" id="set-overlay" onclick="if(event.target===this)closeSettings()">
+  <div class="modal" role="dialog" aria-label="Settings" style="max-width:520px">
+    <div class="m-head">
+      <div class="m-head-banner" style="background:linear-gradient(90deg,var(--gold),#C8A86BAA);height:5px"></div>
+      <div class="m-head-content">
+        <button class="m-close" onclick="closeSettings()">✕</button>
+        <div class="m-tag" style="background:rgba(200,168,107,.12);color:var(--gold);border:1px solid rgba(200,168,107,.3)">SETTINGS</div>
+        <div class="m-title" style="font-style:normal">Preferences</div>
+      </div>
+    </div>
+    <div class="m-body" id="set-body"></div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header class="hdr">
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v4.0</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v4.1</div>
   </div>
   <div class="hdr-right">
+    <span class="offline-pip"><span style="width:5px;height:5px;border-radius:50%;background:var(--neg)"></span>OFFLINE</span>
     <span id="lastUpdated">—</span>
     <button class="btn-hdr" id="cmdkBtn" onclick="openCmdk()" title="Command palette (Ctrl+K)">⌘K</button>
     <button class="hdr-tool-btn" id="hideReadBtn" onclick="toggleHideRead()" title="Hide read stories">◑</button>
+    <button class="hdr-tool-btn" id="settingsBtn" onclick="openSettings()" title="Settings">⚙</button>
     <button class="btn-hdr" id="refreshBtn" onclick="manualRefresh()">
       <span class="spin-icon">↻</span> Refresh
     </button>
@@ -1276,7 +1324,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v4.0
+    MERIDIAN v4.1
   </div>
 </main>
 
@@ -1313,7 +1361,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v4.0 · RSS + GDELT + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v4.1 · RSS + GDELT + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2047,7 +2095,8 @@ function refreshCrossSection(){
   if(!results.length)return'<div class="text-muted" style="font-size:12px;font-family:\'JetBrains Mono\',monospace;color:var(--text-sub)">No cross-section overlaps yet</div>';
   const pills=results.map(([w,sset])=>{
     const cats=[...sset].map(sid=>{const c=cat(sid);return`<span class="cross-cat-pill" style="color:${c.hex};border-color:${c.hex}">${c.name}</span>`;}).join('');
-    return`<div class="cross-tag"><span class="cross-keyword">${w.toUpperCase()}</span>${cats}</div>`;
+    // keyword is [a-z0-9]+ only (extractKeywords strips the rest) — safe to inline
+    return`<div class="cross-tag" title="Search news for '${w}'" onclick="switchTab('search');setTimeout(()=>doNewsSearch('${w}'),400)"><span class="cross-keyword">${w.toUpperCase()}</span>${cats}</div>`;
   }).join('');
   return`<div class="cross-tags">${pills}</div>`;
 }
@@ -2205,6 +2254,7 @@ function switchTab(id){
     inPanel.classList.add('active');
   }
   if(history.replaceState) history.replaceState(null,'','#'+id);
+  if(typeof markTabSeen==='function') markTabSeen(id);
   if(!loaded.has(id)){loaded.add(id);loadCat(id);}
 }
 
@@ -5370,11 +5420,16 @@ function cycleDensity(){
 async function loadDigestBrief(){
   const el=document.getElementById('home-digest');if(!el)return;
   const sections=CATS.filter(c=>c._rss&&c.id!=='home');
+  _briefData=[];
   el.innerHTML=`
     <div class="brief-card">
       <div class="brief-card-header">
         <span class="brief-card-title">Today in Brief</span>
-        <span class="brief-card-time" id="brief-time"></span>
+        <div class="brief-tools">
+          <button class="brief-tool-btn" id="brief-listen-btn" onclick="toggleListenBrief()" title="Read the brief aloud">▷ LISTEN</button>
+          <button class="brief-tool-btn" onclick="copyBriefMarkdown()" title="Copy brief as Markdown">⎘ COPY</button>
+          <span class="brief-card-time" id="brief-time"></span>
+        </div>
       </div>
       <div id="brief-list">
         ${sections.map(c=>`<div class="brief-row" id="dbrf-${c.id}">
@@ -5387,10 +5442,12 @@ async function loadDigestBrief(){
   await Promise.allSettled(sections.map(async c=>{
     try{
       const items=await fetchRssFeeds([c._rss[0]]);
+      updateTabBadge(c.id,items);
       const row=document.getElementById('dbrf-'+c.id);if(!row)return;
       const first=items[0];
       if(!first){row.remove();return;}
       const ts=first.pub&&first.pub.getTime()>0?ago(first.pub):'';
+      _briefData.push({cat:c.name,title:first.title,age:ts,url:first.url});
       const artId=storeArt(first);
       row.innerHTML=`
         <div class="brief-dot" style="background:${c.hex}"></div>
@@ -5501,6 +5558,9 @@ function _cpActions(){
   acts.push({group:'Actions',ico:'≡',label:'Cycle density',sub:'appearance',run:cycleDensity});
   acts.push({group:'Actions',ico:'◑',label:'Toggle hide-read',sub:'reading',run:toggleHideRead});
   acts.push({group:'Actions',ico:'↻',label:'Refresh all feeds',sub:'data',run:manualRefresh});
+  acts.push({group:'Actions',ico:'⚙',label:'Open settings',sub:'preferences',run:openSettings});
+  acts.push({group:'Actions',ico:'▷',label:'Listen to today’s brief',sub:'audio',run:()=>{switchTab('home');toggleListenBrief();}});
+  acts.push({group:'Actions',ico:'⎘',label:'Copy brief as Markdown',sub:'export',run:copyBriefMarkdown});
   getSaved().slice().reverse().forEach(s=>acts.push({
     group:'Saved stories',ico:'★',label:s.title||s.url,sub:s.src||'',run:()=>window.open(s.url,'_blank','noopener')
   }));
@@ -5546,8 +5606,132 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'){e.preventDefault();_cpRun(_cpSel);}
 });
 
+/* ════════════════════════════════════════
+   v4.1 APEX LAYER
+   Unread badges · Audio brief · Markdown export
+   Settings panel · Service worker · Offline mode
+════════════════════════════════════════ */
+
+/* ── Per-tab unread badges ── */
+const LS_SEEN='mer18_seen';
+function getSeenMap(){try{return JSON.parse(localStorage.getItem(LS_SEEN)||'{}');}catch{return{};}}
+function markTabSeen(id){
+  const m=getSeenMap();m[id]=Date.now();
+  try{localStorage.setItem(LS_SEEN,JSON.stringify(m));}catch{}
+  const tab=document.getElementById('tab-'+id);
+  tab?.querySelector('.tab-badge')?.remove();
+}
+function updateTabBadge(id,items){
+  const tab=document.getElementById('tab-'+id);if(!tab)return;
+  tab.querySelector('.tab-badge')?.remove();
+  const active=document.getElementById('panel-'+id)?.classList.contains('active');
+  if(active){markTabSeen(id);return;}
+  const since=getSeenMap()[id]||0;
+  if(!since)return; // first-ever visit: no baseline yet, no badge noise
+  const n=items.filter(a=>a.pub&&a.pub.getTime()>since).length;
+  if(n>0){
+    const b=document.createElement('span');
+    b.className='tab-badge';b.textContent=n>9?'9+':n;
+    tab.appendChild(b);
+  }
+}
+
+/* ── Audio brief (SpeechSynthesis) + Markdown export ── */
+let _briefData=[];
+let _briefSpeaking=false;
+function toggleListenBrief(){
+  const btn=document.getElementById('brief-listen-btn');
+  if(_briefSpeaking){
+    speechSynthesis.cancel();_briefSpeaking=false;
+    if(btn){btn.classList.remove('speaking');btn.textContent='▷ LISTEN';}
+    return;
+  }
+  if(!('speechSynthesis' in window)){toast('Speech not supported in this browser','⚠');return;}
+  if(!_briefData.length){toast('Brief is still loading — try again in a moment','◷');return;}
+  const text='Meridian daily brief. '+_briefData.map(r=>`${r.cat}: ${r.title}.`).join(' ')+' End of brief.';
+  const u=new SpeechSynthesisUtterance(text);
+  u.rate=1.02;u.pitch=1;
+  u.onend=u.onerror=()=>{_briefSpeaking=false;if(btn){btn.classList.remove('speaking');btn.textContent='▷ LISTEN';}};
+  _briefSpeaking=true;
+  if(btn){btn.classList.add('speaking');btn.textContent='■ STOP';}
+  speechSynthesis.speak(u);
+}
+async function copyBriefMarkdown(){
+  if(!_briefData.length){toast('Brief is still loading — try again in a moment','◷');return;}
+  const date=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const md=`## MERIDIAN Daily Brief — ${date}\n\n`+
+    _briefData.map(r=>`- **${r.cat}** — ${r.title}${r.age?` _(${r.age})_`:''}${r.url?`\n  ${r.url}`:''}`).join('\n')+
+    `\n\n_Generated by MERIDIAN · free global intelligence feed_`;
+  try{await navigator.clipboard.writeText(md);toast('Brief copied as Markdown','⎘');}
+  catch{toast('Could not copy — clipboard blocked','⚠');}
+}
+
+/* ── Settings panel ── */
+const LS_DEFTAB='mer18_deftab';
+function _cacheStats(){
+  let n=0,sz=0;
+  Object.keys(localStorage).forEach(k=>{if(k.startsWith(LS_PFX)){n++;sz+=(localStorage.getItem(k)||'').length;}});
+  return{n,kb:(sz/1024).toFixed(0)};
+}
+function openSettings(){
+  const body=document.getElementById('set-body');if(!body)return;
+  const defTab=localStorage.getItem(LS_DEFTAB)||'home';
+  const theme=document.documentElement.getAttribute('data-theme');
+  const density=localStorage.getItem(LS_DENSITY)||'comfortable';
+  const st=_cacheStats();
+  body.innerHTML=`
+    <div class="set-row">
+      <div><div class="set-lbl">Default landing tab</div><div class="set-sub">Opens on launch when the URL has no #tab</div></div>
+      <select class="set-sel" onchange="localStorage.setItem(LS_DEFTAB,this.value);toast('Default tab saved','⚙')">
+        ${CATS.map(c=>`<option value="${c.id}"${c.id===defTab?' selected':''}>${c.ico} ${c.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="set-row">
+      <div><div class="set-lbl">Theme</div><div class="set-sub">Also toggled from the header or ⌘K</div></div>
+      <select class="set-sel" onchange="applyTheme(this.value)">
+        <option value="dark"${theme==='dark'?' selected':''}>☾ Dark</option>
+        <option value="light"${theme==='light'?' selected':''}>☀ Light</option>
+      </select>
+    </div>
+    <div class="set-row">
+      <div><div class="set-lbl">Card density</div><div class="set-sub">How much breathing room stories get</div></div>
+      <select class="set-sel" onchange="setDensity(this.value)">
+        ${DENSITIES.map(d=>`<option value="${d}"${d===density?' selected':''}>${DENSITY_ICONS[d]} ${DENSITY_LABELS[d]}</option>`).join('')}
+      </select>
+    </div>
+    <div class="set-row">
+      <div><div class="set-lbl">Feed cache</div><div class="set-sub set-stat">${st.n} entries · ${st.kb} KB · 15-min TTL</div></div>
+      <button class="set-danger-btn" onclick="clearAllCache();toast('Feed cache cleared','⊘');openSettings()">Clear cache</button>
+    </div>
+    <div class="set-row">
+      <div><div class="set-lbl">Reading history</div><div class="set-sub">Read-story dimming and unread badges reset</div></div>
+      <button class="set-danger-btn" onclick="localStorage.removeItem(LS_READ);localStorage.removeItem(LS_SEEN);toast('Reading history cleared','⊘')">Clear history</button>
+    </div>
+    <div class="set-row">
+      <div><div class="set-lbl">Saved stories</div><div class="set-sub set-stat">${getSaved().length} saved · surfaced in ⌘K</div></div>
+      <button class="set-danger-btn" onclick="setSaved([]);toast('Saved stories cleared','⊘');openSettings()">Clear saved</button>
+    </div>`;
+  document.getElementById('set-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSettings(){
+  document.getElementById('set-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings();});
+
+/* ── Service worker + offline awareness ── */
+if('serviceWorker' in navigator&&location.protocol==='https:'){
+  navigator.serviceWorker.register('./sw.js')
+    .then(()=>DBG.ok('INIT','Service worker registered — offline shell active'))
+    .catch(e=>DBG.warn('INIT','SW registration failed: '+e.message));
+}
+window.addEventListener('offline',()=>{document.body.classList.add('is-offline');toast('You are offline — showing cached data','⚠');});
+window.addEventListener('online',()=>{document.body.classList.remove('is-offline');toast('Back online','✓');});
+if(navigator.onLine===false)document.body.classList.add('is-offline');
+
 buildNav();
-DBG.info('INIT','MERIDIAN v4.0 · RSS + GDELT · 10 tabs · Command palette · Saved stories');
+DBG.info('INIT','MERIDIAN v4.1 · Offline PWA · Unread badges · Audio brief · Settings');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
@@ -5557,9 +5741,15 @@ DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc 
     const hash=(location.hash||'').replace('#','');
     if(hash&&document.getElementById('panel-'+hash)){
       switchTab(hash);
+      return true;
     }
+    return false;
   }
-  applyHash();
+  if(!applyHash()){
+    // No hash → honor the user's default landing tab from Settings
+    const def=localStorage.getItem('mer18_deftab');
+    if(def&&def!=='home'&&document.getElementById('panel-'+def)) switchTab(def);
+  }
   window.addEventListener('hashchange',applyHash);
 })();
 
