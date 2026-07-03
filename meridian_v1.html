@@ -89,7 +89,7 @@
     .tab-ico{font-size:10px;opacity:.75}
 
     /* ── MAIN ── */
-    .main{max-width:1440px;margin:0 auto;padding:28px 28px 60px}
+    .main{max-width:1440px;margin:0 auto;padding:28px 28px 84px}
     .panel{display:none;animation:fadeIn .28s cubic-bezier(0.22,1,0.36,1)}
     .panel.active{display:block}
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -585,6 +585,22 @@
     .ticker-level.orange{background:rgba(245,158,11,.15);color:#F59E0B;border:0.5px solid rgba(245,158,11,.3)}
     .ticker-sep{color:var(--text-muted);opacity:.4}
 
+    /* ── SITE-WIDE WIRE FOOTER TICKER (namespaced — do not reuse .ticker-item/tickerScroll) ── */
+    .wt-bar{position:fixed;left:0;right:0;bottom:0;z-index:150;background:var(--bg-surf);border-top:1px solid var(--border);padding:6px 0;overflow:hidden;white-space:nowrap;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+    .wt-bar::before,.wt-bar::after{content:'';position:absolute;top:0;bottom:0;width:50px;z-index:2;pointer-events:none}
+    .wt-bar::before{left:0;background:linear-gradient(90deg,var(--bg-surf),transparent)}
+    .wt-bar::after{right:0;background:linear-gradient(270deg,var(--bg-surf),transparent)}
+    .wt-label{position:absolute;left:0;top:0;bottom:0;width:132px;display:flex;align-items:center;gap:5px;padding:0 12px;background:var(--bg-surf);z-index:3;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;color:#E24B4A;white-space:nowrap;box-sizing:border-box}
+    .wt-track{display:inline-block;animation:wireTickerScroll 90s linear infinite;padding-left:132px}
+    .wt-track:hover{animation-play-state:paused}
+    @keyframes wireTickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .wt-item{display:inline-flex;align-items:center;gap:6px;margin-right:28px;font-family:'JetBrains Mono',monospace;font-size:10px}
+    .wt-badge{font-size:8px;font-weight:700;letter-spacing:.6px;padding:1px 5px;border-radius:2px}
+    .wt-badge.critical{background:rgba(226,75,74,.18);color:#E24B4A;border:0.5px solid rgba(226,75,74,.35)}
+    .wt-badge.elevated{background:rgba(245,158,11,.15);color:#F59E0B;border:0.5px solid rgba(245,158,11,.3)}
+    .wt-badge.active{background:rgba(20,184,166,.15);color:#14B8A6;border:0.5px solid rgba(20,184,166,.3)}
+    .wt-sep{color:var(--text-muted);opacity:.4;margin-left:6px}
+
     /* ── CRISIS COMMAND: STAT COUNTERS ── */
     .crisis-summary-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
     .crisis-summary-item{flex:1;min-width:90px;background:var(--bg-card);border:0.5px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
@@ -667,6 +683,24 @@
     .alr-sev{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--text)}
     .alr-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted)}
 
+    /* ── WIRE FEED: ROWS + SEVERITY BADGES ── */
+    .wire-scroll-list{max-height:72vh;overflow-y:auto;border:0.5px solid var(--border);border-radius:var(--r);background:var(--bg-card)}
+    .wire-row{display:flex;align-items:center;gap:9px;padding:10px 14px;border-bottom:0.5px solid var(--border);text-decoration:none;transition:background var(--t)}
+    .wire-row:last-child{border-bottom:none}
+    .wire-row:hover{background:var(--bg-card-h)}
+    .wire-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .wire-dot.critical{background:#E24B4A;box-shadow:0 0 5px rgba(226,75,74,.6);animation:dotPulse 2s ease-in-out infinite}
+    .wire-dot.elevated{background:#F59E0B;box-shadow:0 0 4px rgba(245,158,11,.5)}
+    .wire-dot.active{background:#14B8A6;box-shadow:0 0 4px rgba(20,184,166,.4)}
+    .wire-sev-badge{font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;letter-spacing:.6px;padding:1px 6px;border-radius:2px;flex-shrink:0}
+    .wire-sev-badge.critical{background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3)}
+    .wire-sev-badge.elevated{background:rgba(245,158,11,.12);color:#F59E0B;border:0.5px solid rgba(245,158,11,.25)}
+    .wire-sev-badge.active{background:rgba(20,184,166,.12);color:#14B8A6;border:0.5px solid rgba(20,184,166,.25)}
+    .wire-headline{flex:1;font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .wire-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub);flex-shrink:0;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .wire-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);flex-shrink:0;width:56px;text-align:right}
+    .wire-live-pip{display:inline-block;width:6px;height:6px;border-radius:50%;background:#E24B4A;margin-right:5px;box-shadow:0 0 5px rgba(226,75,74,.6);animation:dotPulse 2s ease-in-out infinite}
+
     /* ── CRISIS COMMAND: SEISMIC v2 (HUMAN-READABLE SCALE) ── */
     .seismic-list-v2{display:flex;flex-direction:column}
     .seismic-row-v2{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:0.5px solid var(--border);transition:background var(--t);cursor:pointer;text-decoration:none}
@@ -697,14 +731,14 @@
     .tbul-src{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);flex-shrink:0;white-space:nowrap}
 
     /* ── DEBUG ── */
-    #dbg-btn{position:fixed;bottom:16px;right:16px;z-index:800;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);cursor:pointer;display:flex;align-items:center;gap:6px;transition:border-color .2s}
+    #dbg-btn{position:fixed;bottom:54px;right:16px;z-index:800;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);cursor:pointer;display:flex;align-items:center;gap:6px;transition:border-color .2s}
     #dbg-btn:hover{border-color:#4B8EF0;color:#4B8EF0}
     #dbg-pip{width:6px;height:6px;border-radius:50%;background:var(--text-muted);transition:background .3s}
     #dbg-pip.ok{background:#3DB88A}
     #dbg-pip.warn{background:var(--gold);animation:blink 1s infinite}
     #dbg-pip.err{background:var(--neg);animation:blink .5s infinite}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-    #dbg-panel{display:none;position:fixed;bottom:50px;right:16px;width:min(660px,calc(100vw - 32px));max-height:420px;z-index:799;background:#05070D;border:1px solid #1A2038;border-radius:12px;overflow:hidden;box-shadow:0 8px 48px rgba(0,0,0,.8);flex-direction:column;font-family:'JetBrains Mono',monospace}
+    #dbg-panel{display:none;position:fixed;bottom:88px;right:16px;width:min(660px,calc(100vw - 32px));max-height:420px;z-index:799;background:#05070D;border:1px solid #1A2038;border-radius:12px;overflow:hidden;box-shadow:0 8px 48px rgba(0,0,0,.8);flex-direction:column;font-family:'JetBrains Mono',monospace}
     #dbg-panel.open{display:flex}
     .dbg-hdr{padding:8px 14px;border-bottom:1px solid #1A2038;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
     .dbg-hdr-l{font-size:10px;color:#3A4A6A;letter-spacing:1px}
@@ -1040,7 +1074,7 @@
     body.density-compact .c-title{font-size:14px}
     body.density-compact .hero-title{font-size:22px}
     body.density-compact .hero-desc{font-size:12px}
-    body.density-compact .main{padding:20px 24px 48px}
+    body.density-compact .main{padding:20px 24px 72px}
     /* Spacious density */
     body.density-spacious .card{padding:20px 22px}
     body.density-spacious .hero-card{padding:28px 30px}
@@ -1048,7 +1082,7 @@
     body.density-spacious .c-title{font-size:17px;-webkit-line-clamp:4}
     body.density-spacious .hero-title{font-size:30px}
     body.density-spacious .hero-desc{font-size:14px}
-    body.density-spacious .main{padding:36px 28px 72px}
+    body.density-spacious .main{padding:36px 28px 96px}
 
     /* ── CURSOR SPOTLIGHT + 3D TILT ── */
     .card,.hero-card{background-image:none;will-change:transform,background-image}
@@ -1147,6 +1181,7 @@
     <div class="art-grid" id="home-grid"></div>
   </div>
 
+  <div id="panel-wire"    class="panel"></div>
   <div id="panel-world"   class="panel"></div>
   <div id="panel-markets" class="panel"></div>
   <div id="panel-economy" class="panel"></div>
@@ -1456,6 +1491,9 @@ const CATS = [
       {url:'https://www.aljazeera.com/xml/rss/all.xml',                   name:'Al Jazeera'},
     ]},
 
+  // Wire — live chronological feed, merged from Home/World/Crisis sources, severity-classified
+  { id:'wire', name:'Wire', ico:'⚡', hex:'#E24B4A' },
+
   // World Conflicts — past 12h Google News: armed conflict + geopolitics
   { id:'world',   name:'World Conflicts', ico:'◎', hex:'#E05252',
     _rss:[
@@ -1508,7 +1546,7 @@ const CATS = [
 /* ════════════════════════════════════════
    STATE
 ════════════════════════════════════════ */
-const loaded   = new Set(['home']);
+const loaded   = new Set(['home','wire']);
 const artStore = {};
 let   artCount = 0, autoTimer = null;
 
@@ -1746,6 +1784,23 @@ function getTone(a){
   if(n>p)return{cls:'neg',lbl:'Negative',sc:'~',raw:-2};
   if(p>n)return{cls:'pos',lbl:'Positive',sc:'~',raw:2};
   return{cls:'neu',lbl:'Neutral',sc:'~',raw:0};
+}
+const CRIT_W=['killed','dead','deaths','explosion','war','strike','strikes','attack','attacked',
+  'invasion','invades','missile','missiles','coup','massacre','airstrike','bombing','bomb','gunman',
+  'shooting','hostage','assassinat','genocide','mass casualty','executed'];
+const ELEV_W=['clash','clashes','warning','warns','protest','protests','tension','tensions',
+  'evacuate','evacuated','threat','threatens','standoff','unrest','crackdown','sanctions','blockade',
+  'mobiliz','emergency declared','curfew','wildfire','earthquake','flood','cyclone','storm surge'];
+// word-boundary regex, not substring match — otherwise short words like 'war' false-positive
+// inside unrelated words like 'warning'/'toward'/'reward'
+const CRIT_RE=CRIT_W.map(w=>new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b'));
+const ELEV_RE=ELEV_W.map(w=>new RegExp('\\b'+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b'));
+function wireSeverity(a){
+  // heuristic triage, not real classification — mirrors NEG_W/POS_W pattern above
+  const txt=((a.title||'')+' '+(a._snippet||'')).toLowerCase();
+  if(CRIT_RE.some(re=>re.test(txt)))return{cls:'critical',lbl:'CRITICAL'};
+  if(ELEV_RE.some(re=>re.test(txt)))return{cls:'elevated',lbl:'ELEVATED'};
+  return{cls:'active',lbl:'ACTIVE'};
 }
 function cat(id){return CATS.find(c=>c.id===id);}
 
@@ -3601,6 +3656,15 @@ function gdacsTickerHTML(alerts){
   return`<div class="alert-ticker-outer"><div class="alert-ticker-inner">${doubled}</div></div>`;
 }
 
+function wireFooterTickerHTML(items){
+  if(!items.length)return'';
+  const chunk=items.map(a=>{
+    const sev=a._sev||wireSeverity(a);
+    return`<span class="wt-item"><span class="wt-badge ${sev.cls}">${sev.lbl}</span>${esc(a.title)}<span class="wt-sep">●</span></span>`;
+  }).join('');
+  return`<div class="wt-track">${chunk}${chunk}</div>`;
+}
+
 /* ── News RSS feeds for Crisis tab ── */
 const CRISIS_NEWS_RSS=[
   {url:'https://news.google.com/rss/search?q=natural+disaster+OR+cyclone+OR+flood+OR+earthquake+OR+tsunami+OR+volcano&hl=en-IN&gl=IN&ceid=IN:en&tbs=qdr:d', name:'Global Crisis'},
@@ -3752,6 +3816,61 @@ async function loadCrisisWatch(){
       }
     })()
   ]);
+}
+
+/* ════════════════════════════════════════
+   WIRE TAB — live chronological feed, merged sources, severity-classified
+════════════════════════════════════════ */
+function wireRowHTML(a){
+  const sev=a._sev||wireSeverity(a);
+  const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
+  const tag=esc(a._src||a.domain||'—');
+  return`<a class="wire-row" href="${esc(a.url)}" target="_blank" rel="noopener">
+    <span class="wire-dot ${sev.cls}"></span>
+    <span class="wire-sev-badge ${sev.cls}">${sev.lbl}</span>
+    <span class="wire-headline">${esc(a.title)}</span>
+    <span class="wire-tag">${tag}</span>
+    <span class="wire-time">${ts}</span>
+  </a>`;
+}
+
+async function loadWireTab(){
+  const id='wire';
+  const c=cat(id);
+  const panel=document.getElementById('panel-'+id);
+  panel.innerHTML=`
+    <div class="panel-banner">
+      <div class="cat-head-row">
+        <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex};box-shadow:0 0 10px ${c.hex}"></div><div class="cat-name">${c.name}</div></div>
+        <div class="cat-meta" id="wire-meta-bar"><span class="wire-live-pip"></span>LIVE</div>
+      </div>
+    </div>
+    <div class="crisis-summary-row">
+      <div class="crisis-summary-item"><div class="csi-label" style="color:#E24B4A">Critical</div><div class="csi-count" id="wire-crit">—</div><div class="csi-sub">high-severity</div></div>
+      <div class="crisis-summary-item"><div class="csi-label" style="color:#F59E0B">Elevated</div><div class="csi-count" id="wire-elev">—</div><div class="csi-sub">watch</div></div>
+      <div class="crisis-summary-item"><div class="csi-label" style="color:#14B8A6">Active</div><div class="csi-count" id="wire-active">—</div><div class="csi-sub">tracked</div></div>
+    </div>
+    <div class="wire-scroll-list" id="wire-list">${skels(6)}</div>`;
+  try{
+    const feeds=[...cat('home')._rss, ...cat('world')._rss, ...CRISIS_NEWS_RSS];
+    const items=await fetchRssFeeds(feeds);
+    items.forEach(a=>{ a._sev=wireSeverity(a); });
+    const critC=items.filter(a=>a._sev.cls==='critical').length;
+    const elevC=items.filter(a=>a._sev.cls==='elevated').length;
+    document.getElementById('wire-crit').textContent=critC;
+    document.getElementById('wire-elev').textContent=elevC;
+    document.getElementById('wire-active').textContent=items.length-critC-elevC;
+    const listEl=document.getElementById('wire-list');
+    listEl.innerHTML=items.length?items.map(wireRowHTML).join(''):
+      `<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No wire activity right now.</div></div>`;
+    storeSectionData(id,items);
+    const tickerEl=document.getElementById('wire-footer-ticker');
+    if(tickerEl)tickerEl.innerHTML=wireFooterTickerHTML(items.slice(0,20));
+  }catch(e){
+    DBG.err('RSS',`loadWireTab(): ${e.message}`);
+    const listEl=document.getElementById('wire-list');
+    if(listEl)renderErr(listEl,e.message,"loadCat('wire')");
+  }
 }
 
 /* ════════════════════════════════════════
@@ -4828,6 +4947,7 @@ async function loadCat(id){
   if(id==='climate') return loadClimateTab();
   if(id==='crisis')  return loadCrisisWatch();
   if(id==='markets') return loadMarketsPanel();
+  if(id==='wire')    return loadWireTab();
   const c=cat(id);
   if(c&&c._rss)      return loadRssTab(id);
   return loadCatGeneric(id);
@@ -5263,6 +5383,13 @@ updateLogoGlow();
 setInterval(updateLogoGlow,60000);
 
 loadHome();
+loadWireTab();
 </script>
+
+<!-- SITE-WIDE WIRE FOOTER TICKER — lives outside <main> so switchTab() never touches it -->
+<div class="wt-bar" id="wire-footer-ticker-wrap">
+  <span class="wt-label"><span class="wire-live-pip"></span>LIVE WIRE</span>
+  <div id="wire-footer-ticker"></div>
+</div>
 </body>
 </html>
