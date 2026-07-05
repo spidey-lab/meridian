@@ -1392,6 +1392,73 @@
       .hero-title{font-size:24px}
       #cmdkBtn{display:none} /* no hardware keyboard on touch — actions live in header + dock */
     }
+
+    /* ══════════════════════════════════════════════
+       v5.1 OBSIDIAN GLASS — final cascade layer
+       Ambient atmosphere + true frosted-glass surfaces
+    ══════════════════════════════════════════════ */
+    [data-theme="dark"]{
+      --bg:#05070D;
+      --text-sub:#8B96B0;--text-muted:#4A5570; /* legibility: old muted #243050 was near-invisible */
+      --bg-card:rgba(15,21,37,.55);--bg-card-h:rgba(24,32,54,.62);
+      --bg-surf:rgba(12,18,32,.5);--bg-modal:rgba(13,18,32,.8);
+      --glow-a:rgba(200,168,107,.08);--glow-b:rgba(75,142,255,.055);--glow-c:rgba(20,184,166,.05);
+      --glass-solid:#0D1220;
+    }
+    [data-theme="light"]{
+      --bg:#F5F2EC;
+      --bg-card:rgba(255,255,255,.6);--bg-card-h:rgba(255,255,255,.82);
+      --bg-surf:rgba(255,255,255,.5);--bg-modal:rgba(255,255,255,.86);
+      --glow-a:rgba(200,168,107,.15);--glow-b:rgba(120,160,235,.11);--glow-c:rgba(50,180,170,.09);
+      --glass-solid:#FCFAF6;
+    }
+    :root{
+      --neg:#E85B5B;--pos:#34C08B;
+      --accent:#C8A86B;
+      --blur-1:blur(12px);--blur-2:blur(24px) saturate(1.3);
+    }
+    body[data-accent="world"]{--accent:var(--clr-world)}
+    body[data-accent="markets"]{--accent:var(--clr-markets)}
+    body[data-accent="economy"]{--accent:var(--clr-economy)}
+    body[data-accent="techai"]{--accent:var(--clr-techai)}
+    body[data-accent="india"]{--accent:var(--clr-india)}
+    body[data-accent="crisis"]{--accent:var(--clr-crisis)}
+    body[data-accent="tamilnadu"]{--accent:var(--clr-tamilnadu)}
+    body[data-accent="climate"]{--accent:var(--clr-climate)}
+    body[data-accent="search"]{--accent:var(--clr-search)}
+
+    /* Ambient: enrich existing .aurora — base wash on the div itself
+       (accent-tinted, follows active tab), drifting glows on ::before/::after */
+    .aurora{background:
+      radial-gradient(46% 40% at 20% 14%,var(--glow-a),transparent 70%),
+      radial-gradient(52% 46% at 84% 32%,var(--glow-b),transparent 70%),
+      radial-gradient(46% 42% at 26% 88%,var(--glow-c),transparent 70%),
+      radial-gradient(32% 28% at 72% 76%,color-mix(in srgb,var(--accent) 7%,transparent),transparent 70%);
+      transition:background 1.2s ease}
+    .aurora::before,.aurora::after{opacity:.6}
+    /* fine noise so the gradients don't band */
+    body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.022;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+    /* True frosted glass: card/panel surfaces blur what's behind them.
+       (bg tokens above are now translucent — blur is what makes them read as glass) */
+    .card,.hero-card,.brief-card,.crisis-panel-box,.crisis-summary-item,.clim-panel,.clim-hero,
+    .gs-card,.gs-hero,.gs-compact,.mkt-summary-strip,.mkt-status-chip,.n50-hero,.n50-hist-card,
+    .n50-table-wrap,.topic-brief,.alert-card,.sk-card{
+      backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1)}
+    .modal,.cp-box,.toast{backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2)}
+    /* accent-aware hover: glass stays glass, the edge lights up */
+    .card:hover,.hero-card:hover{border-color:color-mix(in srgb,var(--accent) 28%,transparent)}
+    /* mobile: blur on dozens of cards janks — drop blur and make the surface
+       tokens near-opaque so every consumer falls back uniformly */
+    @media(max-width:768px){
+      .card,.hero-card,.brief-card,.crisis-panel-box,.crisis-summary-item,.clim-panel,.clim-hero,
+      .gs-card,.gs-hero,.gs-compact,.mkt-summary-strip,.mkt-status-chip,.n50-hero,.n50-hist-card,
+      .n50-table-wrap,.topic-brief,.alert-card,.sk-card{
+        backdrop-filter:none;-webkit-backdrop-filter:none}
+      [data-theme="dark"]{--bg-card:rgba(15,21,37,.94);--bg-card-h:rgba(24,32,54,.95);--bg-surf:rgba(12,18,32,.92)}
+      [data-theme="light"]{--bg-card:rgba(255,255,255,.94);--bg-card-h:rgba(255,255,255,.97);--bg-surf:rgba(255,255,255,.92)}
+    }
   </style>
 </head>
 <body>
@@ -2436,6 +2503,7 @@ function switchTab(id){
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     inPanel.classList.add('active');
   }
+  document.body.setAttribute('data-accent',id);
   if(history.replaceState) history.replaceState(null,'','#'+id);
   if(typeof markTabSeen==='function') markTabSeen(id);
   if(!loaded.has(id)){loaded.add(id);loadCat(id);}
