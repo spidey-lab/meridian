@@ -771,18 +771,16 @@
     .dl-src.rss{background:rgba(43,191,204,.15);color:#2BBFCC}
     .dbg-cooldown{display:none;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:3px;background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);animation:blink 1s infinite}
 
-    /* ── STAGGERED CARD ANIMATION ── */
-    .art-grid .card,.gdacs-grid .alert-card{
-      animation:cardSlideUp .3s cubic-bezier(0.22,1,0.36,1) both
-    }
-    .art-grid .card:nth-child(1){animation-delay:0ms}
-    .art-grid .card:nth-child(2){animation-delay:40ms}
-    .art-grid .card:nth-child(3){animation-delay:80ms}
-    .art-grid .card:nth-child(4){animation-delay:120ms}
-    .art-grid .card:nth-child(5){animation-delay:160ms}
-    .art-grid .card:nth-child(6){animation-delay:200ms}
-    .art-grid .card:nth-child(n+7){animation-delay:240ms}
-    @keyframes cardSlideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    /* ── SCROLL-REVEAL CARD ENTRANCE (IO-driven; replaces render-time stagger) ──
+       Hidden state only applies once JS arms the observer (body.io-on), so cards
+       stay visible if JS fails or prefers-reduced-motion skips the observer.
+       Animation deliberately has no forwards fill: once it ends the card returns
+       to natural styling, so the tilt's inline transform isn't overridden
+       (the old `both` fill was silently killing tilt on grid cards). */
+    body.io-on .art-grid .card:not(.rise),body.io-on .hero-card:not(.rise),
+    body.io-on .gdacs-grid .alert-card:not(.rise),body.io-on .gs-card:not(.rise){opacity:0}
+    .rise{animation:riseIn .55s cubic-bezier(.22,1,.36,1) backwards}
+    @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
     /* ── RESPONSIVE ── */
     @media(max-width:860px){
@@ -1461,6 +1459,54 @@
       [data-theme="dark"]{--bg-card:rgba(15,21,37,.94);--bg-card-h:rgba(24,32,54,.95);--bg-surf:rgba(12,18,32,.92)}
       [data-theme="light"]{--bg-card:rgba(255,255,255,.94);--bg-card-h:rgba(255,255,255,.97);--bg-surf:rgba(255,255,255,.92)}
     }
+
+    /* ── ARTICLE IMAGES: desaturated thumbs melted into the glass ── */
+    .card.has-thumb,.hero-card.has-thumb{display:flex;gap:16px;align-items:stretch}
+    .card.has-thumb .card-main,.hero-card.has-thumb .card-main{flex:1;min-width:0;display:flex;flex-direction:column}
+    .c-thumb{width:88px;border-radius:10px;object-fit:cover;flex-shrink:0;align-self:stretch;max-height:96px;
+      filter:saturate(.72) contrast(1.04);opacity:.92;
+      -webkit-mask-image:linear-gradient(260deg,#000 62%,rgba(0,0,0,.55));mask-image:linear-gradient(260deg,#000 62%,rgba(0,0,0,.55))}
+    .hero-thumb{width:230px;border-radius:14px;object-fit:cover;flex-shrink:0;align-self:stretch;min-height:130px;
+      filter:saturate(.78) contrast(1.04);opacity:.94;
+      -webkit-mask-image:linear-gradient(255deg,#000 55%,rgba(0,0,0,.45));mask-image:linear-gradient(255deg,#000 55%,rgba(0,0,0,.45))}
+    .card:hover .c-thumb,.hero-card:hover .hero-thumb{filter:saturate(1) contrast(1.04);opacity:1;transition:filter .3s ease,opacity .3s ease}
+    @media(max-width:640px){.hero-thumb{display:none}.c-thumb{width:70px;max-height:80px}}
+
+    /* ── SCROLL-REACTIVE CHROME: masthead compresses past the fold ── */
+    .hdr{transition:height .32s var(--ease),box-shadow .32s var(--ease)}
+    .nav{transition:top .32s var(--ease)}
+    body.scrolled .hdr{height:50px;box-shadow:0 10px 34px -18px rgba(0,0,0,.65)}
+    body.scrolled .hdr .logo{font-size:18px;transition:font-size .32s var(--ease)}
+    @media(min-width:641px){body.scrolled .nav{top:50px}}
+
+    /* ── SIGNAL PULSE: heartbeat sweep under the masthead on data arrival ── */
+    .sig-line{position:absolute;left:0;right:0;bottom:-1px;height:2px;pointer-events:none;opacity:0;z-index:5;
+      background:linear-gradient(90deg,transparent,var(--accent) 45%,var(--gold) 55%,transparent);
+      background-size:34% 100%;background-repeat:no-repeat;background-position:-34% 0}
+    .hdr.sig .sig-line{animation:sigSweep 1.15s ease-out}
+    @keyframes sigSweep{0%{opacity:.95;background-position:-34% 0}100%{opacity:0;background-position:134% 0}}
+
+    /* ── NUMBER ROLL: counters drop in like a departure board ── */
+    .num-roll{animation:numRoll .5s var(--ease)}
+    @keyframes numRoll{from{opacity:0;transform:translateY(-.55em);filter:blur(2px)}to{opacity:1;transform:none;filter:none}}
+
+    /* ── HOLO SHEEN: faint iridescence that tracks the cursor (via --shx from paint()) ── */
+    .card::after,.hero-card::after{
+      background:
+        radial-gradient(circle at var(--mx,50%) var(--my,50%),var(--spot,transparent) 0%,transparent 65%),
+        linear-gradient(115deg,transparent 34%,hsla(190,90%,75%,.05) 45%,hsla(280,85%,75%,.06) 50%,hsla(35,95%,72%,.05) 55%,transparent 66%),
+        linear-gradient(160deg,var(--card-inner-top) 0%,transparent 50%);
+      background-size:100% 100%,240% 100%,100% 100%;
+      background-position:0 0,var(--shx,50%) 0,0 0;
+      background-repeat:no-repeat}
+
+    /* ── CRISIS GLOBE ── */
+    .panel-banner{position:relative;overflow:hidden}
+    #panel-crisis .panel-banner{min-height:224px;display:flex;flex-direction:column;justify-content:center}
+    #crisis-globe{position:absolute;right:36px;top:50%;transform:translateY(-50%);width:216px;height:216px;
+      opacity:.65;pointer-events:none;z-index:0}
+    .panel-banner>*:not(#crisis-globe){position:relative;z-index:1}
+    @media(max-width:640px){#crisis-globe{width:170px;height:170px;right:-30px;opacity:.45}}
   </style>
 </head>
 <body>
@@ -1498,9 +1544,10 @@
 
 <!-- HEADER -->
 <header class="hdr">
+  <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.0</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.2</div>
   </div>
   <div class="hdr-right">
     <span class="offline-pip"><span style="width:5px;height:5px;border-radius:50%;background:var(--neg)"></span>OFFLINE</span>
@@ -1566,7 +1613,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v5.0
+    MERIDIAN v5.2
   </div>
 </main>
 
@@ -1603,7 +1650,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v5.0 · RSS + GDELT + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v5.2 · RSS + GDELT + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2455,6 +2502,7 @@ function getCardHex(card){
     card.style.setProperty('--mx',x.toFixed(0)+'px');
     card.style.setProperty('--my',y.toFixed(0)+'px');
     card.style.setProperty('--spot',hex+'20');
+    card.style.setProperty('--shx',((x/rect.width)*100).toFixed(1)+'%'); // holo sheen tracks cursor
     card.style.transform=`perspective(800px) rotateX(${(-dy*3).toFixed(2)}deg) rotateY(${(dx*3).toFixed(2)}deg)`;
   }
   document.addEventListener('mousemove',e=>{
@@ -3602,6 +3650,10 @@ async function loadUSGS(containerId){
     if(!r.ok)throw new Error(`HTTP ${r.status}`);
     const d=await r.json();
     const elapsed=((Date.now()-t0)/1000).toFixed(1);
+    // feed the crisis globe: all M2.5+ points (not just the M5+ list below)
+    _quakePoints=(Array.isArray(d.features)?d.features:[])
+      .map(f=>({lon:f.geometry?.coordinates?.[0],lat:f.geometry?.coordinates?.[1],mag:f.properties.mag||3}))
+      .filter(p=>p.lat!=null&&p.lon!=null).slice(0,90);
     const quakes=(Array.isArray(d.features)?d.features:[])
       .map(f=>({
         mag:f.properties.mag,
@@ -3699,8 +3751,12 @@ function normalizeRssItem(item,sourceName){
   }else{
     snippet=rawDesc.slice(0,220)+(rawDesc.length>220?'…':'');
   }
+  // Article image: rss2json exposes media as thumbnail / enclosure.link.
+  // Google News RSS never carries usable article art, so skip it there.
+  let img=item.thumbnail||(item.enclosure&&(item.enclosure.link||item.enclosure.thumbnail))||'';
+  if(isGN||typeof img!=='string'||!/^https:\/\//.test(img))img='';
   return{title,domain,url,pub:parseRssDate(item.pubDate||item.published),
-    _snippet:snippet,_src:publisherName,_rss:true,tone:null,_unverified:false};
+    _snippet:snippet,_src:publisherName,_img:img,_rss:true,tone:null,_unverified:false};
 }
 
 async function fetchRssFeeds(feeds){
@@ -3728,6 +3784,7 @@ async function fetchRssFeeds(feeds){
   DBG.stats.art+=final.length;DBG._st();
   if(deduped.length<items.length)DBG.info('RSS',`Deduped ${items.length-deduped.length} duplicate(s)`);
   if(fresh.length<deduped.length)DBG.info('RSS',`Age filter: ${deduped.length-fresh.length} older articles hidden`);
+  if(final.length&&typeof signalPulse==='function')signalPulse(); // masthead heartbeat on batch arrival
   return final;
 }
 
@@ -3744,7 +3801,9 @@ function rssHeroCardHTML(a,hex){
   const id=storeArt(a);
   const t=getTone(a);
   const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
-  return`<div class="hero-card ${t.cls}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
+  const thumb=a._img?`<img class="hero-thumb" src="${esc(a._img)}" alt="" loading="lazy" onerror="this.closest('.hero-card').classList.remove('has-thumb');this.remove()">`:'';
+  return`<div class="hero-card ${t.cls}${a._img?' has-thumb':''}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
+    <div class="card-main">
     <div class="hero-top">
       <div class="hero-top-left">
         <span class="badge-top">${esc(a._src||'RSS')}</span>
@@ -3755,6 +3814,7 @@ function rssHeroCardHTML(a,hex){
     </div>
     <div class="hero-title">${esc(a.title)}</div>
     <div class="hero-desc" id="hdesc-${id}">${esc(a._snippet||'')}</div>
+    </div>${thumb}
   </div>`;
 }
 
@@ -3762,7 +3822,9 @@ function rssCardHTML(a,hex){
   const id=storeArt(a);
   const t=getTone(a);
   const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
-  return`<div class="card ${t.cls}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
+  const thumb=a._img?`<img class="c-thumb" src="${esc(a._img)}" alt="" loading="lazy" onerror="this.closest('.card').classList.remove('has-thumb');this.remove()">`:'';
+  return`<div class="card ${t.cls}${a._img?' has-thumb':''}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
+    <div class="card-main">
     <div class="card-top">
       <div class="card-top-left">
         ${favImg(a.domain)}<span class="c-src">${esc(a._src||a.domain||'RSS')}</span>
@@ -3772,6 +3834,7 @@ function rssCardHTML(a,hex){
       <span class="c-time" data-ts="${a.pub&&a.pub.getTime()>0?a.pub.getTime():''}">${ts}</span>
     </div>
     <div class="c-title">${esc(a.title)}</div>
+    </div>${thumb}
   </div>`;
 }
 
@@ -4066,6 +4129,7 @@ async function loadCrisisWatch(){
   const panel=document.getElementById('panel-'+id);
   panel.innerHTML=`
     <div class="panel-banner">
+      <canvas id="crisis-globe" width="360" height="360" aria-hidden="true"></canvas>
       <div class="cat-head-row">
         <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex};box-shadow:0 0 10px ${c.hex}"></div><div class="cat-name">${c.name}</div></div>
         <div class="cat-meta" id="crisis-meta-bar"></div>
@@ -4138,6 +4202,8 @@ async function loadCrisisWatch(){
     <div id="hero-crisis"></div>
     <div class="art-grid" id="g-crisis">${skels(4)}</div>`;
 
+  initCrisisGlobe();
+
   await Promise.all([
     /* ── GDACS disaster alerts ── */
     (async()=>{
@@ -4147,8 +4213,8 @@ async function loadCrisisWatch(){
         _gdacsFilter='ALL';
         const redCount=alerts.filter(a=>a.alertlevel==='Red').length;
         const orgCount=alerts.filter(a=>a.alertlevel==='Orange').length;
-        const rc=document.getElementById('cri-red');if(rc)rc.textContent=redCount;
-        const oc=document.getElementById('cri-orange');if(oc)oc.textContent=orgCount;
+        rollNum(document.getElementById('cri-red'),redCount);
+        rollNum(document.getElementById('cri-orange'),orgCount);
         const badge=document.getElementById('gdacs-count-badge');
         if(badge)badge.textContent=`${alerts.length} active`;
         const ticker=document.getElementById('gdacs-ticker');
@@ -4171,7 +4237,7 @@ async function loadCrisisWatch(){
       await loadUSGS('usgs-container-crisis');
       const el=document.getElementById('usgs-container-crisis');
       const count=el?el.querySelectorAll('.seismic-row-v2').length:0;
-      const cnt=document.getElementById('cri-quake');if(cnt)cnt.textContent=count||'0';
+      rollNum(document.getElementById('cri-quake'),count||'0');
     })(),
 
     /* ── Crisis news (blended Global + India/TN) ── */
@@ -4183,7 +4249,7 @@ async function loadCrisisWatch(){
           const k=(a.title||'').substring(0,55).toLowerCase();
           if(seen.has(k))return false;seen.add(k);return true;
         }).sort((a,b)=>b.pub-a.pub).slice(0,15);
-        const nc=document.getElementById('cri-news');if(nc)nc.textContent=deduped.length;
+        rollNum(document.getElementById('cri-news'),deduped.length);
         const badge=document.getElementById('crisis-news-badge');if(badge)badge.textContent=`${deduped.length} stories`;
         const hmap=document.getElementById('hmap-crisis');if(hmap)hmap.innerHTML=hourlyHeatmap(deduped,c.hex);
         const sd=document.getElementById('sdigest-crisis');
@@ -5984,7 +6050,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v5.0 · Premium design system · Offline PWA · Command palette');
+DBG.info('INIT','MERIDIAN v5.2 · Motion & signal layer · Article images · Crisis globe');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
@@ -6005,6 +6071,112 @@ DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc 
   }
   window.addEventListener('hashchange',applyHash);
 })();
+
+/* ════════════════════════════════════════
+   v5.2 MOTION & SIGNAL LAYER
+════════════════════════════════════════ */
+
+/* Scroll-reactive chrome: compress masthead past the fold */
+(function(){
+  let last=false;
+  window.addEventListener('scroll',()=>{
+    const s=window.scrollY>24;
+    if(s!==last){last=s;document.body.classList.toggle('scrolled',s);}
+  },{passive:true});
+})();
+
+/* Scroll-reveal: IO adds .rise as cards enter the viewport; a MutationObserver
+   auto-enrolls dynamically rendered cards. body.io-on gates the hidden initial
+   state so nothing is invisible if this never runs. */
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  if(!('IntersectionObserver' in window))return;
+  const SEL='.art-grid .card,.hero-card,.gdacs-grid .alert-card,.gs-card';
+  let batch=0,batchT=0;
+  const io=new IntersectionObserver(entries=>{
+    const now=performance.now();
+    if(now-batchT>200)batch=0; // new reveal batch → restart stagger
+    batchT=now;
+    for(const e of entries){
+      if(!e.isIntersecting)continue;
+      e.target.style.animationDelay=(Math.min(batch++,8)*45)+'ms';
+      e.target.classList.add('rise');
+      io.unobserve(e.target);
+    }
+  },{rootMargin:'0px 0px -6% 0px',threshold:.05});
+  const enroll=root=>{
+    if(root.nodeType!==1)return;
+    if(root.matches&&root.matches(SEL)&&!root._io){root._io=1;io.observe(root);}
+    if(root.querySelectorAll)for(const c of root.querySelectorAll(SEL)){if(!c._io){c._io=1;io.observe(c);}}
+  };
+  new MutationObserver(muts=>{for(const m of muts)for(const n of m.addedNodes)enroll(n);})
+    .observe(document.body,{childList:true,subtree:true});
+  enroll(document.body);
+  document.body.classList.add('io-on');
+})();
+
+/* Signal pulse: one sweep under the masthead whenever a feed batch lands */
+function signalPulse(){
+  const h=document.querySelector('.hdr');if(!h)return;
+  h.classList.remove('sig');void h.offsetWidth;h.classList.add('sig');
+}
+
+/* Departure-board number roll for live counters */
+function rollNum(el,val){
+  if(!el)return;
+  if(el.textContent===String(val)){el.textContent=val;return;}
+  el.textContent=val;
+  el.classList.remove('num-roll');void el.offsetWidth;el.classList.add('num-roll');
+}
+
+/* Crisis globe: orthographic wireframe + live quake points (from loadUSGS) */
+let _quakePoints=[],_globeRAF=0;
+function initCrisisGlobe(){
+  const cv=document.getElementById('crisis-globe');if(!cv)return;
+  const ctx=cv.getContext('2d');if(!ctx)return;
+  const S=360,R=155,CX=S/2,CY=S/2;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  cancelAnimationFrame(_globeRAF);_globeRAF=0;
+  function proj(lat,lon,rot){
+    const la=lat*Math.PI/180,lo=(lon+rot)*Math.PI/180;
+    return[CX+R*Math.cos(la)*Math.sin(lo),CY-R*Math.sin(la),Math.cos(la)*Math.cos(lo)>0.02];
+  }
+  function strokePath(fn,rot){
+    ctx.beginPath();let started=false;
+    fn((lat,lon)=>{
+      const[x,y,v]=proj(lat,lon,rot);
+      if(v){if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);}
+      else started=false;
+    });
+    ctx.stroke();
+  }
+  function draw(t){
+    _globeRAF=0;
+    if(!cv.isConnected)return; // panel re-rendered — a fresh init owns the canvas now
+    if(cv.offsetParent===null){ // tab hidden — idle-poll instead of drawing
+      setTimeout(()=>{if(cv.isConnected&&!_globeRAF)_globeRAF=requestAnimationFrame(draw);},1500);
+      return;
+    }
+    const rot=reduced?20:(t*0.0035)%360;
+    ctx.clearRect(0,0,S,S);
+    const line=document.documentElement.getAttribute('data-theme')==='light'?'rgba(60,50,30,.14)':'rgba(255,255,255,.1)';
+    ctx.strokeStyle=line;ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(CX,CY,R,0,6.2832);ctx.stroke();
+    for(let m=0;m<360;m+=30)strokePath(emit=>{for(let la=-90;la<=90;la+=4)emit(la,m);},rot);
+    for(let la=-60;la<=60;la+=30)strokePath(emit=>{for(let lo=0;lo<=360;lo+=4)emit(la,lo);},rot);
+    const pulse=reduced?1:(Math.sin(t*0.003)+1)/2;
+    ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--clr-crisis').trim()||'#D14A66';
+    for(const p of _quakePoints){
+      const[x,y,v]=proj(p.lat,p.lon,rot);
+      if(!v)continue;
+      ctx.globalAlpha=.45+.55*pulse;
+      ctx.beginPath();ctx.arc(x,y,Math.max(1.6,(p.mag-2)*.9),0,6.2832);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    if(!reduced)_globeRAF=requestAnimationFrame(draw);
+  }
+  _globeRAF=requestAnimationFrame(draw);
+}
 
 /* ── logo market glow ── */
 updateLogoGlow();
