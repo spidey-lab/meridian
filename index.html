@@ -604,10 +604,18 @@
     @keyframes wireTickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
     .wt-item{display:inline-flex;align-items:center;gap:6px;margin-right:28px;font-family:'JetBrains Mono',monospace;font-size:10px}
     .wt-badge{font-size:8px;font-weight:700;letter-spacing:.6px;padding:1px 5px;border-radius:2px}
-    .wt-badge.critical{background:rgba(226,75,74,.18);color:#E24B4A;border:0.5px solid rgba(226,75,74,.35)}
+    .wt-badge.critical{background:rgba(226,75,74,.18);color:#E24B4A;border:0.5px solid rgba(226,75,74,.35);
+      animation:criticalGlitch 8s ease-in-out infinite}
     .wt-badge.elevated{background:rgba(245,158,11,.15);color:#F59E0B;border:0.5px solid rgba(245,158,11,.3)}
     .wt-badge.active{background:rgba(20,184,166,.15);color:#14B8A6;border:0.5px solid rgba(20,184,166,.3)}
     .wt-sep{color:var(--text-muted);opacity:.4;margin-left:6px}
+    /* rare, subtle RGB-split twitch — ~120ms once every 8s, never seizure-bait */
+    @keyframes criticalGlitch{
+      0%,97%,100%{transform:translate(0,0);text-shadow:none}
+      97.4%{transform:translate(-1px,0);text-shadow:1px 0 rgba(255,60,90,.7),-1px 0 rgba(60,200,255,.7)}
+      97.7%{transform:translate(1px,0);text-shadow:-1px 0 rgba(255,60,90,.7),1px 0 rgba(60,200,255,.7)}
+      98.1%{transform:translate(0,0);text-shadow:none}
+    }
 
     /* ── CRISIS COMMAND: STAT COUNTERS ── */
     .crisis-summary-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
@@ -1314,6 +1322,21 @@
     }
     @keyframes sheetUp{from{transform:translateY(48px);opacity:.5}to{transform:translateY(0);opacity:1}}
 
+    /* ── HOLO-MATERIALIZE: modal opens like a hologram stabilizing ── */
+    @keyframes holoMaterialize{
+      0%{filter:drop-shadow(-3px 0 rgba(255,60,90,.65)) drop-shadow(3px 0 rgba(60,200,255,.65)) blur(1.5px);opacity:.35;transform:scale(.985)}
+      45%{filter:drop-shadow(-1.2px 0 rgba(255,60,90,.4)) drop-shadow(1.2px 0 rgba(60,200,255,.4)) blur(.6px);opacity:.85;transform:scale(.996)}
+      100%{filter:drop-shadow(0 0 rgba(255,60,90,0)) drop-shadow(0 0 rgba(60,200,255,0)) blur(0);opacity:1;transform:scale(1)}
+    }
+    .modal.materialize{animation:holoMaterialize .32s cubic-bezier(.22,1,.36,1)}
+    @media(max-width:640px){
+      .modal.materialize{animation:sheetUp .3s cubic-bezier(.22,1,.36,1),holoMaterialize .32s cubic-bezier(.22,1,.36,1)}
+    }
+
+    /* ── VIEW TRANSITIONS: tab-switch morph (Chromium; no-op elsewhere) ── */
+    ::view-transition-old(root),::view-transition-new(root){
+      animation-duration:.35s;animation-timing-function:cubic-bezier(.22,1,.36,1)}
+
     /* ── INPUTS ── */
     .search-input{padding:14px 22px;font-size:15px;border-radius:28px}
     .search-btn{border-radius:28px;padding:14px 26px;font-size:13px}
@@ -1595,7 +1618,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.3</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.4</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1664,7 +1687,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v5.3
+    MERIDIAN v5.4
   </div>
 </main>
 
@@ -1701,7 +1724,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v5.3 · RSS + GDELT + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v5.4 · RSS + GDELT + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2583,33 +2606,40 @@ function buildNav(){
   ).join('');
 }
 function switchTab(id){
-  CATS.forEach(c=>{
-    const b=document.getElementById('tab-'+c.id);if(!b)return;
-    b.classList.remove('active');
-    b.style.background='';b.style.borderColor='transparent';b.style.color='';
-  });
-  const b=document.getElementById('tab-'+id),c=cat(id);
-  b.classList.add('active');
-  b.style.background=c.hex+'1A';
-  b.style.borderColor=c.hex+'50';
-  b.style.color=c.hex;
-  const outPanel=document.querySelector('.panel.active');
-  const inPanel=document.getElementById('panel-'+id);
-  if(outPanel&&outPanel!==inPanel){
-    outPanel.classList.add('fading-out');
-    setTimeout(()=>{
-      outPanel.classList.remove('active','fading-out');
+  // instant=true (native View Transition owns the crossfade, so skip our
+  // manual fading-out/setTimeout dance — running both would double-animate)
+  const doSwitch=(instant)=>{
+    CATS.forEach(c=>{
+      const b=document.getElementById('tab-'+c.id);if(!b)return;
+      b.classList.remove('active');
+      b.style.background='';b.style.borderColor='transparent';b.style.color='';
+    });
+    const b=document.getElementById('tab-'+id),c=cat(id);
+    b.classList.add('active');
+    b.style.background=c.hex+'1A';
+    b.style.borderColor=c.hex+'50';
+    b.style.color=c.hex;
+    const outPanel=document.querySelector('.panel.active');
+    const inPanel=document.getElementById('panel-'+id);
+    if(!instant&&outPanel&&outPanel!==inPanel){
+      outPanel.classList.add('fading-out');
+      setTimeout(()=>{
+        outPanel.classList.remove('active','fading-out');
+        inPanel.classList.add('active');
+      },130);
+    }else{
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
       inPanel.classList.add('active');
-    },130);
-  }else{
-    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    inPanel.classList.add('active');
-  }
-  document.body.setAttribute('data-accent',id);
-  if(history.replaceState) history.replaceState(null,'','#'+id);
-  if(typeof markTabSeen==='function') markTabSeen(id);
-  if(!loaded.has(id)){loaded.add(id);loadCat(id);}
-  if(typeof updateTelemetry==='function')updateTelemetry();
+    }
+    document.body.setAttribute('data-accent',id);
+    if(history.replaceState) history.replaceState(null,'','#'+id);
+    if(typeof markTabSeen==='function') markTabSeen(id);
+    if(!loaded.has(id)){loaded.add(id);loadCat(id);}
+    if(typeof updateTelemetry==='function')updateTelemetry();
+  };
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(document.startViewTransition&&!reduced) document.startViewTransition(()=>doSwitch(true));
+  else doSwitch(false);
 }
 
 /* ════════════════════════════════════════
@@ -2954,6 +2984,13 @@ function openModalShell(id,hex){
 
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
+  triggerHoloMaterialize(document.querySelector('#overlay .modal'));
+}
+function triggerHoloMaterialize(el){
+  if(!el||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  el.classList.remove('materialize');
+  void el.offsetWidth; // force reflow so the animation restarts on repeat opens
+  el.classList.add('materialize');
 }
 function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';}
 function handleOvClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
@@ -6106,7 +6143,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v5.3 · Cockpit layer · Boot sequence · Telemetry · Radar sweep');
+DBG.info('INIT','MERIDIAN v5.4 · Holo modal · Critical glitch · View Transitions');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
