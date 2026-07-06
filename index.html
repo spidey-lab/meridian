@@ -1457,7 +1457,8 @@
       radial-gradient(52% 46% at 84% 32%,var(--glow-b),transparent 70%),
       radial-gradient(46% 42% at 26% 88%,var(--glow-c),transparent 70%),
       radial-gradient(32% 28% at 72% 76%,color-mix(in srgb,var(--accent) 7%,transparent),transparent 70%);
-      transition:background 1.2s ease}
+      transform:translate(calc(var(--px,0) * 1px),calc(var(--py,0) * 1px)) scale(1.06);
+      transition:background 1.2s ease,transform .5s ease-out}
     .aurora::before,.aurora::after{opacity:.6}
     /* fine noise so the gradients don't band */
     body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.022;
@@ -1467,7 +1468,7 @@
        (bg tokens above are now translucent — blur is what makes them read as glass) */
     .card,.hero-card,.brief-card,.crisis-panel-box,.crisis-summary-item,.clim-panel,.clim-hero,
     .gs-card,.gs-hero,.gs-compact,.mkt-summary-strip,.mkt-status-chip,.n50-hero,.n50-hist-card,
-    .n50-table-wrap,.topic-brief,.alert-card,.sk-card{
+    .n50-table-wrap,.topic-brief,.alert-card,.sk-card,.tension-card{
       backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1)}
     .modal,.cp-box,.toast{backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2)}
     /* accent-aware hover: glass stays glass, the edge lights up */
@@ -1477,7 +1478,7 @@
     @media(max-width:768px){
       .card,.hero-card,.brief-card,.crisis-panel-box,.crisis-summary-item,.clim-panel,.clim-hero,
       .gs-card,.gs-hero,.gs-compact,.mkt-summary-strip,.mkt-status-chip,.n50-hero,.n50-hist-card,
-      .n50-table-wrap,.topic-brief,.alert-card,.sk-card{
+      .n50-table-wrap,.topic-brief,.alert-card,.sk-card,.tension-card{
         backdrop-filter:none;-webkit-backdrop-filter:none}
       [data-theme="dark"]{--bg-card:rgba(15,21,37,.94);--bg-card-h:rgba(24,32,54,.95);--bg-surf:rgba(12,18,32,.92)}
       [data-theme="light"]{--bg-card:rgba(255,255,255,.94);--bg-card-h:rgba(255,255,255,.97);--bg-surf:rgba(255,255,255,.92)}
@@ -1527,7 +1528,8 @@
     .panel-banner{position:relative;overflow:hidden}
     #panel-crisis .panel-banner{min-height:224px;display:flex;flex-direction:column;justify-content:center}
     #crisis-globe{position:absolute;right:36px;top:50%;transform:translateY(-50%);width:216px;height:216px;
-      opacity:.65;pointer-events:none;z-index:0}
+      opacity:.65;pointer-events:auto;z-index:2;cursor:pointer;transition:opacity .2s ease}
+    #crisis-globe:hover{opacity:.9}
     .panel-banner>*:not(#crisis-globe){position:relative;z-index:1}
     @media(max-width:640px){#crisis-globe{width:170px;height:170px;right:-30px;opacity:.45}}
 
@@ -1570,6 +1572,51 @@
     /* ── DECRYPT-IN HEADLINES (hero only) ── */
     .decrypting{opacity:.85}
     .decrypting .hero-title,.decrypting .hero-desc{color:var(--text-sub)}
+
+    /* ══════════════════════════════════════════════
+       v5.5 TIER 2 — tension index, globe view overlay
+    ══════════════════════════════════════════════ */
+
+    /* ── GLOBAL TENSION INDEX (Home) ── */
+    .tension-card{border-radius:var(--r);border:1px solid var(--border);padding:18px 22px;margin-bottom:20px;
+      display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+    .tension-gauge-wrap{position:relative;width:132px;flex-shrink:0;display:flex;flex-direction:column;align-items:center}
+    .tension-gauge-svg{width:100%;height:auto;overflow:visible}
+    .tension-num{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;text-anchor:middle}
+    .tension-sub{font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:1px;text-anchor:middle;fill:var(--text-muted)}
+    .tension-lbl{margin-top:-6px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;
+      padding:2px 10px;border-radius:20px}
+    .tension-body{flex:1;min-width:200px;display:flex;flex-direction:column;gap:10px}
+    .tension-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .tension-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text-sub);text-transform:uppercase}
+    .tension-caption{font-size:11.5px;color:var(--text-sub);line-height:1.5}
+    .tension-breakdown{display:flex;gap:8px;flex-wrap:wrap}
+    .tension-pill{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9.5px;
+      padding:3px 9px;border-radius:20px;background:var(--bg-surf);border:0.5px solid var(--border)}
+    .tension-pill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+    .tension-spark{margin-left:auto;opacity:.85}
+    @media(max-width:560px){.tension-card{flex-direction:column;align-items:flex-start}}
+
+    /* ── GLOBE VIEW OVERLAY (⌘K-launchable fullscreen threat map) ── */
+    .globe-overlay{display:none;position:fixed;inset:0;z-index:960;background:rgba(0,0,0,.78);
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);align-items:center;justify-content:center;padding:24px}
+    .globe-overlay.open{display:flex;animation:fadeIn .2s ease}
+    .globe-view-box{position:relative;background:var(--bg-modal);border:1px solid var(--edge-hi);border-radius:24px;
+      padding:20px 24px 26px;box-shadow:var(--shadow-md);display:flex;flex-direction:column;align-items:center;
+      max-width:min(92vw,640px);width:100%}
+    .globe-view-head{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:6px}
+    .globe-view-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--text-sub)}
+    .globe-view-close{background:none;border:1px solid var(--border);color:var(--text-sub);width:28px;height:28px;
+      border-radius:50%;cursor:pointer;font-size:12px;flex-shrink:0}
+    .globe-view-close:hover{border-color:var(--gold);color:var(--gold)}
+    #globe-view-canvas{width:100%;max-width:480px;height:auto;cursor:default}
+    .globe-view-legend{display:flex;gap:16px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub);flex-wrap:wrap;justify-content:center}
+    .globe-view-legend span{display:inline-flex;align-items:center;gap:5px}
+    .gv-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+    .globe-view-empty{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:8px;text-align:center}
+    .globe-view-tooltip{position:absolute;pointer-events:none;background:var(--bg-modal);border:1px solid var(--edge-hi);
+      border-radius:8px;padding:6px 10px;font-size:11px;color:var(--text);box-shadow:var(--shadow-card);display:none;
+      max-width:220px;z-index:2;transform:translate(-50%,-120%)}
   </style>
 </head>
 <body>
@@ -1585,6 +1632,24 @@
   <div class="boot-skip">TAP TO SKIP</div>
 </div>
 <div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
+
+<!-- GLOBE VIEW — fullscreen threat map (⌘K → Open Globe View, or click the mini globe on Crisis Watch) -->
+<div class="globe-overlay" id="globe-overlay" onclick="if(event.target===this)closeGlobeView()">
+  <div class="globe-view-box">
+    <div class="globe-view-head">
+      <span class="globe-view-title">◎ GLOBAL THREAT MAP</span>
+      <button class="globe-view-close" onclick="closeGlobeView()" aria-label="Close">✕</button>
+    </div>
+    <canvas id="globe-view-canvas" width="640" height="640"></canvas>
+    <div class="globe-view-legend">
+      <span><span class="gv-dot" style="background:#E24B4A"></span>GDACS Red</span>
+      <span><span class="gv-dot" style="background:#F59E0B"></span>GDACS Orange</span>
+      <span><span class="gv-dot" style="background:#D14A66"></span>M5+ Earthquake</span>
+    </div>
+    <div class="globe-view-empty" id="globe-view-empty" style="display:none">No live points loaded yet — visit Crisis Watch or wait for the feed.</div>
+    <div class="globe-view-tooltip" id="globe-view-tip"></div>
+  </div>
+</div>
 
 <!-- COMMAND PALETTE -->
 <div class="cp-overlay" id="cp-overlay" onclick="if(event.target===this)closeCmdk()">
@@ -1618,7 +1683,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.4</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.5</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1663,6 +1728,7 @@
         <div class="home-date" id="homeDate"></div>
       </div>
     </div>
+    <div id="home-tension"></div>
     <div id="home-digest"></div>
     <div id="home-hero"></div>
     <div class="art-grid" id="home-grid"></div>
@@ -1687,7 +1753,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v5.4
+    MERIDIAN v5.5
   </div>
 </main>
 
@@ -1724,7 +1790,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v5.4 · RSS + GDELT + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v5.5 · RSS + GDELT + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2260,6 +2326,11 @@ function ago(d){
   return Math.floor(h/24)+'d ago';
 }
 const FLAGS={'India':'🇮🇳','United States':'🇺🇸','United Kingdom':'🇬🇧','China':'🇨🇳','Russia':'🇷🇺','Germany':'🇩🇪','France':'🇫🇷','Japan':'🇯🇵','Australia':'🇦🇺','Canada':'🇨🇦','Pakistan':'🇵🇰','Israel':'🇮🇱','Iran':'🇮🇷','Ukraine':'🇺🇦','Turkey':'🇹🇷','Saudi Arabia':'🇸🇦','UAE':'🇦🇪','Singapore':'🇸🇬','South Korea':'🇰🇷','Brazil':'🇧🇷','Taiwan':'🇹🇼','Bangladesh':'🇧🇩','Sri Lanka':'🇱🇰','Qatar':'🇶🇦','Indonesia':'🇮🇩','Thailand':'🇹🇭','Malaysia':'🇲🇾','Netherlands':'🇳🇱','Vietnam':'🇻🇳','Philippines':'🇵🇭','Nigeria':'🇳🇬'};
+// Approximate country centroids — lets GDACS alerts (which only carry a country
+// name, no coordinates) be plotted on the Globe View. Curated list favoring
+// disaster-prone/populous countries; unmatched country strings are simply
+// skipped from the globe (graceful, not a crash).
+const COUNTRY_CENTROID={'Afghanistan':[33.9,67.7],'Albania':[41.2,20.2],'Algeria':[28.0,1.7],'Angola':[-11.2,17.9],'Argentina':[-38.4,-63.6],'Armenia':[40.1,45.0],'Australia':[-25.3,133.8],'Austria':[47.5,14.6],'Azerbaijan':[40.1,47.6],'Bangladesh':[23.7,90.4],'Belarus':[53.7,27.9],'Belgium':[50.5,4.5],'Bolivia':[-16.3,-63.6],'Bosnia':[43.9,17.7],'Brazil':[-14.2,-51.9],'Bulgaria':[42.7,25.5],'Burkina Faso':[12.2,-1.6],'Cambodia':[12.6,104.9],'Cameroon':[7.4,12.4],'Canada':[56.1,-106.3],'Chad':[15.5,18.7],'Chile':[-35.7,-71.5],'China':[35.9,104.2],'Colombia':[4.6,-74.3],'Congo':[-0.2,15.8],'Costa Rica':[9.7,-83.8],'Croatia':[45.1,15.2],'Cuba':[21.5,-77.8],'Cyprus':[35.1,33.4],'Czech Republic':[49.8,15.5],'Democratic Republic of the Congo':[-4.0,21.8],'Denmark':[56.3,9.5],'Djibouti':[11.8,42.6],'Dominican Republic':[18.7,-70.2],'Ecuador':[-1.8,-78.2],'Egypt':[26.8,30.8],'El Salvador':[13.8,-88.9],'Eritrea':[15.2,39.8],'Estonia':[58.6,25.0],'Ethiopia':[9.1,40.5],'Fiji':[-17.7,178.1],'Finland':[61.9,25.7],'France':[46.6,2.2],'Gabon':[-0.8,11.6],'Georgia':[42.3,43.4],'Germany':[51.2,10.5],'Ghana':[7.9,-1.0],'Greece':[39.1,21.8],'Guatemala':[15.8,-90.2],'Guinea':[9.9,-9.7],'Haiti':[18.9,-72.3],'Honduras':[15.2,-86.2],'Hungary':[47.2,19.5],'Iceland':[64.9,-19.0],'India':[20.6,78.9],'Indonesia':[-0.8,113.9],'Iran':[32.4,53.7],'Iraq':[33.2,43.7],'Ireland':[53.4,-8.2],'Israel':[31.0,34.9],'Italy':[41.9,12.6],'Ivory Coast':[7.5,-5.5],'Jamaica':[18.1,-77.3],'Japan':[36.2,138.3],'Jordan':[30.6,36.2],'Kazakhstan':[48.0,66.9],'Kenya':[-0.0,37.9],'Kuwait':[29.3,47.5],'Kyrgyzstan':[41.2,74.8],'Laos':[19.9,102.5],'Latvia':[56.9,24.6],'Lebanon':[33.9,35.9],'Liberia':[6.4,-9.4],'Libya':[26.3,17.2],'Lithuania':[55.2,23.9],'Madagascar':[-18.8,46.9],'Malawi':[-13.3,34.3],'Malaysia':[4.2,101.9],'Mali':[17.6,-4.0],'Mexico':[23.6,-102.5],'Moldova':[47.4,28.4],'Mongolia':[46.9,103.8],'Morocco':[31.8,-7.1],'Mozambique':[-18.7,35.5],'Myanmar':[21.9,95.9],'Namibia':[-22.9,18.5],'Nepal':[28.4,84.1],'Netherlands':[52.1,5.3],'New Zealand':[-40.9,174.9],'Nicaragua':[12.9,-85.2],'Niger':[17.6,8.1],'Nigeria':[9.1,8.7],'North Korea':[40.3,127.5],'Norway':[60.5,8.5],'Oman':[21.5,55.9],'Pakistan':[30.4,69.3],'Panama':[8.5,-80.8],'Papua New Guinea':[-6.3,143.9],'Paraguay':[-23.4,-58.4],'Peru':[-9.2,-75.0],'Philippines':[12.9,121.8],'Poland':[51.9,19.1],'Portugal':[39.4,-8.2],'Qatar':[25.4,51.2],'Romania':[45.9,25.0],'Russia':[61.5,105.3],'Rwanda':[-1.9,29.9],'Saudi Arabia':[23.9,45.1],'Senegal':[14.5,-14.5],'Serbia':[44.0,21.0],'Sierra Leone':[8.5,-11.8],'Singapore':[1.3,103.8],'Slovakia':[48.7,19.7],'Somalia':[5.2,46.2],'South Africa':[-30.6,22.9],'South Korea':[35.9,127.8],'South Sudan':[6.9,31.3],'Spain':[40.5,-3.7],'Sri Lanka':[7.9,80.8],'Sudan':[12.9,30.2],'Sweden':[60.1,18.6],'Switzerland':[46.8,8.2],'Syria':[34.8,39.0],'Taiwan':[23.7,121.0],'Tajikistan':[38.9,71.3],'Tanzania':[-6.4,34.9],'Thailand':[15.9,101.0],'Togo':[8.6,0.8],'Tunisia':[33.9,9.5],'Turkey':[38.9,35.2],'Turkmenistan':[38.97,59.6],'Uganda':[1.4,32.3],'Ukraine':[48.4,31.2],'United Arab Emirates':[23.4,53.8],'United Kingdom':[55.4,-3.4],'United States':[37.1,-95.7],'Uruguay':[-32.5,-55.8],'Uzbekistan':[41.4,64.6],'Venezuela':[6.4,-66.6],'Vietnam':[14.1,108.3],'Yemen':[15.6,48.5],'Zambia':[-13.1,27.8],'Zimbabwe':[-19.0,29.2],'UAE':[23.4,53.8],'USA':[37.1,-95.7],'UK':[55.4,-3.4]};
 function flag(c){return FLAGS[c]||'🌐';}
 const NEG_W=['war','crisis','crash','collapse','attack','killed','bomb','strike','conflict','disaster','recession','riot','explosion','coup','flood','earthquake','cyclone','pandemic','violence','terror','famine','sanction','shooting','warns','threat'];
 const POS_W=['peace','surge','growth','breakthrough','record high','rally','recovery','deal','agreement','launch','success','milestone','approved','boost','innovation','discovery','reform','ceasefire','diplomacy','gains','rises','climbs'];
@@ -3733,6 +3804,15 @@ function magScale(m){
   return{label:'MODERATE',cls:'moderate'};
 }
 
+// Shared by loadUSGS() and the Globe View's standalone fallback fetch so both
+// paths populate _quakePoints identically (lat/lon for projection, place/url for tooltips)
+function extractQuakePoints(features){
+  return(Array.isArray(features)?features:[])
+    .map(f=>({lon:f.geometry?.coordinates?.[0],lat:f.geometry?.coordinates?.[1],
+      mag:f.properties.mag||3,place:f.properties.place,url:f.properties.url}))
+    .filter(p=>p.lat!=null&&p.lon!=null).slice(0,90);
+}
+
 async function loadUSGS(containerId){
   const el=document.getElementById(containerId);if(!el)return;
   el.innerHTML='<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Fetching seismic data…</div></div>';
@@ -3743,10 +3823,8 @@ async function loadUSGS(containerId){
     if(!r.ok)throw new Error(`HTTP ${r.status}`);
     const d=await r.json();
     const elapsed=((Date.now()-t0)/1000).toFixed(1);
-    // feed the crisis globe: all M2.5+ points (not just the M5+ list below)
-    _quakePoints=(Array.isArray(d.features)?d.features:[])
-      .map(f=>({lon:f.geometry?.coordinates?.[0],lat:f.geometry?.coordinates?.[1],mag:f.properties.mag||3}))
-      .filter(p=>p.lat!=null&&p.lon!=null).slice(0,90);
+    // feed the crisis globe + fullscreen Globe View: all M2.5+ points (not just the M5+ list below)
+    _quakePoints=extractQuakePoints(d.features);
     const quakes=(Array.isArray(d.features)?d.features:[])
       .map(f=>({
         mag:f.properties.mag,
@@ -4222,7 +4300,7 @@ async function loadCrisisWatch(){
   const panel=document.getElementById('panel-'+id);
   panel.innerHTML=`
     <div class="panel-banner">
-      <canvas id="crisis-globe" width="360" height="360" aria-hidden="true"></canvas>
+      <canvas id="crisis-globe" width="360" height="360" title="Expand · Global Threat Map" onclick="openGlobeView()"></canvas>
       <div class="cat-head-row">
         <div class="cat-title-row"><div class="cat-pip" style="background:${c.hex};box-shadow:0 0 10px ${c.hex}"></div><div class="cat-name">${c.name}</div></div>
         <div class="cat-meta" id="crisis-meta-bar"></div>
@@ -4378,9 +4456,63 @@ async function loadWireFeed(){
     items.forEach(a=>{ a._sev=wireSeverity(a); });
     const tickerEl=document.getElementById('wire-footer-ticker');
     if(tickerEl)tickerEl.innerHTML=wireFooterTickerHTML(items.slice(0,20));
+    renderTensionGauge(items);
   }catch(e){
     DBG.err('RSS',`loadWireFeed(): ${e.message}`);
   }
+}
+
+/* ── GLOBAL TENSION INDEX — heuristic 0-100 score from the live wire severity
+   mix (critical/elevated weighting), same merged feed pull as the footer
+   ticker. Explicitly labeled a heuristic, same honesty bar as wireSeverity. ── */
+function renderTensionGauge(items){
+  const el=document.getElementById('home-tension');if(!el)return;
+  if(!items.length){el.innerHTML='';return;}
+  const critC=items.filter(a=>a._sev.cls==='critical').length;
+  const elevC=items.filter(a=>a._sev.cls==='elevated').length;
+  const activeC=items.length-critC-elevC;
+  const weighted=critC*3+elevC*1;
+  const maxWeighted=items.length*3;
+  const score=Math.round((weighted/Math.max(maxWeighted,1))*100);
+  const band=score>=80?{lbl:'CRITICAL',col:'#8B5CE8'}:score>=55?{lbl:'ELEVATED',col:'#E24B4A'}:score>=30?{lbl:'WATCHFUL',col:'#F59E0B'}:{lbl:'CALM',col:'#14B8A6'};
+
+  const PI=Math.PI,r=52,cx=66,cy=68;
+  const arcPt=p=>[(cx+r*Math.cos(PI*(1-p))).toFixed(2),(cy-r*Math.sin(PI*(1-p))).toFixed(2)];
+  const pct=Math.min(score/100,1);
+  const bands=[[0,.3,'#14B8A6'],[.3,.55,'#F59E0B'],[.55,.8,'#E24B4A'],[.8,1,'#8B5CE8']];
+  const bandSVG=bands.map(([p0,p1,col])=>{
+    const[x0,y0]=arcPt(p0),[x1,y1]=arcPt(p1);
+    return`<path fill="none" stroke="${col}" stroke-width="6" opacity=".85" d="M${x0},${y0} A${r},${r} 0 0,1 ${x1},${y1}"/>`;
+  }).join('');
+  const[markX,markY]=arcPt(pct);
+
+  const spark=activitySparkline(items.filter(a=>a._sev.cls==='critical'),'#E24B4A');
+
+  el.innerHTML=`
+  <div class="tension-card">
+    <div class="tension-gauge-wrap">
+      <svg class="tension-gauge-svg" viewBox="0 0 132 84">
+        ${bandSVG}
+        <circle cx="${markX}" cy="${markY}" r="5" fill="${band.col}" stroke="#0B1220" stroke-width="1.5"/>
+        <text class="tension-num" id="tension-num-el" x="66" y="66" fill="${band.col}">—</text>
+        <text class="tension-sub" x="66" y="78">TENSION</text>
+      </svg>
+      <span class="tension-lbl" id="tension-lbl" style="background:${band.col}22;color:${band.col};border:0.5px solid ${band.col}44">${band.lbl}</span>
+    </div>
+    <div class="tension-body">
+      <div class="tension-title-row">
+        <span class="tension-title">Global Tension Index</span>
+        ${spark?`<span class="tension-spark">${spark}</span>`:''}
+      </div>
+      <div class="tension-caption">Heuristic read on the live wire's severity mix — not a real forecast, just a quick pulse on how the day looks right now.</div>
+      <div class="tension-breakdown">
+        <span class="tension-pill"><span class="tension-pill-dot" style="background:#E24B4A"></span>${critC} Critical</span>
+        <span class="tension-pill"><span class="tension-pill-dot" style="background:#F59E0B"></span>${elevC} Elevated</span>
+        <span class="tension-pill"><span class="tension-pill-dot" style="background:#14B8A6"></span>${activeC} Active</span>
+      </div>
+    </div>
+  </div>`;
+  rollNum(document.getElementById('tension-num-el'),score);
 }
 
 /* ════════════════════════════════════════
@@ -5971,6 +6103,7 @@ function _cpActions(){
   acts.push({group:'Actions',ico:'◑',label:'Toggle hide-read',sub:'reading',run:toggleHideRead});
   acts.push({group:'Actions',ico:'↻',label:'Refresh all feeds',sub:'data',run:manualRefresh});
   acts.push({group:'Actions',ico:'⚙',label:'Open settings',sub:'preferences',run:openSettings});
+  acts.push({group:'Actions',ico:'◔',label:'Open Globe View',sub:'threat map',run:openGlobeView});
   acts.push({group:'Actions',ico:'▷',label:'Listen to today’s brief',sub:'audio',run:()=>{switchTab('home');toggleListenBrief();}});
   acts.push({group:'Actions',ico:'⎘',label:'Copy brief as Markdown',sub:'export',run:copyBriefMarkdown});
   getSaved().slice().reverse().forEach(s=>acts.push({
@@ -6143,7 +6276,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v5.4 · Holo modal · Critical glitch · View Transitions');
+DBG.info('INIT','MERIDIAN v5.5 · Parallax atmosphere · Tension Index · Globe View');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
@@ -6379,6 +6512,191 @@ function decryptText(el){
   new MutationObserver(muts=>{for(const m of muts)for(const n of m.addedNodes)enroll(n);})
     .observe(document.body,{childList:true,subtree:true});
 })();
+
+/* ════════════════════════════════════════
+   v5.5 TIER 2 — parallax atmosphere, tension index, globe view
+════════════════════════════════════════ */
+
+/* ── PARALLAX: aurora glows drift with cursor (desktop) or device tilt (mobile) ── */
+(function initParallax(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const aurora=document.querySelector('.aurora');if(!aurora)return;
+  const hasHover=window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  let raf=0,tx=0,ty=0;
+  function apply(){
+    raf=0;
+    aurora.style.setProperty('--px',tx.toFixed(2));
+    aurora.style.setProperty('--py',ty.toFixed(2));
+  }
+  if(hasHover){
+    window.addEventListener('mousemove',e=>{
+      const nx=e.clientX/window.innerWidth-0.5,ny=e.clientY/window.innerHeight-0.5;
+      tx=nx*24;ty=ny*18;
+      if(!raf)raf=requestAnimationFrame(apply);
+    },{passive:true});
+  }else if(window.DeviceOrientationEvent){
+    // No permission prompt: works as-is on Android/older iOS; silently inert on
+    // iOS 13+ Safari (which gates the event behind a user-gesture permission
+    // request) rather than interrupting a subtle background effect with a modal
+    window.addEventListener('deviceorientation',e=>{
+      if(e.beta==null||e.gamma==null)return;
+      const nx=Math.max(-1,Math.min(1,e.gamma/30));
+      const ny=Math.max(-1,Math.min(1,(e.beta-45)/30));
+      tx=nx*16;ty=ny*12;
+      if(!raf)raf=requestAnimationFrame(apply);
+    });
+  }
+})();
+
+/* ── GLOBE VIEW — fullscreen interactive threat map ── */
+let _quakeFetchPromise=null;
+async function ensureQuakePoints(){
+  if(_quakePoints.length)return;
+  if(!_quakeFetchPromise){
+    _quakeFetchPromise=fetch(USGS_URL,{signal:AbortSignal.timeout(15000)})
+      .then(r=>r.json())
+      .then(d=>{_quakePoints=extractQuakePoints(d.features);})
+      .catch(()=>{});
+  }
+  await _quakeFetchPromise;
+}
+
+let _gvPoints=[];
+function buildGlobeViewPoints(){
+  _gvPoints=[];
+  _quakePoints.forEach(p=>_gvPoints.push({
+    lat:p.lat,lon:p.lon,color:'#D14A66',size:Math.max(2,(p.mag-2)*1.1),
+    label:`M${p.mag.toFixed(1)} · ${p.place||'Unknown location'}`,url:p.url,
+  }));
+  (_gdacsAlerts||[]).forEach(a=>{
+    const c=COUNTRY_CENTROID[a.country];if(!c)return;
+    const color=a.alertlevel==='Red'?'#E24B4A':'#F59E0B';
+    _gvPoints.push({
+      lat:c[0],lon:c[1],color,size:a.alertlevel==='Red'?5:4,
+      label:`${a.alertlevel.toUpperCase()} · ${GDACS_TYPE_LABEL[a.eventtype]||a.eventtype||'Alert'} · ${a.country}`,
+      url:a.link,
+    });
+  });
+  const emptyEl=document.getElementById('globe-view-empty');
+  if(emptyEl)emptyEl.style.display=_gvPoints.length?'none':'block';
+}
+
+let _globeViewRAF=0;
+function initGlobeView(){
+  const cv=document.getElementById('globe-view-canvas');if(!cv)return;
+  const ctx=cv.getContext('2d');if(!ctx)return;
+  const S=cv.width,R=S*0.42,CX=S/2,CY=S/2;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  cancelAnimationFrame(_globeViewRAF);_globeViewRAF=0;
+  let hoverIdx=-1,screenPts=[];
+
+  function proj(lat,lon,rot){
+    const la=lat*Math.PI/180,lo=(lon+rot)*Math.PI/180;
+    return[CX+R*Math.cos(la)*Math.sin(lo),CY-R*Math.sin(la),Math.cos(la)*Math.cos(lo)>0.02];
+  }
+  function strokePath(fn,rot){
+    ctx.beginPath();let started=false;
+    fn((lat,lon)=>{
+      const[x,y,v]=proj(lat,lon,rot);
+      if(v){if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);}
+      else started=false;
+    });
+    ctx.stroke();
+  }
+  function draw(t){
+    _globeViewRAF=0;
+    if(!document.getElementById('globe-overlay').classList.contains('open'))return;
+    const rot=reduced?20:(t*0.0025)%360;
+    ctx.clearRect(0,0,S,S);
+    const line=document.documentElement.getAttribute('data-theme')==='light'?'rgba(60,50,30,.16)':'rgba(255,255,255,.12)';
+    ctx.strokeStyle=line;ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(CX,CY,R,0,6.2832);ctx.stroke();
+    for(let m=0;m<360;m+=20)strokePath(emit=>{for(let la=-90;la<=90;la+=3)emit(la,m);},rot);
+    for(let la=-70;la<=70;la+=20)strokePath(emit=>{for(let lo=0;lo<=360;lo+=3)emit(la,lo);},rot);
+
+    if(!reduced){
+      const sweepAngle=(t*0.0004)%(2*Math.PI),steps=26,spread=0.9;
+      for(let i=0;i<steps;i++){
+        const a=sweepAngle-(i/steps)*spread;
+        ctx.strokeStyle=`rgba(200,168,107,${((1-i/steps)*0.16).toFixed(3)})`;
+        ctx.lineWidth=1.2;
+        ctx.beginPath();ctx.moveTo(CX,CY);ctx.lineTo(CX+R*Math.cos(a),CY+R*Math.sin(a));ctx.stroke();
+      }
+    }
+
+    const pulse=reduced?1:(Math.sin(t*0.003)+1)/2;
+    screenPts=[];
+    _gvPoints.forEach((p,i)=>{
+      const[x,y,v]=proj(p.lat,p.lon,rot);
+      if(!v)return;
+      screenPts.push({x,y,i});
+      const isHover=i===hoverIdx;
+      ctx.fillStyle=p.color;
+      if(isHover){ctx.globalAlpha=.3;ctx.beginPath();ctx.arc(x,y,p.size*3.4,0,6.2832);ctx.fill();}
+      ctx.globalAlpha=isHover?1:(.55+.45*pulse);
+      ctx.beginPath();ctx.arc(x,y,isHover?p.size*1.8:p.size,0,6.2832);ctx.fill();
+    });
+    ctx.globalAlpha=1;
+    if(!reduced)_globeViewRAF=requestAnimationFrame(draw);
+  }
+  _globeViewRAF=requestAnimationFrame(draw);
+
+  function pickPoint(mx,my){
+    let best=-1,bestD=16;
+    screenPts.forEach(sp=>{const d=Math.hypot(sp.x-mx,sp.y-my);if(d<bestD){bestD=d;best=sp.i;}});
+    return best;
+  }
+  function toCanvasXY(e){
+    const rect=cv.getBoundingClientRect(),scale=cv.width/rect.width;
+    return[(e.clientX-rect.left)*scale,(e.clientY-rect.top)*scale];
+  }
+  cv.onmousemove=(e)=>{
+    const[mx,my]=toCanvasXY(e);
+    const idx=pickPoint(mx,my);
+    hoverIdx=idx;
+    const tip=document.getElementById('globe-view-tip');
+    const box=document.querySelector('.globe-view-box');
+    if(idx>=0&&_gvPoints[idx]&&tip&&box){
+      const boxRect=box.getBoundingClientRect();
+      tip.style.display='block';
+      tip.textContent=_gvPoints[idx].label;
+      tip.style.left=(e.clientX-boxRect.left)+'px';
+      tip.style.top=(e.clientY-boxRect.top)+'px';
+      cv.style.cursor='pointer';
+    }else{
+      if(tip)tip.style.display='none';
+      cv.style.cursor='default';
+    }
+    if(reduced)draw(performance.now());
+  };
+  cv.onmouseleave=()=>{
+    hoverIdx=-1;
+    const tip=document.getElementById('globe-view-tip');if(tip)tip.style.display='none';
+    if(reduced)draw(performance.now());
+  };
+  cv.onclick=(e)=>{
+    const[mx,my]=toCanvasXY(e);
+    const idx=pickPoint(mx,my);
+    if(idx>=0&&_gvPoints[idx]?.url)window.open(_gvPoints[idx].url,'_blank','noopener');
+  };
+}
+
+async function openGlobeView(){
+  const ov=document.getElementById('globe-overlay');if(!ov)return;
+  ov.classList.add('open');document.body.style.overflow='hidden';
+  buildGlobeViewPoints();
+  initGlobeView();
+  if(!_quakePoints.length){
+    await ensureQuakePoints();
+    if(document.getElementById('globe-overlay').classList.contains('open'))buildGlobeViewPoints();
+  }
+}
+function closeGlobeView(){
+  const ov=document.getElementById('globe-overlay');if(ov)ov.classList.remove('open');
+  document.body.style.overflow='';
+  cancelAnimationFrame(_globeViewRAF);_globeViewRAF=0;
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGlobeView();});
 
 /* ── logo market glow ── */
 updateLogoGlow();
