@@ -170,6 +170,9 @@
     .card.unverified::before{background:var(--gold)!important}
     .hero-card.unverified::before{background:var(--gold)!important}
     .badge-unverified{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;background:rgba(200,168,107,.12);color:var(--gold);border:1px solid rgba(200,168,107,.3);font-weight:600;letter-spacing:.3px;flex-shrink:0}
+    .card.aged-fallback::before{background:#BA7517!important}
+    .hero-card.aged-fallback::before{background:#BA7517!important}
+    .badge-aged{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;background:rgba(186,117,23,.12);color:#BA7517;border:1px solid rgba(186,117,23,.3);font-weight:600;letter-spacing:.3px;flex-shrink:0}
     .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;gap:8px}
     .card-top-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
     .c-flag{font-size:12px;line-height:1;flex-shrink:0}
@@ -1632,6 +1635,8 @@
        v5.6 — world clock strip, Terminal Green CRT theme
     ══════════════════════════════════════════════ */
     /* v5.7 — world clock: added IST; header: fixed logo/button overlap on phones */
+    /* v5.8 — RSS freshness: graduated widen+tag replaces the fresh<8 escape hatch,
+       Search/Climate now dedup+filter, World Conflicts tbs fixed, new "older result" badge */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1747,7 +1752,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.7</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.8</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1818,7 +1823,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v5.7
+    MERIDIAN v5.8
   </div>
 </main>
 
@@ -1855,7 +1860,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v5.7 · RSS + GDELT + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v5.8 · RSS + GDELT + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2115,7 +2120,7 @@ const CATS = [
   // World Conflicts — past 12h Google News: armed conflict + geopolitics
   { id:'world',   name:'World Conflicts', ico:'◎', hex:'#E05252',
     _rss:[
-      {url:'https://news.google.com/rss/search?q=war+OR+conflict+OR+ceasefire+OR+Ukraine+OR+Gaza+OR+NATO+OR+%22India+Pakistan%22+OR+sanctions+OR+%22South+China+Sea%22+OR+%22Middle+East%22&hl=en&gl=US&ceid=US:en&tbs=qdr:h12', name:'Google News'}
+      {url:'https://news.google.com/rss/search?q=war+OR+conflict+OR+ceasefire+OR+Ukraine+OR+Gaza+OR+NATO+OR+%22India+Pakistan%22+OR+sanctions+OR+%22South+China+Sea%22+OR+%22Middle+East%22&hl=en&gl=US&ceid=US:en&tbs=qdr:d', name:'Google News'}
     ]},
 
   // Economy — AP Business + ET Markets + past-day Google News business
@@ -3992,7 +3997,42 @@ function normalizeRssItem(item,sourceName){
   let img=item.thumbnail||(item.enclosure&&(item.enclosure.link||item.enclosure.thumbnail))||'';
   if(isGN||typeof img!=='string'||!/^https:\/\//.test(img))img='';
   return{title,domain,url,pub:parseRssDate(item.pubDate||item.published),
-    _snippet:snippet,_src:publisherName,_img:img,_rss:true,tone:null,_unverified:false};
+    _snippet:snippet,_src:publisherName,_img:img,_rss:true,tone:null,_unverified:false,_agedFallback:false};
+}
+
+// Cross-feed dedup by normalized title prefix — shared by every RSS surface
+// (news-tab pipeline, Search, Climate) so none of them can show duplicates.
+function dedupRssByTitle(items){
+  const seen=new Set();
+  return items.filter(a=>{
+    const k=(a.title||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').substring(0,55);
+    if(seen.has(k))return false;seen.add(k);return true;
+  });
+}
+
+// Freshness filter with graduated widening, capped at a hard ceiling.
+// Google News RSS's pubDate reflects crawl/index time, not always true
+// publish time — narrow queries can otherwise starve below a usable count.
+// Rather than the old behavior (silently drop the age filter entirely once
+// too few "fresh" items exist, letting arbitrarily old articles blend in
+// unlabeled), widen in tiers and tag anything beyond the first tier so it
+// renders with a visible "older result" badge instead of passing as fresh.
+const FRESHNESS_TIERS_H=[48,96,168]; // 48h happy path → 96h widen → 168h (7D) hard ceiling
+const MIN_FRESH_ITEMS=8;
+function applyFreshnessFilter(items,opts={}){
+  const tiers=opts.tiers||FRESHNESS_TIERS_H;
+  const minItems=opts.minItems||MIN_FRESH_ITEMS;
+  const now=Date.now();
+  const dated=items.filter(a=>a.pub&&a.pub.getTime()>0); // unknown-age always excluded
+  const tier0Cutoff=now-tiers[0]*3600*1000;
+  let result=[];
+  for(let i=0;i<tiers.length;i++){
+    const cutoff=now-tiers[i]*3600*1000;
+    result=dated.filter(a=>a.pub.getTime()>cutoff);
+    if(i>0)result.forEach(a=>{ if(a.pub.getTime()<=tier0Cutoff)a._agedFallback=true; });
+    if(result.length>=minItems||i===tiers.length-1)break;
+  }
+  return result;
 }
 
 async function fetchRssFeeds(feeds){
@@ -4005,21 +4045,12 @@ async function fetchRssFeeds(feeds){
     }else{DBG.err('RSS',`Feed failed: ${res.reason?.message||'unknown'}`);}
   }
   items.sort((a,b)=>b.pub-a.pub);
-  // Deduplicate by normalized title prefix — removes cross-feed duplicates
-  const seen=new Set();
-  const deduped=items.filter(a=>{
-    const k=(a.title||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').substring(0,55);
-    if(seen.has(k))return false;seen.add(k);return true;
-  });
-  // Age filter: keep only articles with a valid, parseable date within 48h.
-  // Articles with epoch/zero date (failed parse) are treated as unknown-age and excluded.
-  // Falls back to the full deduped list only if fewer than 8 fresh articles survive.
-  const cutoff=Date.now()-48*3600*1000;
-  const fresh=deduped.filter(a=>a.pub&&a.pub.getTime()>0&&a.pub.getTime()>cutoff);
-  const final=fresh.length>=8?fresh:deduped;
+  const deduped=dedupRssByTitle(items);
+  const final=applyFreshnessFilter(deduped);
+  const agedCount=final.filter(a=>a._agedFallback).length;
   DBG.stats.art+=final.length;DBG._st();
   if(deduped.length<items.length)DBG.info('RSS',`Deduped ${items.length-deduped.length} duplicate(s)`);
-  if(fresh.length<deduped.length)DBG.info('RSS',`Age filter: ${deduped.length-fresh.length} older articles hidden`);
+  if(agedCount>0)DBG.info('RSS',`Freshness: widened window · ${agedCount} older article(s) included & tagged _agedFallback`);
   if(final.length&&typeof signalPulse==='function')signalPulse(); // masthead heartbeat on batch arrival
   return final;
 }
@@ -4038,12 +4069,13 @@ function rssHeroCardHTML(a,hex){
   const t=getTone(a);
   const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
   const thumb=a._img?`<img class="hero-thumb" src="${esc(a._img)}" alt="" loading="lazy" onerror="this.closest('.hero-card').classList.remove('has-thumb');this.remove()">`:'';
-  return`<div class="hero-card ${t.cls}${a._img?' has-thumb':''}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
+  return`<div class="hero-card ${t.cls}${a._img?' has-thumb':''}${a._agedFallback?' aged-fallback':''}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
     <div class="card-main">
     <div class="hero-top">
       <div class="hero-top-left">
         <span class="badge-top">${esc(a._src||'RSS')}</span>
         <span class="c-tone ${t.cls}">${t.lbl}</span>
+        ${a._agedFallback?'<span class="badge-aged">⏱ OLDER RESULT</span>':''}
         ${recencyBadge(a.pub)}
       </div>
       <span class="c-time" data-ts="${a.pub&&a.pub.getTime()>0?a.pub.getTime():''}">${ts}</span>
@@ -4059,12 +4091,13 @@ function rssCardHTML(a,hex){
   const t=getTone(a);
   const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
   const thumb=a._img?`<img class="c-thumb" src="${esc(a._img)}" alt="" loading="lazy" onerror="this.closest('.card').classList.remove('has-thumb');this.remove()">`:'';
-  return`<div class="card ${t.cls}${a._img?' has-thumb':''}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
+  return`<div class="card ${t.cls}${a._img?' has-thumb':''}${a._agedFallback?' aged-fallback':''}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
     <div class="card-main">
     <div class="card-top">
       <div class="card-top-left">
         ${favImg(a.domain)}<span class="c-src">${esc(a._src||a.domain||'RSS')}</span>
         <span class="c-tone ${t.cls}">${t.lbl}</span>
+        ${a._agedFallback?'<span class="badge-aged">⏱ OLDER RESULT</span>':''}
         ${recencyBadge(a.pub)}
       </div>
       <span class="c-time" data-ts="${a.pub&&a.pub.getTime()>0?a.pub.getTime():''}">${ts}</span>
@@ -4094,7 +4127,9 @@ async function loadRssTab(id){
     const meta=document.getElementById('cc-'+id);
     const vel=velocityBadge(items);
     const spkSvg=activitySparkline(items,c.hex);
-    if(meta)meta.innerHTML=`<span class="sparkline-wrap">${spkSvg}<span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE · ${items.length}</span></span>`;
+    const agedCount=items.filter(a=>a._agedFallback).length;
+    const agedSuffix=agedCount>0?` <span style="color:#BA7517;font-size:9px">(${agedCount} older)</span>`:'';
+    if(meta)meta.innerHTML=`<span class="sparkline-wrap">${spkSvg}<span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE · ${items.length}</span>${agedSuffix}</span>`;
     const sd=document.getElementById('sdigest-'+id);
     if(sd&&items.length){
       const newest=items[0].pub;const upStr=newest&&newest.getTime()>0?ago(newest):'just now';
@@ -4173,7 +4208,7 @@ async function doNewsSearch(preset){
   res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Searching "${esc(rawQuery)}"…</div></div>`;
   DBG.info('SEARCH',`Query: ${rawQuery} → ${q}`);
   try{
-    const feedUrl=`https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-IN&gl=IN&ceid=IN:en`;
+    const feedUrl=`https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-IN&gl=IN&ceid=IN:en&tbs=qdr:d`;
     let rssResult;
     try{
       rssResult=await fetchRSS(feedUrl);
@@ -4191,11 +4226,14 @@ async function doNewsSearch(preset){
       });
       rssResult={items:rawItems};
     }
-    const norm=rssResult.items.map(i=>normalizeRssItem(i,'Google News')).sort((a,b)=>b.pub-a.pub);
+    let norm=rssResult.items.map(i=>normalizeRssItem(i,'Google News')).sort((a,b)=>b.pub-a.pub);
+    norm=dedupRssByTitle(norm);
+    norm=applyFreshnessFilter(norm);
     if(!norm.length){
       res.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">No results for "${esc(rawQuery)}".</div></div>`;
       return;
     }
+    const agedCount=norm.filter(a=>a._agedFallback).length;
     /* Topic Brief hero card — replaces single article hero */
     const topBullets=norm.slice(0,3).map(a=>`<div class="topic-brief-bullet">
       <span class="tbul-dot">—</span>
@@ -4207,7 +4245,7 @@ async function doNewsSearch(preset){
         <div class="topic-brief-ico">◐</div>
         <div class="topic-brief-body">
           <div class="topic-brief-query">${esc(rawQuery)}</div>
-          <div class="topic-brief-count">${norm.length} result${norm.length===1?'':'s'} · Google News</div>
+          <div class="topic-brief-count">${norm.length} result${norm.length===1?'':'s'} · Google News${agedCount>0?` <span style="color:#BA7517">(${agedCount} older)</span>`:''}</div>
         </div>
         <div class="topic-brief-badge">TOPIC BRIEF</div>
       </div>
@@ -4486,7 +4524,8 @@ async function loadCrisisWatch(){
           if(seen.has(k))return false;seen.add(k);return true;
         }).sort((a,b)=>b.pub-a.pub).slice(0,15);
         rollNum(document.getElementById('cri-news'),deduped.length);
-        const badge=document.getElementById('crisis-news-badge');if(badge)badge.textContent=`${deduped.length} stories`;
+        const agedCount=deduped.filter(a=>a._agedFallback).length;
+        const badge=document.getElementById('crisis-news-badge');if(badge)badge.textContent=`${deduped.length} stories${agedCount>0?` (${agedCount} older)`:''}`;
         const hmap=document.getElementById('hmap-crisis');if(hmap)hmap.innerHTML=hourlyHeatmap(deduped,c.hex);
         const sd=document.getElementById('sdigest-crisis');
         if(sd&&deduped.length){const t=deduped[0].pub&&deduped[0].pub.getTime()>0?ago(deduped[0].pub):'just now';sd.innerHTML=`<span class="section-digest-dot"></span>${deduped.length} stories · latest ${t}`;}
@@ -5599,10 +5638,14 @@ async function _loadClimateNews(){
     const feeds=await Promise.allSettled(CLIMATE_NEWS_RSS.map(f=>fetchRSS(f.url).then(r=>(r.items||[]).map(it=>normalizeRssItem(it,f.name)))));
     let arts=[];
     feeds.forEach(r=>{if(r.status==='fulfilled')arts=arts.concat(r.value);});
-    arts=dedup(arts).sort((a,b)=>(b.pub||0)-(a.pub||0)).slice(0,12);
+    arts.sort((a,b)=>(b.pub||0)-(a.pub||0));
+    arts=dedupRssByTitle(arts);
+    arts=applyFreshnessFilter(arts).slice(0,12);
     if(!arts.length){el.innerHTML='<div style="padding:16px;text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--text-muted)">No climate news available.</div>';return;}
+    const agedCount=arts.filter(a=>a._agedFallback).length;
+    const metaLine=`<div style="padding:8px 14px 0;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)">${arts.length} stories${agedCount>0?` <span style="color:#BA7517">(${agedCount} older)</span>`:''}</div>`;
     const frag=arts.map(a=>rssCardHTML(a,'#38BDF8')).join('');
-    el.innerHTML=`<div class="art-grid" style="padding:14px">${frag}</div>`;
+    el.innerHTML=`${metaLine}<div class="art-grid" style="padding:14px">${frag}</div>`;
   }catch(e){
     if(el)el.innerHTML=`<div style="padding:16px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)">Climate news unavailable</div>`;
   }
@@ -6342,7 +6385,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v5.7 · World Clock strip (+IST) · fixed mobile header overlap');
+DBG.info('INIT','MERIDIAN v5.8 · RSS freshness overhaul · graduated widen+tag, no more silent stale fallback');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
