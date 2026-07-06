@@ -1507,12 +1507,60 @@
       opacity:.65;pointer-events:none;z-index:0}
     .panel-banner>*:not(#crisis-globe){position:relative;z-index:1}
     @media(max-width:640px){#crisis-globe{width:170px;height:170px;right:-30px;opacity:.45}}
+
+    /* ══════════════════════════════════════════════
+       v5.3 COCKPIT LAYER — boot splash, telemetry,
+       decrypt headlines (radar sweep lives in canvas JS)
+    ══════════════════════════════════════════════ */
+
+    /* ── BOOT SPLASH ── */
+    #boot-splash{position:fixed;inset:0;z-index:1000;background:var(--bg);
+      display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;
+      cursor:pointer;transition:opacity .5s ease}
+    #boot-splash.out{opacity:0;pointer-events:none}
+    .boot-logo{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;letter-spacing:10px;
+      text-transform:uppercase;color:var(--text)}
+    .boot-logo em{font-style:normal;color:var(--gold)}
+    .boot-lines{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--text-sub);
+      min-height:44px;text-align:center;display:flex;flex-direction:column;gap:6px}
+    .boot-line{opacity:0;animation:bootLineIn .35s ease forwards}
+    .boot-line.done{color:var(--text-muted)}
+    .boot-cursor{display:inline-block;width:6px;height:11px;background:var(--gold);margin-left:2px;
+      animation:blink .8s step-end infinite;vertical-align:-1px}
+    @keyframes bootLineIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+    .boot-bar-track{width:220px;height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+    .boot-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#DFC08A);
+      transition:width 1.1s cubic-bezier(.22,1,.36,1)}
+    .boot-skip{position:absolute;bottom:26px;font-family:'JetBrains Mono',monospace;font-size:9px;
+      letter-spacing:1px;color:var(--text-muted);opacity:.6}
+
+    /* ── TELEMETRY STRIP (masthead) ── */
+    .telemetry{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
+      border-left:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:9px;
+      letter-spacing:.4px;color:var(--text-muted);white-space:nowrap}
+    .tm-dot{width:5px;height:5px;border-radius:50%;background:var(--pos);flex-shrink:0;
+      box-shadow:0 0 5px var(--pos);animation:dotPulse 2s ease-in-out infinite}
+    .tm-sep{opacity:.5}
+    .tm-val{color:var(--text-sub);font-weight:600}
+    @media(max-width:1180px){.telemetry{display:none}}
+
+    /* ── DECRYPT-IN HEADLINES (hero only) ── */
+    .decrypting{opacity:.85}
+    .decrypting .hero-title,.decrypting .hero-desc{color:var(--text-sub)}
   </style>
 </head>
 <body>
 
 <a class="skip-link" href="#panel-home">Skip to content</a>
 <div class="aurora" aria-hidden="true"></div>
+
+<!-- BOOT SPLASH — once per session, skippable, respects reduced-motion -->
+<div id="boot-splash" onclick="skipBoot()" role="presentation">
+  <div class="boot-logo">MERI<em>DI</em>AN</div>
+  <div class="boot-lines" id="boot-lines"></div>
+  <div class="boot-bar-track"><div class="boot-bar-fill" id="boot-bar"></div></div>
+  <div class="boot-skip">TAP TO SKIP</div>
+</div>
 <div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
 
 <!-- COMMAND PALETTE -->
@@ -1547,7 +1595,10 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.2</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.3</div>
+    <span class="telemetry" id="telemetry" aria-hidden="true">
+      <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
+    </span>
   </div>
   <div class="hdr-right">
     <span class="offline-pip"><span style="width:5px;height:5px;border-radius:50%;background:var(--neg)"></span>OFFLINE</span>
@@ -1613,7 +1664,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v5.2
+    MERIDIAN v5.3
   </div>
 </main>
 
@@ -1650,7 +1701,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v5.2 · RSS + GDELT + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v5.3 · RSS + GDELT + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2026,6 +2077,7 @@ const DBG = {
     ['req','hit','fetch','err','art'].forEach(k=>{
       const el=document.getElementById('ds-'+k);if(el)el.textContent=this.stats[k];
     });
+    if(typeof updateTelemetry==='function')updateTelemetry();
   }
 };
 function toggleDbg(){
@@ -2557,6 +2609,7 @@ function switchTab(id){
   if(history.replaceState) history.replaceState(null,'','#'+id);
   if(typeof markTabSeen==='function') markTabSeen(id);
   if(!loaded.has(id)){loaded.add(id);loadCat(id);}
+  if(typeof updateTelemetry==='function')updateTelemetry();
 }
 
 /* ════════════════════════════════════════
@@ -2921,9 +2974,12 @@ document.addEventListener('keydown',e=>{
 /* ════════════════════════════════════════
    REFRESH
 ════════════════════════════════════════ */
+let _lastFullRefresh=0;
 function updateStamp(){
   document.getElementById('lastUpdated').textContent=
     'Updated '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  _lastFullRefresh=Date.now();
+  updateTelemetry();
 }
 function manualRefresh(){
   const btn=document.getElementById('refreshBtn');
@@ -6050,7 +6106,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v5.2 · Motion & signal layer · Article images · Crisis globe');
+DBG.info('INIT','MERIDIAN v5.3 · Cockpit layer · Boot sequence · Telemetry · Radar sweep');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
@@ -6150,6 +6206,7 @@ function initCrisisGlobe(){
     });
     ctx.stroke();
   }
+  function angDiff(a,b){const d=Math.abs(a-b)%(2*Math.PI);return d>Math.PI?2*Math.PI-d:d;}
   function draw(t){
     _globeRAF=0;
     if(!cv.isConnected)return; // panel re-rendered — a fresh init owns the canvas now
@@ -6164,19 +6221,127 @@ function initCrisisGlobe(){
     ctx.beginPath();ctx.arc(CX,CY,R,0,6.2832);ctx.stroke();
     for(let m=0;m<360;m+=30)strokePath(emit=>{for(let la=-90;la<=90;la+=4)emit(la,m);},rot);
     for(let la=-60;la<=60;la+=30)strokePath(emit=>{for(let lo=0;lo<=360;lo+=4)emit(la,lo);},rot);
+
+    // radar sweep — decorative rotating beam (screen-space angle, independent of
+    // the sphere's own rotation); trailing wedge fades out behind the leading edge
+    const sweepAngle=reduced?-Math.PI/2:(t*0.00063)%(2*Math.PI);
+    if(!reduced){
+      const steps=22,spread=0.85;
+      for(let i=0;i<steps;i++){
+        const a=sweepAngle-(i/steps)*spread;
+        ctx.strokeStyle=`rgba(200,168,107,${((1-i/steps)*0.22).toFixed(3)})`; // mirrors --gold #C8A86B
+        ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(CX,CY);ctx.lineTo(CX+R*Math.cos(a),CY+R*Math.sin(a));ctx.stroke();
+      }
+      ctx.strokeStyle='rgba(200,168,107,.55)';ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(CX,CY);ctx.lineTo(CX+R*Math.cos(sweepAngle),CY+R*Math.sin(sweepAngle));ctx.stroke();
+    }
+
     const pulse=reduced?1:(Math.sin(t*0.003)+1)/2;
     ctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--clr-crisis').trim()||'#D14A66';
     for(const p of _quakePoints){
       const[x,y,v]=proj(p.lat,p.lon,rot);
       if(!v)continue;
-      ctx.globalAlpha=.45+.55*pulse;
-      ctx.beginPath();ctx.arc(x,y,Math.max(1.6,(p.mag-2)*.9),0,6.2832);ctx.fill();
+      const rBase=Math.max(1.6,(p.mag-2)*.9);
+      const hit=!reduced&&angDiff(Math.atan2(y-CY,x-CX),sweepAngle)<0.18;
+      if(hit){
+        ctx.globalAlpha=.3;
+        ctx.beginPath();ctx.arc(x,y,rBase*3,0,6.2832);ctx.fill(); // brief halo as the beam passes
+      }
+      ctx.globalAlpha=hit?1:(.45+.55*pulse);
+      ctx.beginPath();ctx.arc(x,y,hit?rBase*1.7:rBase,0,6.2832);ctx.fill();
     }
     ctx.globalAlpha=1;
     if(!reduced)_globeRAF=requestAnimationFrame(draw);
   }
   _globeRAF=requestAnimationFrame(draw);
 }
+
+/* ════════════════════════════════════════
+   v5.3 COCKPIT LAYER
+════════════════════════════════════════ */
+
+/* ── TELEMETRY STRIP ── */
+function updateTelemetry(){
+  const tabsEl=document.getElementById('tm-tabs');
+  const storiesEl=document.getElementById('tm-stories');
+  const cacheEl=document.getElementById('tm-cache');
+  if(tabsEl)tabsEl.textContent=`${loaded.size}/${CATS.length}`;
+  if(storiesEl)storiesEl.textContent=DBG.stats.art;
+  if(cacheEl){
+    if(!_lastFullRefresh)cacheEl.textContent='SYNCING';
+    else{
+      const mins=Math.floor((Date.now()-_lastFullRefresh)/60000);
+      cacheEl.textContent=mins<1?'FRESH':mins+'m AGO';
+    }
+  }
+}
+setInterval(updateTelemetry,20000);
+
+/* ── BOOT SPLASH — once per session, tap/click to skip, respects reduced-motion ── */
+function skipBoot(){
+  const el=document.getElementById('boot-splash');if(!el)return;
+  el.classList.add('out');
+  try{sessionStorage.setItem('meridianBooted','1');}catch{}
+  setTimeout(()=>{if(el.isConnected)el.remove();},500);
+}
+(function initBootSplash(){
+  const el=document.getElementById('boot-splash');if(!el)return;
+  let already=false;
+  try{already=sessionStorage.getItem('meridianBooted')==='1';}catch{}
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(already||reduced){
+    try{sessionStorage.setItem('meridianBooted','1');}catch{}
+    el.remove();return;
+  }
+  const lines=['// GLOBAL INTELLIGENCE FEED','ESTABLISHING UPLINK…','FEEDS ONLINE'];
+  const box=document.getElementById('boot-lines');
+  const bar=document.getElementById('boot-bar');
+  lines.forEach((txt,i)=>{
+    setTimeout(()=>{
+      const d=document.createElement('div');
+      d.className='boot-line';d.textContent=txt;
+      if(box)box.appendChild(d);
+    },i*260);
+  });
+  requestAnimationFrame(()=>{if(bar)bar.style.width='100%';});
+  setTimeout(skipBoot,1300);
+})();
+
+/* ── DECRYPT-IN HEADLINES: hero titles resolve from scrambled glyphs ──
+   Applied only to hero cards (frequency: one per tab load) so the effect
+   stays special. Skipped under reduced-motion. */
+const _GLYPHS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=/\\';
+function decryptText(el){
+  if(!el||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const final=el.textContent;if(!final)return;
+  const len=final.length;
+  let frame=0;const totalFrames=Math.min(24,Math.round(len/2)+10);
+  el.setAttribute('aria-label',final);
+  const tick=()=>{
+    frame++;
+    const revealCount=Math.floor((frame/totalFrames)*len);
+    let out='';
+    for(let i=0;i<len;i++){
+      if(final[i]===' '){out+=' ';continue;}
+      out+= i<revealCount ? final[i] : _GLYPHS[Math.floor(Math.random()*_GLYPHS.length)];
+    }
+    el.textContent=out;
+    if(frame<totalFrames)requestAnimationFrame(tick);
+    else el.textContent=final;
+  };
+  requestAnimationFrame(tick);
+}
+(function initDecryptObserver(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const enroll=root=>{
+    if(root.nodeType!==1)return;
+    if(root.classList&&root.classList.contains('hero-title')&&!root._decrypted){root._decrypted=1;decryptText(root);}
+    if(root.querySelectorAll)for(const t of root.querySelectorAll('.hero-title')){if(!t._decrypted){t._decrypted=1;decryptText(t);}}
+  };
+  new MutationObserver(muts=>{for(const m of muts)for(const n of m.addedNodes)enroll(n);})
+    .observe(document.body,{childList:true,subtree:true});
+})();
 
 /* ── logo market glow ── */
 updateLogoGlow();
