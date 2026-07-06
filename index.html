@@ -1637,6 +1637,8 @@
     /* v5.7 — world clock: added IST; header: fixed logo/button overlap on phones */
     /* v5.8 — RSS freshness: graduated widen+tag replaces the fresh<8 escape hatch,
        Search/Climate now dedup+filter, World Conflicts tbs fixed, new "older result" badge */
+    /* v5.9 — World Conflicts: best-effort GDELT/OSINT enrichment (ISW, ACLED, Bellingcat,
+       RFE/RL, Jane's, SIPRI…), fire-and-forget, never blocks RSS render, same freshness filter */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1752,7 +1754,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.8</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.9</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1823,7 +1825,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v5.8
+    MERIDIAN v5.9
   </div>
 </main>
 
@@ -1860,7 +1862,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v5.8 · RSS + GDELT + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v5.9 · RSS + GDELT + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -4107,6 +4109,64 @@ function rssCardHTML(a,hex){
   </div>`;
 }
 
+/* ── World Conflicts: best-effort GDELT/OSINT enrichment ──
+   GDELT's DOC API is rate-limited by design (research use, not steady live
+   polling) and its own `seendate` field has the same crawl-time-vs-publish-
+   time ambiguity Google News RSS has — so this is never a primary source,
+   never blocks the tab's RSS render, and never bypasses the normal
+   freshness filter. It's purely a fire-and-forget enrichment pass pulling
+   in genuine conflict/OSINT specialists (ISW, ACLED, Bellingcat, RFE/RL,
+   Jane's, SIPRI…) that Google News keyword search doesn't prioritize. */
+const CONFLICT_OSINT_DOMAINS=['understandingwar.org','acled.com','bellingcat.com',
+  'kyivindependent.com','rferl.org','defenseone.com','janes.com','sipri.org',
+  'middleeasteye.net','haaretz.com','timesofisrael.com','jpost.com'];
+function isConflictOsintDomain(domain){
+  const d=(domain||'').toLowerCase();
+  return CONFLICT_OSINT_DOMAINS.some(td=>d===td||d.endsWith('.'+td));
+}
+function parseGdeltSeenDate(s){
+  // GDELT seendate is compact ISO ("20260706T091500Z"), not directly
+  // Date()-parseable — reformat with the punctuation Date() expects.
+  if(!s)return new Date(0);
+  const m=/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/.exec(s);
+  if(!m)return new Date(0);
+  const d=new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}Z`);
+  return isNaN(d.getTime())?new Date(0):d;
+}
+function gdeltArticleToItem(a){
+  // Same object shape normalizeRssItem() produces, so GDELT items flow
+  // through the identical dedup/freshness-filter/badge pipeline as RSS —
+  // no special-casing GDELT's dates as more trustworthy than RSS's.
+  return{title:stripHtml(a.title||''),domain:(a.domain||'').replace(/^www\./,''),
+    url:a.url||'',pub:parseGdeltSeenDate(a.seendate),
+    _snippet:'',_src:'GDELT/OSINT',_img:'',_rss:false,tone:null,_unverified:false,_agedFallback:false};
+}
+async function enrichWorldConflictsWithGdelt(baseItems){
+  if(!gdeltReady())return; // cooling down from a recent rate-limit — skip silently
+  try{
+    const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000));
+    const {arts}=await Promise.race([
+      fetchGdelt('war OR conflict OR ceasefire OR Ukraine OR Gaza','24H',15,'DateDesc'),
+      timeout
+    ]);
+    const osint=arts.filter(a=>isConflictOsintDomain(a.domain)).map(gdeltArticleToItem);
+    if(!osint.length)return;
+    const merged=dedupRssByTitle([...baseItems,...osint].sort((a,b)=>b.pub-a.pub));
+    const final=applyFreshnessFilter(merged);
+    const c=cat('world');
+    const heroEl=document.getElementById('hero-world');
+    const gridEl=document.getElementById('g-world');
+    if(heroEl&&gridEl&&final.length){
+      heroEl.innerHTML=rssHeroCardHTML(final[0],c.hex);
+      gridEl.innerHTML=final.slice(1,13).map(a=>rssCardHTML(a,c.hex)).join('');
+      storeSectionData('world',final);
+      DBG.ok('GDELT',`World Conflicts enriched · +${osint.length} OSINT source(s)`);
+    }
+  }catch(e){
+    DBG.info('GDELT',`World Conflicts enrichment skipped: ${e.message}`);
+  }
+}
+
 /* ── Generic RSS tab loader ── */
 async function loadRssTab(id){
   const panel=document.getElementById('panel-'+id);
@@ -4147,6 +4207,10 @@ async function loadRssTab(id){
       gridEl.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories available right now.</div><div class="empty-hint">RSS feeds may be temporarily unavailable.</div></div>`;
     }
     storeSectionData(id,items);
+    // Fire-and-forget — never await. World Conflicts renders from RSS above
+    // exactly as every other tab does; this only patches the panel in place
+    // later if a bounded GDELT enrichment succeeds within its own timeout.
+    if(id==='world')enrichWorldConflictsWithGdelt(items);
   }catch(e){
     DBG.err('RSS',`loadRssTab(${id}): ${e.message}`);
     const gridEl=document.getElementById('g-'+id);
@@ -6385,7 +6449,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v5.8 · RSS freshness overhaul · graduated widen+tag, no more silent stale fallback');
+DBG.info('INIT','MERIDIAN v5.9 · World Conflicts: best-effort GDELT/OSINT enrichment');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
