@@ -1,5 +1,5 @@
 /* MERIDIAN service worker — offline shell + data cache fallback */
-const CACHE = 'meridian-v5.3';
+const CACHE = 'meridian-v5.3.1';
 const SHELL = ['./', './index.html', './manifest.webmanifest'];
 
 self.addEventListener('install', e => {
@@ -22,15 +22,15 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
 
   if (url.origin === location.origin) {
-    // App shell: cache-first, refresh in background
+    // App shell: network-first so a fresh deploy shows up on the very next
+    // reload (cache-first previously meant a deploy needed two reloads —
+    // one to silently update the SW, a second to actually see it). Falls
+    // back to cache only when the network is unavailable (offline mode).
     e.respondWith(
-      caches.match(req).then(hit => {
-        const net = fetch(req).then(r => {
-          if (r.ok) caches.open(CACHE).then(c => c.put(req, r.clone()));
-          return r;
-        }).catch(() => hit);
-        return hit || net;
-      })
+      fetch(req).then(r => {
+        if (r.ok) caches.open(CACHE).then(c => c.put(req, r.clone()));
+        return r;
+      }).catch(() => caches.match(req))
     );
   } else {
     // Data APIs (rss2json, Open-Meteo, USGS, Sheets…): network-first,
