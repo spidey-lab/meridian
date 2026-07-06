@@ -1617,6 +1617,59 @@
     .globe-view-tooltip{position:absolute;pointer-events:none;background:var(--bg-modal);border:1px solid var(--edge-hi);
       border-radius:8px;padding:6px 10px;font-size:11px;color:var(--text);box-shadow:var(--shadow-card);display:none;
       max-width:220px;z-index:2;transform:translate(-50%,-120%)}
+
+    /* ══════════════════════════════════════════════
+       v5.6 — world clock strip, Terminal Green CRT theme
+    ══════════════════════════════════════════════ */
+
+    /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
+    .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
+      border-left:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:9px;
+      letter-spacing:.3px;color:var(--text-muted);white-space:nowrap}
+    .wc-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;
+      box-shadow:0 0 5px var(--gold);animation:dotPulse 3s ease-in-out infinite}
+    .wc-lbl{color:var(--text-sub);font-weight:600;margin-right:3px}
+    .wc-sep{opacity:.4;margin:0 6px}
+    @media(max-width:1500px){.world-clock{display:none}}
+
+    /* ── TERMINAL GREEN — full third theme, monochrome-with-shade-variance CRT ──
+       Consolidates every theme-scoped custom property declared elsewhere (base
+       tokens, v5.0 edge/glass, v5.1 Obsidian Glass) into one block, since this
+       selector never matches when data-theme is dark/light — no cascade-order
+       fight with those rules, but everything needed must be defined right here. */
+    [data-theme="terminal"]{
+      --bg:#010D06;--bg-surf:rgba(10,35,20,.5);--bg-card:rgba(8,30,17,.55);--bg-card-h:rgba(14,45,26,.62);
+      --bg-modal:rgba(6,26,14,.85);--border:rgba(80,255,140,.18);--border-sub:rgba(80,255,140,.1);
+      --text:#8CFFB0;--text-sub:#4FDB86;--text-muted:#2E8F5C;
+      --shadow:0 4px 24px rgba(0,0,0,.6);--shadow-md:0 8px 48px rgba(0,0,0,.8);
+      --shadow-card:inset 0 1px 0 rgba(140,255,176,.08),0 4px 20px rgba(0,0,0,.5);
+      --shadow-card-h:inset 0 1px 0 rgba(140,255,176,.14),0 8px 32px rgba(0,0,0,.65),0 0 24px -8px rgba(57,255,106,.3);
+      --nav-bg:rgba(4,20,10,.75);--sk-base:rgba(80,255,140,.05);--sk-shine:rgba(80,255,140,.14);
+      --tone-neg-bg:rgba(255,90,70,.14);--tone-pos-bg:rgba(57,255,106,.14);
+      --tone-neg-txt:#FF8B70;--tone-pos-txt:#7CFFAA;
+      --tone-neu-bg:rgba(80,255,140,.08);--tone-neu-txt:#4FDB86;
+      --card-inner-top:rgba(140,255,176,.06);
+      --edge-hi:rgba(140,255,176,.18);--edge-lo:rgba(140,255,176,.04);--edge-hi2:rgba(140,255,176,.11);
+      --glass:rgba(6,26,14,.78);--glass-solid:#04160A;
+      --glow-a:rgba(57,255,106,.09);--glow-b:rgba(46,224,196,.06);--glow-c:rgba(0,255,65,.05);
+      --gold:#39FF6A;--neg:#FF5A46;--pos:#39FF6A;--neu:#4FDB86;--warn:#B6FF4F;
+      /* Per-section accents stay in the green/teal/lime family — monochrome mood,
+         still enough hue variance to tell tabs apart at a glance */
+      --clr-home:#39FF6A;--clr-world:#00D97E;--clr-markets:#2ECC71;
+      --clr-economy:#17E0A0;--clr-techai:#7CFF6B;--clr-india:#4CE07A;
+      --clr-crisis:#00FF41;--clr-tamilnadu:#2FE0C4;--clr-climate:#52E0B8;--clr-search:#66FFAA;
+    }
+    /* CRT tube feel: scanlines + edge vignette, terminal theme only */
+    [data-theme="terminal"] body::after{
+      content:'';position:fixed;inset:0;z-index:800;pointer-events:none;
+      background:repeating-linear-gradient(0deg,rgba(0,0,0,.15) 0px,rgba(0,0,0,.15) 1px,transparent 1px,transparent 3px),
+        radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.35) 100%);
+      mix-blend-mode:multiply;animation:crtFlicker 6s infinite}
+    @keyframes crtFlicker{0%,96%,100%{opacity:1}97%{opacity:.94}98.5%{opacity:1}99%{opacity:.97}}
+    [data-theme="terminal"] .logo em{color:var(--gold)}
+    [data-theme="terminal"] .btn-open{background:linear-gradient(135deg,#8CFFB0 0%,#39FF6A 55%,#1FB84A 100%);
+      color:#022B10;box-shadow:0 8px 20px -8px rgba(57,255,106,.55)}
+    @media(prefers-reduced-motion:reduce){[data-theme="terminal"] body::after{animation:none}}
   </style>
 </head>
 <body>
@@ -1683,10 +1736,11 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.5</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.6</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
+    <span class="world-clock" id="world-clock" aria-hidden="true"></span>
   </div>
   <div class="hdr-right">
     <span class="offline-pip"><span style="width:5px;height:5px;border-radius:50%;background:var(--neg)"></span>OFFLINE</span>
@@ -1753,7 +1807,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v5.5
+    MERIDIAN v5.6
   </div>
 </main>
 
@@ -1790,7 +1844,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v5.5 · RSS + GDELT + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v5.6 · RSS + GDELT + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -1863,7 +1917,7 @@ function gdeltReady(){
 ════════════════════════════════════════ */
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
-  document.getElementById('themeBtn').textContent = t==='dark' ? '☀' : '☾';
+  document.getElementById('themeBtn').textContent = t==='dark' ? '☀' : t==='terminal' ? '⌗' : '☾';
   localStorage.setItem(LS_THEME, t);
   // Re-render active TV widget so it picks up the new theme
   const tvTabs=['calendar','signals','heatmap'];
@@ -6236,6 +6290,7 @@ function openSettings(){
       <select class="set-sel" onchange="applyTheme(this.value)">
         <option value="dark"${theme==='dark'?' selected':''}>☾ Dark</option>
         <option value="light"${theme==='light'?' selected':''}>☀ Light</option>
+        <option value="terminal"${theme==='terminal'?' selected':''}>⌗ Terminal</option>
       </select>
     </div>
     <div class="set-row">
@@ -6276,7 +6331,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v5.5 · Parallax atmosphere · Tension Index · Globe View');
+DBG.info('INIT','MERIDIAN v5.6 · World Clock strip · Terminal Green CRT theme');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
@@ -6447,6 +6502,26 @@ function updateTelemetry(){
   }
 }
 setInterval(updateTelemetry,20000);
+
+/* ── WORLD CLOCK STRIP (masthead, wide screens only via CSS) ── */
+const WORLD_CLOCK_ZONES=[
+  {tz:'America/New_York',lbl:'NY'},
+  {tz:'Europe/London',lbl:'LON'},
+  {tz:'Asia/Dubai',lbl:'DXB'},
+  {tz:'Asia/Singapore',lbl:'SGP'},
+  {tz:'Asia/Tokyo',lbl:'TOK'},
+];
+function updateWorldClock(){
+  const el=document.getElementById('world-clock');if(!el)return;
+  const now=new Date();
+  const items=WORLD_CLOCK_ZONES.map(z=>{
+    const t=now.toLocaleTimeString('en-GB',{timeZone:z.tz,hour:'2-digit',minute:'2-digit',hour12:false});
+    return`<span class="wc-item"><span class="wc-lbl">${z.lbl}</span>${t}</span>`;
+  }).join('<span class="wc-sep">·</span>');
+  el.innerHTML=`<span class="wc-dot"></span>${items}`;
+}
+updateWorldClock();
+setInterval(updateWorldClock,15000);
 
 /* ── BOOT SPLASH — once per session, tap/click to skip, respects reduced-motion ── */
 function skipBoot(){
