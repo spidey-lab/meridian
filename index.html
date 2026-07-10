@@ -173,6 +173,13 @@
     .card.aged-fallback::before{background:#BA7517!important}
     .hero-card.aged-fallback::before{background:#BA7517!important}
     .badge-aged{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;background:rgba(186,117,23,.12);color:#BA7517;border:1px solid rgba(186,117,23,.3);font-weight:600;letter-spacing:.3px;flex-shrink:0}
+    /* ── AI enrichment (Gemini) — badges + card, all optional/null-safe ── */
+    .badge-ai{font-family:'JetBrains Mono',monospace;font-size:9px;padding:1px 5px;border-radius:8px;background:rgba(200,168,107,.15);color:var(--gold);font-weight:700;letter-spacing:.2px;flex-shrink:0}
+    .ai-card{background:var(--bg-card);border:1px solid rgba(200,168,107,.25);border-radius:14px;padding:16px 18px;margin-bottom:16px;position:relative}
+    .ai-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;border-radius:14px 0 0 14px;background:var(--gold)}
+    .ai-card-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    .ai-card-txt{font-size:13.5px;line-height:1.55;color:var(--text-sub)}
+    .ai-takeaway{font-size:11px;font-style:italic;color:var(--text-sub);margin-top:6px;padding-top:6px;border-top:1px solid var(--border-sub)}
     .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;gap:8px}
     .card-top-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
     .c-flag{font-size:12px;line-height:1;flex-shrink:0}
@@ -686,7 +693,7 @@
 
     /* ── CRISIS COMMAND: GDACS ALERT LIST (PREMIUM FORMAT) ── */
     .alert-list{display:flex;flex-direction:column}
-    .alert-list-row{display:flex;align-items:center;gap:9px;padding:9px 14px;border-bottom:0.5px solid var(--border);transition:background var(--t);cursor:pointer;text-decoration:none}
+    .alert-list-row{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:9px 14px;border-bottom:0.5px solid var(--border);transition:background var(--t);cursor:pointer;text-decoration:none}
     .alert-list-row:last-child{border-bottom:none}
     .alert-list-row:hover{background:var(--bg-card-h)}
     .alr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
@@ -701,6 +708,8 @@
     .alr-detail{flex-shrink:0;text-align:right;line-height:1.4;min-width:52px}
     .alr-sev{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--text)}
     .alr-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted)}
+    .ai-takeaway-row{display:none;flex-basis:100%;font-size:11px;font-style:italic;color:var(--text-sub);margin-top:6px}
+    .ai-takeaway-row.show{display:block}
 
     /* ── WIRE FOOTER TICKER: LIVE PIP (used in the ticker label) ── */
     .wire-live-pip{display:inline-block;width:6px;height:6px;border-radius:50%;background:#E24B4A;margin-right:5px;box-shadow:0 0 5px rgba(226,75,74,.6);animation:dotPulse 2s ease-in-out infinite}
@@ -780,6 +789,7 @@
     .dl-src.usgs{background:rgba(226,75,74,.15);color:#E24B4A}
     .dl-src.rw{background:rgba(90,106,138,.2);color:#5A6A8A}
     .dl-src.rss{background:rgba(43,191,204,.15);color:#2BBFCC}
+    .dl-src.ai{background:rgba(200,168,107,.15);color:var(--gold)}
     .dbg-cooldown{display:none;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:3px;background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3);animation:blink 1s infinite}
 
     /* ── SCROLL-REVEAL CARD ENTRANCE (IO-driven; replaces render-time stagger) ──
@@ -1221,7 +1231,11 @@
     .set-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:3px}
     .set-sel{background:var(--bg-surf);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:12px;padding:7px 12px;outline:none;cursor:pointer;min-width:150px}
     .set-sel:focus{border-color:var(--gold)}
+    .set-input{background:var(--bg-surf);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;padding:7px 12px;outline:none;min-width:170px}
+    .set-input:focus{border-color:var(--gold)}
     .set-danger-btn{background:none;border:1px solid rgba(226,75,74,.35);color:var(--neg);border-radius:16px;font-size:11px;font-weight:500;padding:6px 14px;cursor:pointer;transition:var(--t)}
+    .set-ok-btn{background:none;border:1px solid rgba(200,168,107,.35);color:var(--gold);border-radius:16px;font-size:11px;font-weight:500;padding:6px 14px;cursor:pointer;transition:var(--t)}
+    .set-ok-btn:hover{background:rgba(200,168,107,.08)}
     .set-danger-btn:hover{background:rgba(226,75,74,.08)}
     .set-stat{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
 
@@ -1639,6 +1653,9 @@
        Search/Climate now dedup+filter, World Conflicts tbs fixed, new "older result" badge */
     /* v5.9 — World Conflicts: best-effort GDELT/OSINT enrichment (ISW, ACLED, Bellingcat,
        RFE/RL, Jane's, SIPRI…), fire-and-forget, never blocks RSS render, same freshness filter */
+    /* v6.0 — Gemini AI Gateway (free tier, bring-your-own-key): Daily AI Briefing, real AI
+       tone/severity classification, World Conflicts situation report, Crisis Watch AI risk
+       takeaways, Markets AI wrap-up — all pure enrichment, null-safe, cached + throttled */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1754,7 +1771,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v5.9</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.0</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1802,6 +1819,7 @@
     </div>
     <div id="home-tension"></div>
     <div id="home-digest"></div>
+    <div id="home-ai-briefing"></div>
     <div id="home-hero"></div>
     <div class="art-grid" id="home-grid"></div>
   </div>
@@ -1825,7 +1843,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v5.9
+    MERIDIAN v6.0
   </div>
 </main>
 
@@ -1862,7 +1880,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v5.9 · RSS + GDELT + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v6.0 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -1893,6 +1911,85 @@ const CACHE_TTL = 5 * 60 * 1000;
 const LS_PFX    = 'mer18_';
 const LS_READ   = 'mer18_read';
 const LS_THEME  = 'mer18_theme';
+
+/* ════════════════════════════════════════
+   GEMINI AI GATEWAY (free tier, bring-your-own-key)
+   Every feature built on this is pure enrichment — fire-and-forget,
+   cached, silently no-ops if disabled/unavailable. The free tier is
+   officially "unstable, best effort" (Google's own words), so nothing
+   here may ever block or degrade the app's existing rendering.
+════════════════════════════════════════ */
+const GEMINI_ENDPOINT_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
+// Ordered fallback chain — capability first, then highest-quota tier, then a
+// different model generation for resilience against a family-wide quota cut
+// (exactly what happened to the whole 2.5 line in Dec 2025). Edit this list
+// as Google's free-tier lineup changes — the 2.5 generation itself sunsets
+// Oct 16, 2026.
+const GEMINI_MODEL_CHAIN = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3-flash'];
+const LS_GEMINI_KEY     = 'mer18_gemini_key';
+const LS_GEMINI_ENABLED = 'mer18_gemini_enabled';
+
+const _geminiCooldownUntil = {}; // modelId -> timestamp
+function setGeminiCooldown(modelId, secs = 300){
+  _geminiCooldownUntil[modelId] = Date.now() + secs*1000;
+  DBG.warn('GEMINI', `${modelId} cooling down · ${secs}s`);
+}
+function geminiModelReady(modelId){ return Date.now() >= (_geminiCooldownUntil[modelId]||0); }
+
+function geminiEnabled(){
+  return localStorage.getItem(LS_GEMINI_ENABLED)==='1' && !!localStorage.getItem(LS_GEMINI_KEY);
+}
+function geminiCacheKey(prompt, model){
+  return LS_PFX+'gemai_'+btoa(encodeURIComponent(model+'::'+prompt)).slice(0,60);
+}
+
+// Core call — tries each model in GEMINI_MODEL_CHAIN in order, honoring a
+// per-model cooldown after 429/503, and caches successful text responses.
+// ALWAYS returns null on any failure/disabled state — never throws — so
+// every call site can simply treat null as "render nothing extra."
+async function callGemini(prompt, opts={}){
+  if(!geminiEnabled())return null;
+  const key=localStorage.getItem(LS_GEMINI_KEY);
+  const ttlMs=(opts.ttlHours??6)*3600*1000;
+  for(const model of GEMINI_MODEL_CHAIN){
+    const ck=geminiCacheKey(prompt,model);
+    if(ttlMs>0){
+      try{
+        const raw=localStorage.getItem(ck);
+        if(raw){
+          const{text,ts}=JSON.parse(raw);
+          if(Date.now()-ts<ttlMs){DBG.ok('GEMINI',`CACHE HIT · ${model}`);return text;}
+        }
+      }catch{}
+    }
+    if(!geminiModelReady(model)){DBG.info('GEMINI',`${model} cooling down — skip`);continue;}
+    try{
+      const url=`${GEMINI_ENDPOINT_BASE}${model}:generateContent?key=${encodeURIComponent(key)}`;
+      const body={contents:[{parts:[{text:prompt}]}]};
+      if(opts.json)body.generationConfig={responseMimeType:'application/json'};
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(body),signal:AbortSignal.timeout(opts.timeoutMs||20000)});
+      if(r.status===429||r.status===503){setGeminiCooldown(model,r.status===429?600:120);continue;}
+      if(!r.ok){DBG.err('GEMINI',`${model} HTTP ${r.status}`);continue;}
+      const d=await r.json();
+      const text=d?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+      if(!text){DBG.warn('GEMINI',`${model} empty response`);continue;}
+      if(ttlMs>0){try{localStorage.setItem(ck,JSON.stringify({text,ts:Date.now()}));}catch{}}
+      DBG.ok('GEMINI',`✓ ${model}`);
+      return text;
+    }catch(e){DBG.err('GEMINI',`${model} ${e.message}`);continue;}
+  }
+  DBG.warn('GEMINI','All models exhausted/unavailable — skipping AI enrichment');
+  return null;
+}
+
+// Simple string hash — used to detect "did the underlying headline set
+// materially change" so cached AI text only regenerates when warranted,
+// not on every refresh tick.
+function hashStr(s){
+  let h=0;for(let i=0;i<s.length;i++){h=(h<<5)-h+s.charCodeAt(i);h|=0;}
+  return (h>>>0).toString(36);
+}
 
 
 /* ════════════════════════════════════════
@@ -2209,7 +2306,7 @@ async function _drainQueue(){
 const SRC_CHIPS = {
   GDELT:'gdelt',CACHE:'gdelt',FALLBACK:'gdelt',FILTER:'gdelt',T5:'gdelt',
   GS:'mkt',N50:'mkt',
-  USGS:'usgs',RW:'rw',RSS:'rss',
+  USGS:'usgs',RW:'rw',RSS:'rss',GEMINI:'ai',
   HOME:'rss',CAT:'gdelt',AUTO:'gdelt',INIT:'',SOURCES:'',KEYS:''
 };
 const DBG = {
@@ -2283,11 +2380,11 @@ function cacheSet(q,ts,max,data){
 function cacheStale(q,ts,max){
   try{const raw=localStorage.getItem(ck(q,ts,max));if(!raw)return null;const {data,fetchedAt}=JSON.parse(raw);return{data,ageMs:Date.now()-fetchedAt};}catch{return null;}
 }
-function clearAllCache(){let n=0;Object.keys(localStorage).forEach(k=>{if(k.startsWith(LS_PFX)&&k!==LS_READ&&k!==LS_THEME){localStorage.removeItem(k);n++;}});DBG.info('CACHE',`Cleared ${n} entries`);}
+function clearAllCache(){let n=0;Object.keys(localStorage).forEach(k=>{if(k.startsWith(LS_PFX)&&k!==LS_READ&&k!==LS_THEME&&k!==LS_GEMINI_KEY&&k!==LS_GEMINI_ENABLED){localStorage.removeItem(k);n++;}});DBG.info('CACHE',`Cleared ${n} entries`);}
 function showCacheInfo(){
   let n=0,sz=0;
   Object.keys(localStorage).forEach(k=>{
-    if(k.startsWith(LS_PFX)&&k!==LS_READ&&k!==LS_THEME){
+    if(k.startsWith(LS_PFX)&&k!==LS_READ&&k!==LS_THEME&&k!==LS_GEMINI_KEY&&k!==LS_GEMINI_ENABLED){
       n++;try{const r=localStorage.getItem(k);sz+=r.length;const {fetchedAt}=JSON.parse(r);const m=Math.floor((Date.now()-fetchedAt)/60000);DBG.data('ENTRY',`${k.slice(-10)} · ${m}m · ${(r.length/1024).toFixed(1)}KB`);}catch{}
     }
   });
@@ -2891,13 +2988,14 @@ async function loadHome(){
     if(top.length){
       hero.innerHTML=rssHeroCardHTML(top[0],'#D4A843');
       grid.innerHTML=top.slice(1).map(a=>rssCardHTML(a,'#D4A843')).join('');
+      enrichToneWithAi(hero,grid,top);
     }else{
       hero.innerHTML='';
       grid.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories right now.</div><div class="empty-hint">RSS feeds may be temporarily unavailable.</div></div>`;
     }
     storeSectionData('home',top);
     updateStamp();
-    setTimeout(loadDigestBrief,300);
+    setTimeout(()=>{loadDigestBrief().then(loadAiBriefing);},300);
     DBG.ok('HOME',`${top.length} RSS stories`);
   }catch(e){
     const pgw=grid.querySelector('.progress-wrap');if(pgw)pgw.remove();
@@ -3653,6 +3751,45 @@ async function _renderGSCards(){
   if(count<=12)      wrap.innerHTML=_renderSmall(_gsProcessed,d.data);
   else if(count<=30) wrap.innerHTML=_renderMedium(_gsProcessed,d.data);
   else               wrap.innerHTML=_renderLarge(_gsProcessed,d.data);
+  enrichMarketsWithAiWrapup();
+}
+
+/* ── Markets: AI wrap-up (Gemini, optional) ──
+   Feeds the biggest movers (already computed/sorted by processMarketData)
+   into a short natural-language commentary prompt. Market data itself
+   updates infrequently relative to news, so this throttles harder (12h)
+   than the news-driven features. Silently no-ops if unavailable — the
+   structured Google Finance cards above already show every number. */
+const LS_AI_MARKETS_META='mer18_ai_markets_meta';
+async function enrichMarketsWithAiWrapup(){
+  if(!geminiEnabled()||!_gsProcessed||!_gsProcessed.raw||!_gsProcessed.raw.length)return;
+  const items=_gsProcessed.raw.filter(x=>x.changePercent&&x.trend);
+  if(!items.length)return;
+  const top=items.slice(0,10);
+  const listText=top.map(x=>`${x.name}: ${x.trend==='UP'?'+':'-'}${Math.abs(x.changePercent).toFixed(2)}%`).join('\n');
+  const hash=hashStr(listText);
+  let meta={};
+  try{meta=JSON.parse(localStorage.getItem(LS_AI_MARKETS_META)||'{}');}catch{}
+  const throttleMs=12*3600*1000;
+  const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
+  if(!shouldRegenerate){
+    if(meta.text)renderMarketsWrapup(meta.text);
+    return;
+  }
+  const prompt=`You are a markets commentator. Given these instrument moves (Indian and global `+
+    `indices/stocks/commodities/currencies), write a neutral, factual 2-3 sentence wrap-up of `+
+    `today's market action, naming the biggest movers. Prose only, no bullet points, no preamble.\n\n${listText}`;
+  const text=await callGemini(prompt,{ttlHours:12});
+  if(!text)return;
+  try{localStorage.setItem(LS_AI_MARKETS_META,JSON.stringify({hash,ts:Date.now(),text}));}catch{}
+  renderMarketsWrapup(text);
+}
+function renderMarketsWrapup(text){
+  const el=document.getElementById('markets-ai-wrap');if(!el)return;
+  el.innerHTML=`<div class="ai-card">
+    <div class="ai-card-lbl"><span class="badge-ai">✨ AI MARKET WRAP</span></div>
+    <div class="ai-card-txt">${esc(text)}</div>
+  </div>`;
 }
 
 
@@ -3747,6 +3884,7 @@ async function loadMarketsPanel(){
           <span class="mkt-auto-lbl">Auto (60s)</span>
         </label>
       </div>
+      <div id="markets-ai-wrap"></div>
       <div id="gs-cards-wrap">
         <div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Loading market data…</div></div>
       </div>
@@ -4071,7 +4209,7 @@ function rssHeroCardHTML(a,hex){
   const t=getTone(a);
   const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
   const thumb=a._img?`<img class="hero-thumb" src="${esc(a._img)}" alt="" loading="lazy" onerror="this.closest('.hero-card').classList.remove('has-thumb');this.remove()">`:'';
-  return`<div class="hero-card ${t.cls}${a._img?' has-thumb':''}${a._agedFallback?' aged-fallback':''}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
+  return`<div class="hero-card ${t.cls}${a._img?' has-thumb':''}${a._agedFallback?' aged-fallback':''}" data-artid="${id}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
     <div class="card-main">
     <div class="hero-top">
       <div class="hero-top-left">
@@ -4093,7 +4231,7 @@ function rssCardHTML(a,hex){
   const t=getTone(a);
   const ts=a.pub&&a.pub.getTime()>0?ago(a.pub):'—';
   const thumb=a._img?`<img class="c-thumb" src="${esc(a._img)}" alt="" loading="lazy" onerror="this.closest('.card').classList.remove('has-thumb');this.remove()">`:'';
-  return`<div class="card ${t.cls}${a._img?' has-thumb':''}${a._agedFallback?' aged-fallback':''}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
+  return`<div class="card ${t.cls}${a._img?' has-thumb':''}${a._agedFallback?' aged-fallback':''}" data-artid="${id}" tabindex="0" role="button" onclick="cardClick('${id}','${hex}')">
     <div class="card-main">
     <div class="card-top">
       <div class="card-top-left">
@@ -4107,6 +4245,41 @@ function rssCardHTML(a,hex){
     <div class="c-title">${esc(a.title)}</div>
     </div>${thumb}
   </div>`;
+}
+
+/* ── Real AI tone/severity classification (Gemini, optional) ──
+   getTone()'s NEG_W/POS_W keyword-substring matching is fast and always-on,
+   but naive (the same style of heuristic that had a real "war"-inside-
+   "warning" false-positive bug elsewhere in this file). This batches ALL
+   currently-rendered headlines into ONE prompt (not one call per article)
+   and, if it succeeds, patches the already-rendered .c-tone badges in place
+   with a small "✨" marker. If it fails/is disabled, the keyword-heuristic
+   badges already on screen simply stand — this can only upgrade, never
+   regress, what the user already sees. */
+async function enrichToneWithAi(heroEl,gridEl,items){
+  if(!geminiEnabled()||!items||!items.length)return;
+  const batch=items.slice(0,20); // hero + first page of grid — keeps prompt small
+  const listText=batch.map((a,i)=>`${i}. ${a.title}`).join('\n');
+  const prompt=`Classify the sentiment of each numbered news headline as exactly one of `+
+    `"pos" (positive/good news), "neg" (negative/bad news), or "neu" (neutral/factual, no clear `+
+    `sentiment). Respond with ONLY a JSON array like [{"i":0,"cls":"neg"}], one entry per `+
+    `headline, nothing else.\n\n${listText}`;
+  const text=await callGemini(prompt,{json:true,ttlHours:3});
+  if(!text)return;
+  let results;
+  try{results=JSON.parse(text);}catch{DBG.warn('GEMINI','Tone classification: bad JSON, skipped');return;}
+  if(!Array.isArray(results))return;
+  const LBL={pos:'Positive',neg:'Negative',neu:'Neutral'};
+  let patched=0;
+  results.forEach(r=>{
+    if(!r||typeof r.i!=='number'||!LBL[r.cls])return;
+    const el=r.i===0?heroEl?.querySelector('.c-tone'):gridEl?.children[r.i-1]?.querySelector('.c-tone');
+    if(!el)return;
+    el.className=`c-tone ${r.cls}`;
+    el.innerHTML=`✨ ${LBL[r.cls]}`;
+    patched++;
+  });
+  if(patched)DBG.ok('GEMINI',`Tone reclassified · ${patched} headline(s)`);
 }
 
 /* ── World Conflicts: best-effort GDELT/OSINT enrichment ──
@@ -4142,29 +4315,69 @@ function gdeltArticleToItem(a){
     _snippet:'',_src:'GDELT/OSINT',_img:'',_rss:false,tone:null,_unverified:false,_agedFallback:false};
 }
 async function enrichWorldConflictsWithGdelt(baseItems){
-  if(!gdeltReady())return; // cooling down from a recent rate-limit — skip silently
-  try{
-    const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000));
-    const {arts}=await Promise.race([
-      fetchGdelt('war OR conflict OR ceasefire OR Ukraine OR Gaza','24H',15,'DateDesc'),
-      timeout
-    ]);
-    const osint=arts.filter(a=>isConflictOsintDomain(a.domain)).map(gdeltArticleToItem);
-    if(!osint.length)return;
-    const merged=dedupRssByTitle([...baseItems,...osint].sort((a,b)=>b.pub-a.pub));
-    const final=applyFreshnessFilter(merged);
-    const c=cat('world');
-    const heroEl=document.getElementById('hero-world');
-    const gridEl=document.getElementById('g-world');
-    if(heroEl&&gridEl&&final.length){
-      heroEl.innerHTML=rssHeroCardHTML(final[0],c.hex);
-      gridEl.innerHTML=final.slice(1,13).map(a=>rssCardHTML(a,c.hex)).join('');
-      storeSectionData('world',final);
-      DBG.ok('GDELT',`World Conflicts enriched · +${osint.length} OSINT source(s)`);
+  let finalItems=baseItems; // falls back to RSS-only if GDELT enrichment doesn't succeed
+  if(gdeltReady()){
+    try{
+      const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000));
+      const {arts}=await Promise.race([
+        fetchGdelt('war OR conflict OR ceasefire OR Ukraine OR Gaza','24H',15,'DateDesc'),
+        timeout
+      ]);
+      const osint=arts.filter(a=>isConflictOsintDomain(a.domain)).map(gdeltArticleToItem);
+      if(osint.length){
+        const merged=dedupRssByTitle([...baseItems,...osint].sort((a,b)=>b.pub-a.pub));
+        const final=applyFreshnessFilter(merged);
+        const c=cat('world');
+        const heroEl=document.getElementById('hero-world');
+        const gridEl=document.getElementById('g-world');
+        if(heroEl&&gridEl&&final.length){
+          heroEl.innerHTML=rssHeroCardHTML(final[0],c.hex);
+          gridEl.innerHTML=final.slice(1,13).map(a=>rssCardHTML(a,c.hex)).join('');
+          storeSectionData('world',final);
+          enrichToneWithAi(heroEl,gridEl,final.slice(0,13));
+          DBG.ok('GDELT',`World Conflicts enriched · +${osint.length} OSINT source(s)`);
+          finalItems=final;
+        }
+      }
+    }catch(e){
+      DBG.info('GDELT',`World Conflicts enrichment skipped: ${e.message}`);
     }
-  }catch(e){
-    DBG.info('GDELT',`World Conflicts enrichment skipped: ${e.message}`);
   }
+  enrichWorldConflictsSituationReport(finalItems);
+}
+
+/* ── World Conflicts: AI situation report (Gemini, optional) ──
+   Synthesizes whatever pool is available (RSS-only, or RSS+GDELT/OSINT if
+   that enrichment above succeeded) into a short prose situation summary.
+   Same throttle/cache-by-content-hash discipline as the Daily Briefing. */
+const LS_AI_WORLD_META='mer18_ai_world_meta';
+async function enrichWorldConflictsSituationReport(items){
+  if(!geminiEnabled()||!items||!items.length)return;
+  const batch=items.slice(0,15);
+  const headlineText=batch.map(a=>`- ${a.title}${a._src==='GDELT/OSINT'?' (OSINT source)':''}`).join('\n');
+  const hash=hashStr(headlineText);
+  let meta={};
+  try{meta=JSON.parse(localStorage.getItem(LS_AI_WORLD_META)||'{}');}catch{}
+  const throttleMs=4*3600*1000;
+  const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
+  if(!shouldRegenerate){
+    if(meta.text)renderWorldSituationReport(meta.text);
+    return;
+  }
+  const prompt=`You are a conflict analyst writing a short situation report. Given these current `+
+    `headlines about global conflicts and geopolitical tension, write a neutral, factual 3-4 `+
+    `sentence situation summary. Prose only, no bullet points, no preamble.\n\nHeadlines:\n${headlineText}`;
+  const text=await callGemini(prompt,{ttlHours:6});
+  if(!text)return;
+  try{localStorage.setItem(LS_AI_WORLD_META,JSON.stringify({hash,ts:Date.now(),text}));}catch{}
+  renderWorldSituationReport(text);
+}
+function renderWorldSituationReport(text){
+  const el=document.getElementById('world-ai-report');if(!el)return;
+  el.innerHTML=`<div class="ai-card">
+    <div class="ai-card-lbl"><span class="badge-ai">✨ AI SITUATION REPORT</span></div>
+    <div class="ai-card-txt">${esc(text)}</div>
+  </div>`;
 }
 
 /* ── Generic RSS tab loader ── */
@@ -4180,6 +4393,7 @@ async function loadRssTab(id){
       <div class="section-digest" id="sdigest-${id}"></div>
       <div id="hmap-${id}"></div>
     </div>
+    ${id==='world'?'<div id="world-ai-report"></div>':''}
     <div id="hero-${id}"></div>
     <div class="art-grid" id="g-${id}">${skels(4)}</div>`;
   try{
@@ -4202,6 +4416,7 @@ async function loadRssTab(id){
     if(items.length){
       heroEl.innerHTML=rssHeroCardHTML(items[0],c.hex);
       gridEl.innerHTML=items.slice(1,13).map(a=>rssCardHTML(a,c.hex)).join('');
+      enrichToneWithAi(heroEl,gridEl,items.slice(0,13));
     }else{
       heroEl.innerHTML='';
       gridEl.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No stories available right now.</div><div class="empty-hint">RSS feeds may be temporarily unavailable.</div></div>`;
@@ -4402,6 +4617,7 @@ function gdacsAlertListRowHTML(a){
   const name=a.eventname?`${a.eventname} · ${a.country}`:a.country||'Unknown';
   const pub=a.pub instanceof Date?a.pub:(a.pub?new Date(a.pub):null);
   const timeStr=pub&&!isNaN(pub.getTime())?ago(pub):'';
+  const gk=hashStr(a.title||'');
   return`<a class="alert-list-row" href="${esc(a.link)}" target="_blank" rel="noopener">
     <span class="alr-dot ${lvl}"></span>
     <span class="alr-level ${lvl}">${a.alertlevel.toUpperCase()}</span>
@@ -4411,6 +4627,7 @@ function gdacsAlertListRowHTML(a){
       ${a.severity?`<div class="alr-sev">${esc(a.severity)}</div>`:''}
       ${timeStr?`<div class="alr-time">${timeStr}</div>`:''}
     </div>
+    <div class="ai-takeaway-row" id="ai-takeaway-${gk}"></div>
   </a>`;
 }
 
@@ -4418,6 +4635,52 @@ function gdacsFilteredHTML(alerts,filter){
   const list=filter==='ALL'?alerts:alerts.filter(a=>a.eventtype===filter);
   if(!list.length)return`<div class="no-data-compact" style="margin:10px 14px"><span class="ndc-ico">◎</span><div class="ndc-msg">No ${GDACS_TYPE_LABEL[filter]||filter} alerts active right now.</div></div>`;
   return`<div class="alert-list">${list.map(gdacsAlertListRowHTML).join('')}</div>`;
+}
+
+/* ── Crisis Watch: AI risk takeaway (Gemini, optional) ──
+   Batches ALL active GDACS alerts into ONE prompt (not one call per alert)
+   asking for a one-line plain-language "what this means" takeaway. Keyed
+   by content-hash of the current alert title set — alerts don't change
+   every refresh, so this naturally throttles to "only when the active
+   alert set actually changes," no separate timer needed. Rows keyed by a
+   per-alert title hash (not array index) so takeaways still land correctly
+   after the user switches the eventtype filter pills (which re-renders a
+   reindexed subset of the same alerts). Silently no-ops if unavailable —
+   every alert already shows its full structured GDACS data regardless. */
+const LS_AI_GDACS_META='mer18_ai_gdacs_meta';
+async function enrichGdacsWithAiTakeaways(alerts){
+  if(!geminiEnabled()||!alerts||!alerts.length)return;
+  const batch=alerts.slice(0,12);
+  const listText=batch.map((a,i)=>`${i}. ${a.alertlevel} ${GDACS_TYPE_LABEL[a.eventtype]||a.eventtype||'event'} `+
+    `in ${a.country||'an unspecified location'}${a.severity?` (${a.severity})`:''}`+
+    `${a.eventname?`, named ${a.eventname}`:''}${a.population?`, ${a.population}`:''}`).join('\n');
+  const idsKey=batch.map(a=>hashStr(a.title||'')).join(',');
+  let meta={};
+  try{meta=JSON.parse(localStorage.getItem(LS_AI_GDACS_META)||'{}');}catch{}
+  if(meta.idsKey===idsKey&&meta.results){applyGdacsTakeaways(batch,meta.results);return;}
+  const prompt=`For each numbered disaster alert below, write ONE short plain-language sentence `+
+    `explaining what this means or why it matters, for a general reader. Respond with ONLY a JSON `+
+    `array like [{"i":0,"takeaway":"..."}], one entry per alert, nothing else.\n\n${listText}`;
+  const text=await callGemini(prompt,{json:true,ttlHours:6});
+  if(!text)return;
+  let results;
+  try{results=JSON.parse(text);}catch{DBG.warn('GEMINI','Crisis takeaways: bad JSON, skipped');return;}
+  if(!Array.isArray(results))return;
+  try{localStorage.setItem(LS_AI_GDACS_META,JSON.stringify({idsKey,results}));}catch{}
+  applyGdacsTakeaways(batch,results);
+}
+function applyGdacsTakeaways(batch,results){
+  let applied=0;
+  results.forEach(r=>{
+    if(!r||typeof r.i!=='number'||!r.takeaway)return;
+    const a=batch[r.i];if(!a)return;
+    const el=document.getElementById('ai-takeaway-'+hashStr(a.title||''));
+    if(!el)return;
+    el.textContent='✨ '+r.takeaway;
+    el.classList.add('show');
+    applied++;
+  });
+  if(applied)DBG.ok('GEMINI',`Crisis takeaways applied · ${applied}`);
 }
 
 function setGDACSFilter(f){
@@ -4563,6 +4826,7 @@ async function loadCrisisWatch(){
         if(grid)grid.innerHTML=gdacsFilteredHTML(alerts,'ALL');
         const meta=document.getElementById('crisis-meta-bar');
         if(meta)meta.innerHTML=`<span class="cache-badge cb-live"><span class="cb-dot"></span>LIVE · ${alerts.length} alerts</span>`;
+        enrichGdacsWithAiTakeaways(alerts);
       }catch(e){
         DBG.err('GDACS',e.message);
         const grid=document.getElementById('gdacs-alerts');
@@ -4598,6 +4862,7 @@ async function loadCrisisWatch(){
         if(deduped.length){
           heroEl.innerHTML=rssHeroCardHTML(deduped[0],c.hex);
           gridEl.innerHTML=deduped.slice(1).map(a=>rssCardHTML(a,c.hex)).join('');
+          enrichToneWithAi(heroEl,gridEl,deduped);
         }else{
           heroEl.innerHTML='';
           gridEl.innerHTML=`<div class="empty"><div class="empty-ico">◎</div><div class="empty-txt">No crisis news available.</div></div>`;
@@ -6181,6 +6446,44 @@ async function loadDigestBrief(){
   if(timeEl)timeEl.textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 }
 
+/* ── Daily AI Intelligence Briefing (Gemini, optional) ──
+   Pure enrichment on top of "Today in Brief" above — reuses the exact same
+   _briefData this session already collected, no extra fetches. Only
+   regenerates when the underlying headlines materially changed AND at
+   least 4h have passed since the last generation, so a 15-min auto-refresh
+   cadence can't burn through a day's quota. Silently no-ops if AI is off,
+   unavailable, or every model in the fallback chain is exhausted. */
+const LS_AI_BRIEFING_META='mer18_ai_briefing_meta';
+async function loadAiBriefing(){
+  if(!geminiEnabled())return;
+  if(!_briefData||!_briefData.length)return;
+  const headlineText=_briefData.map(b=>`${b.cat}: ${b.title}`).join('\n');
+  const hash=hashStr(headlineText);
+  let meta={};
+  try{meta=JSON.parse(localStorage.getItem(LS_AI_BRIEFING_META)||'{}');}catch{}
+  const throttleMs=4*3600*1000;
+  const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
+  if(!shouldRegenerate){
+    if(meta.text)renderAiBriefing(meta.text);
+    return;
+  }
+  const prompt=`You are a terse intelligence briefing writer. Given these headlines from `+
+    `the last 24 hours across world news, economy, and crisis coverage, write a neutral, `+
+    `factual 3-5 sentence executive summary of what's happening today. Prose only, no bullet `+
+    `points, no preamble like "Here is a summary" — just the summary itself.\n\nHeadlines:\n${headlineText}`;
+  const text=await callGemini(prompt,{ttlHours:6});
+  if(!text)return; // silently no-op — "Today in Brief" strip above stands as-is
+  try{localStorage.setItem(LS_AI_BRIEFING_META,JSON.stringify({hash,ts:Date.now(),text}));}catch{}
+  renderAiBriefing(text);
+}
+function renderAiBriefing(text){
+  const el=document.getElementById('home-ai-briefing');if(!el)return;
+  el.innerHTML=`<div class="ai-card">
+    <div class="ai-card-lbl"><span class="badge-ai">✨ AI BRIEFING</span></div>
+    <div class="ai-card-txt">${esc(text)}</div>
+  </div>`;
+}
+
 /* ════════════════════════════════════════
    v4.0 PREMIUM LAYER
    Toasts · Saved stories · Share · Hide-read
@@ -6428,6 +6731,18 @@ function openSettings(){
     <div class="set-row">
       <div><div class="set-lbl">Saved stories</div><div class="set-sub set-stat">${getSaved().length} saved · surfaced in ⌘K</div></div>
       <button class="set-danger-btn" onclick="setSaved([]);toast('Saved stories cleared','⊘');openSettings()">Clear saved</button>
+    </div>
+    <div class="set-row">
+      <div><div class="set-lbl">Gemini API Key</div><div class="set-sub">Stored only in this browser · free key at aistudio.google.com</div></div>
+      <input class="set-input" type="password" id="gemini-key-inp" placeholder="AIza..." value="${esc(localStorage.getItem(LS_GEMINI_KEY)||'')}" onchange="saveGeminiKey(this.value)">
+    </div>
+    <div class="set-row">
+      <div><div class="set-lbl">AI features</div><div class="set-sub" id="gemini-status-txt">${geminiEnabled()?'Enabled':'Disabled — add a key above first'}</div></div>
+      <label class="toggle-wrap"><input type="checkbox" id="gemini-enabled-tog"${localStorage.getItem(LS_GEMINI_ENABLED)==='1'?' checked':''} onchange="toggleGeminiEnabled(this.checked)"><span class="pill"></span></label>
+    </div>
+    <div class="set-row">
+      <div><div class="set-lbl">Test connection</div><div class="set-sub" id="gemini-test-result">Sends one small request to verify your key works</div></div>
+      <button class="set-ok-btn" onclick="testGeminiKey()">Test</button>
     </div>`;
   document.getElementById('set-overlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -6437,6 +6752,36 @@ function closeSettings(){
   document.body.style.overflow='';
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings();});
+
+function saveGeminiKey(v){
+  v=(v||'').trim();
+  if(v)localStorage.setItem(LS_GEMINI_KEY,v);else localStorage.removeItem(LS_GEMINI_KEY);
+  const st=document.getElementById('gemini-status-txt');
+  if(st)st.textContent=geminiEnabled()?'Enabled':(v?'Key saved — turn on the toggle to enable':'Disabled — add a key above first');
+  toast(v?'Gemini key saved':'Gemini key cleared','⚙');
+}
+function toggleGeminiEnabled(checked){
+  if(checked&&!localStorage.getItem(LS_GEMINI_KEY)){
+    toast('Add a Gemini API key first','⚠');
+    const tog=document.getElementById('gemini-enabled-tog');if(tog)tog.checked=false;
+    return;
+  }
+  localStorage.setItem(LS_GEMINI_ENABLED,checked?'1':'0');
+  const st=document.getElementById('gemini-status-txt');
+  if(st)st.textContent=geminiEnabled()?'Enabled':'Disabled — add a key above first';
+  toast(checked?'AI features enabled':'AI features disabled','⚙');
+}
+async function testGeminiKey(){
+  const res=document.getElementById('gemini-test-result');
+  const key=localStorage.getItem(LS_GEMINI_KEY);
+  if(!key){if(res)res.textContent='Add a key above first';return;}
+  if(res)res.textContent='Testing…';
+  const wasEnabled=localStorage.getItem(LS_GEMINI_ENABLED);
+  localStorage.setItem(LS_GEMINI_ENABLED,'1'); // callGemini requires enabled to run
+  const text=await callGemini('Say "connected" and nothing else.',{ttlHours:0,timeoutMs:15000});
+  if(wasEnabled!=='1')localStorage.setItem(LS_GEMINI_ENABLED,wasEnabled||'0');
+  if(res)res.textContent=text?`✓ Connected · "${text.slice(0,40)}"`:'✗ No model responded — check your key or try again later';
+}
 
 /* ── Service worker + offline awareness ── */
 if('serviceWorker' in navigator&&location.protocol==='https:'){
@@ -6449,7 +6794,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v5.9 · World Conflicts: best-effort GDELT/OSINT enrichment');
+DBG.info('INIT','MERIDIAN v6.0 · Gemini AI Gateway — bring-your-own-key, free tier, opt-in');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
