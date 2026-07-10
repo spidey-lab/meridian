@@ -633,7 +633,7 @@
     .wt-track:hover{animation-play-state:paused}
     @keyframes wireTickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
     .wt-item{display:inline-flex;align-items:center;gap:6px;margin-right:28px;font-family:'JetBrains Mono',monospace;font-size:10px}
-    .wt-badge{font-size:8px;font-weight:700;letter-spacing:.6px;padding:1px 5px;border-radius:2px}
+    .wt-badge{font-size:8px;font-weight:700;letter-spacing:.6px;padding:1px 6px;border-radius:10px}
     .wt-badge.critical{background:rgba(226,75,74,.18);color:#E24B4A;border:0.5px solid rgba(226,75,74,.35);
       animation:criticalGlitch 8s ease-in-out infinite}
     .wt-badge.elevated{background:rgba(245,158,11,.15);color:#F59E0B;border:0.5px solid rgba(245,158,11,.3)}
@@ -938,8 +938,8 @@
     .clim-preset-chip:hover{border-color:var(--clr-climate);color:var(--clr-climate);background:rgba(56,189,248,.06)}
 
     /* Panel cards */
-    .clim-panel{background:rgba(255,255,255,.03);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden;margin-bottom:14px}
-    .clim-ph{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:0.5px solid rgba(255,255,255,.06);background:rgba(255,255,255,.015)}
+    .clim-panel{background:var(--glass);backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1);border:0.5px solid var(--edge-hi);border-radius:14px;overflow:hidden;margin-bottom:14px}
+    .clim-ph{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:0.5px solid var(--edge-lo);background:var(--edge-lo)}
     .clim-ph-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-sub)}
     .clim-ph-badge{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--clr-climate);letter-spacing:.5px}
 
@@ -1281,14 +1281,14 @@
        Final cascade layer: re-themes every component
     ══════════════════════════════════════════════ */
     [data-theme="dark"]{
-      --edge-hi:rgba(255,255,255,.13);--edge-lo:rgba(255,255,255,.035);--edge-hi2:rgba(255,255,255,.08);
-      --glass:rgba(10,15,28,.72);
+      --edge-hi:rgba(255,255,255,.16);--edge-lo:rgba(255,255,255,.035);--edge-hi2:rgba(255,255,255,.09);
+      --glass:rgba(10,15,28,.55);
       --shadow-card:0 1px 2px rgba(0,0,0,.4),0 10px 30px -12px rgba(0,0,0,.7);
       --shadow-card-h:0 2px 4px rgba(0,0,0,.4),0 22px 44px -14px rgba(0,0,0,.8),0 0 24px -8px rgba(200,168,107,.25);
     }
     [data-theme="light"]{
-      --edge-hi:rgba(60,50,30,.16);--edge-lo:rgba(60,50,30,.05);--edge-hi2:rgba(60,50,30,.10);
-      --glass:rgba(247,244,239,.8);
+      --edge-hi:rgba(60,50,30,.18);--edge-lo:rgba(60,50,30,.05);--edge-hi2:rgba(60,50,30,.11);
+      --glass:rgba(247,244,239,.62);
       --shadow-card:0 1px 2px rgba(40,30,10,.06),0 10px 26px -14px rgba(40,30,10,.18);
       --shadow-card-h:0 2px 4px rgba(40,30,10,.07),0 20px 40px -14px rgba(40,30,10,.24),0 0 22px -8px rgba(176,143,82,.35);
     }
@@ -1471,16 +1471,16 @@
     [data-theme="dark"]{
       --bg:#05070D;
       --text-sub:#8B96B0;--text-muted:#4A5570; /* legibility: old muted #243050 was near-invisible */
-      --bg-card:rgba(15,21,37,.55);--bg-card-h:rgba(24,32,54,.62);
-      --bg-surf:rgba(12,18,32,.5);--bg-modal:rgba(13,18,32,.8);
+      --bg-card:rgba(15,21,37,.42);--bg-card-h:rgba(24,32,54,.5);
+      --bg-surf:rgba(12,18,32,.38);--bg-modal:rgba(13,18,32,.8);
       --glow-a:rgba(200,168,107,.08);--glow-b:rgba(75,142,255,.055);--glow-c:rgba(20,184,166,.05);
       --glass-solid:#0D1220;
       --sk-base:rgba(255,255,255,.045);--sk-shine:rgba(255,255,255,.1); /* loaders etched into the glass, not opaque patches */
     }
     [data-theme="light"]{
       --bg:#F5F2EC;
-      --bg-card:rgba(255,255,255,.6);--bg-card-h:rgba(255,255,255,.82);
-      --bg-surf:rgba(255,255,255,.5);--bg-modal:rgba(255,255,255,.86);
+      --bg-card:rgba(255,255,255,.48);--bg-card-h:rgba(255,255,255,.68);
+      --bg-surf:rgba(255,255,255,.4);--bg-modal:rgba(255,255,255,.86);
       --glow-a:rgba(200,168,107,.15);--glow-b:rgba(120,160,235,.11);--glow-c:rgba(50,180,170,.09);
       --glass-solid:#FCFAF6;
       --sk-base:rgba(60,50,30,.06);--sk-shine:rgba(60,50,30,.12);
@@ -1488,7 +1488,7 @@
     :root{
       --neg:#E85B5B;--pos:#34C08B;
       --accent:#C8A86B;
-      --blur-1:blur(12px);--blur-2:blur(24px) saturate(1.3);
+      --blur-1:blur(18px) saturate(1.4);--blur-2:blur(32px) saturate(1.5);
     }
     body[data-accent="world"]{--accent:var(--clr-world)}
     body[data-accent="markets"]{--accent:var(--clr-markets)}
@@ -1518,7 +1518,7 @@
        (bg tokens above are now translucent — blur is what makes them read as glass) */
     .card,.hero-card,.brief-card,.crisis-panel-box,.crisis-summary-item,.clim-panel,.clim-hero,
     .gs-card,.gs-hero,.gs-compact,.mkt-summary-strip,.mkt-status-chip,.n50-hero,.n50-hist-card,
-    .n50-table-wrap,.topic-brief,.alert-card,.sk-card,.tension-card{
+    .n50-table-wrap,.topic-brief-card,.alert-card,.sk-card,.tension-card,.stat-tile{
       backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1)}
     .modal,.cp-box,.toast{backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2)}
     /* accent-aware hover: glass stays glass, the edge lights up */
@@ -1528,7 +1528,7 @@
     @media(max-width:768px){
       .card,.hero-card,.brief-card,.crisis-panel-box,.crisis-summary-item,.clim-panel,.clim-hero,
       .gs-card,.gs-hero,.gs-compact,.mkt-summary-strip,.mkt-status-chip,.n50-hero,.n50-hist-card,
-      .n50-table-wrap,.topic-brief,.alert-card,.sk-card,.tension-card,.ai-card{
+      .n50-table-wrap,.topic-brief-card,.alert-card,.sk-card,.tension-card,.ai-card,.stat-tile{
         backdrop-filter:none;-webkit-backdrop-filter:none}
       [data-theme="dark"]{--bg-card:rgba(15,21,37,.94);--bg-card-h:rgba(24,32,54,.95);--bg-surf:rgba(12,18,32,.92)}
       [data-theme="light"]{--bg-card:rgba(255,255,255,.94);--bg-card-h:rgba(255,255,255,.97);--bg-surf:rgba(255,255,255,.92)}
@@ -1628,7 +1628,10 @@
     ══════════════════════════════════════════════ */
 
     /* ── GLOBAL TENSION INDEX (Home) ── */
-    .tension-card{border-radius:var(--r);border:1px solid var(--border);padding:18px 22px;margin-bottom:20px;
+    .tension-card{border-radius:var(--r);border:1px solid transparent;
+      background:linear-gradient(var(--bg-card),var(--bg-card)) padding-box,
+                 linear-gradient(165deg,var(--edge-hi) 0%,var(--edge-lo) 45%,var(--edge-hi2) 100%) border-box;
+      box-shadow:var(--shadow-card);padding:18px 22px;margin-bottom:20px;
       display:flex;align-items:center;gap:22px;flex-wrap:wrap}
     .tension-gauge-wrap{position:relative;width:132px;flex-shrink:0;display:flex;flex-direction:column;align-items:center}
     .tension-gauge-svg{width:100%;height:auto;overflow:visible}
@@ -1647,6 +1650,37 @@
     .tension-pill-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
     .tension-spark{margin-left:auto;opacity:.85}
     @media(max-width:560px){.tension-card{flex-direction:column;align-items:flex-start}}
+
+    /* ══════════════════════════════════════════════
+       v6.4 GLASSMORPHIC REDESIGN — shared stat components
+       (elevated-glass tiles/bars/gauges; consumed by Home/Markets)
+    ══════════════════════════════════════════════ */
+    .stat-tile{border-radius:var(--r);border:1px solid transparent;
+      background:linear-gradient(var(--bg-card),var(--bg-card)) padding-box,
+                 linear-gradient(165deg,var(--edge-hi) 0%,var(--edge-lo) 45%,var(--edge-hi2) 100%) border-box;
+      box-shadow:var(--shadow-card);padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+    .stat-tile-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--text-sub);text-transform:uppercase}
+    .stat-tile-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+    .stat-tile-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+    .stat-tile-val{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;line-height:1.1;white-space:nowrap}
+    .stat-tile-chg{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600}
+    .stat-tile-chg.up{color:var(--pos)}.stat-tile-chg.dn{color:var(--neg)}.stat-tile-chg.na{color:var(--text-muted)}
+    .stat-tile-spark{flex-shrink:0;opacity:.9}
+    .stat-tile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+
+    .sector-bar-row{display:flex;align-items:center;gap:10px;padding:7px 0}
+    .sector-bar-lbl{font-size:12px;color:var(--text);display:flex;align-items:center;gap:7px;min-width:118px;flex-shrink:0}
+    .sector-bar-track{flex:1;height:6px;border-radius:4px;background:var(--bg-surf);overflow:hidden;position:relative}
+    .sector-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+    .sector-bar-val{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;min-width:52px;text-align:right;flex-shrink:0}
+
+    .breadth-donut-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+    .breadth-donut-svg{width:100%;max-width:150px;height:auto}
+    .breadth-donut-num{font-family:'Cormorant Garamond',serif;font-weight:700;text-anchor:middle}
+    .breadth-donut-sub{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;text-anchor:middle;fill:var(--text-muted)}
+    .breadth-legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text-sub)}
+    .breadth-legend-item{display:flex;align-items:center;gap:5px}
+    .breadth-legend-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 
     /* ── GLOBE VIEW OVERLAY (⌘K-launchable fullscreen threat map) ── */
     .globe-overlay{display:none;position:fixed;inset:0;z-index:960;background:rgba(0,0,0,.78);
@@ -1700,6 +1734,12 @@
     /* v6.3 — Crisis globes (mini + fullscreen) now render real continent silhouettes
        (simplified Natural Earth 110m land outlines) instead of a bare lat/lon wireframe,
        plus a radial-gradient ocean sphere and a glowing rim for a richer, less flat look */
+    /* v6.4 — Phase 0 of the glassmorphic redesign: elevated glass transparency + blur
+       across all three themes, .tension-card gets its own glass surface, .clim-panel
+       normalized onto shared tokens (was hardcoded white, wrong in light/terminal),
+       .topic-brief mobile-blur selector bug fixed, .wt-badge pill-ified, and new shared
+       .stat-tile/.sector-bar-row/.breadth-donut components + sparkline/donut-gauge JS
+       helpers added as foundation for the Home/Markets redesign phases to follow */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1717,7 +1757,7 @@
        selector never matches when data-theme is dark/light — no cascade-order
        fight with those rules, but everything needed must be defined right here. */
     [data-theme="terminal"]{
-      --bg:#010D06;--bg-surf:rgba(10,35,20,.5);--bg-card:rgba(8,30,17,.55);--bg-card-h:rgba(14,45,26,.62);
+      --bg:#010D06;--bg-surf:rgba(10,35,20,.38);--bg-card:rgba(8,30,17,.42);--bg-card-h:rgba(14,45,26,.5);
       --bg-modal:rgba(6,26,14,.85);--border:rgba(80,255,140,.18);--border-sub:rgba(80,255,140,.1);
       --text:#8CFFB0;--text-sub:#4FDB86;--text-muted:#2E8F5C;
       --shadow:0 4px 24px rgba(0,0,0,.6);--shadow-md:0 8px 48px rgba(0,0,0,.8);
@@ -1728,8 +1768,8 @@
       --tone-neg-txt:#FF8B70;--tone-pos-txt:#7CFFAA;
       --tone-neu-bg:rgba(80,255,140,.08);--tone-neu-txt:#4FDB86;
       --card-inner-top:rgba(140,255,176,.06);
-      --edge-hi:rgba(140,255,176,.18);--edge-lo:rgba(140,255,176,.04);--edge-hi2:rgba(140,255,176,.11);
-      --glass:rgba(6,26,14,.78);--glass-solid:#04160A;
+      --edge-hi:rgba(140,255,176,.22);--edge-lo:rgba(140,255,176,.04);--edge-hi2:rgba(140,255,176,.13);
+      --glass:rgba(6,26,14,.6);--glass-solid:#04160A;
       --glow-a:rgba(57,255,106,.09);--glow-b:rgba(46,224,196,.06);--glow-c:rgba(0,255,65,.05);
       --gold:#39FF6A;--neg:#FF5A46;--pos:#39FF6A;--neu:#4FDB86;--warn:#B6FF4F;
       /* Per-section accents stay in the green/teal/lime family — monochrome mood,
@@ -1821,7 +1861,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.3</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.4</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1893,7 +1933,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v6.3
+    MERIDIAN v6.4
   </div>
 </main>
 
@@ -1935,7 +1975,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v6.3 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v6.4 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2687,6 +2727,27 @@ function activitySparkline(items,hex){
   return`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible;vertical-align:middle">
     <polyline points="${pts}" fill="none" stroke="${hex}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".8"/>
     <circle cx="${(BUCKETS-1)*bw}" cy="${H-1-(counts[BUCKETS-1]/max)*(H-3)}" r="2" fill="${hex}"/>
+  </svg>`;
+}
+
+/* Same visual language as activitySparkline, but for an ordered numeric series
+   (e.g. a price/return history) rather than time-bucketed article counts —
+   used by the Markets stat tiles. */
+function seriesSparkline(values,hex){
+  const W=64,H=18;
+  if(!values||values.length<2)return`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"></svg>`;
+  const min=Math.min(...values),max=Math.max(...values);
+  const span=(max-min)||1;
+  const bw=(W-1)/(values.length-1);
+  const pts=values.map((v,i)=>{
+    const x=i*bw;
+    const y=H-1-((v-min)/span)*(H-3);
+    return`${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const lastY=H-1-((values[values.length-1]-min)/span)*(H-3);
+  return`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="overflow:visible;vertical-align:middle">
+    <polyline points="${pts}" fill="none" stroke="${hex}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".8"/>
+    <circle cx="${(values.length-1)*bw}" cy="${lastY}" r="2" fill="${hex}"/>
   </svg>`;
 }
 
@@ -5015,6 +5076,18 @@ function tensionArcXY(score){
   const ang=PI*(1-pct);
   return[(cx+r*Math.cos(ang)).toFixed(2),(cy-r*Math.sin(ang)).toFixed(2)];
 }
+// Full-ring donut gauge geometry (sibling to tensionArcXY's semicircle arc) —
+// takes [{pct,col},...] segments (0-100, any order) and returns them with a
+// running `offset` so a caller can stack plain <circle> strokes into a ring
+// via pathLength=100 + stroke-dasharray, no arc trig needed at render time.
+function donutSegments(parts){
+  let acc=0;
+  return parts.map(p=>{
+    const seg={...p,offset:acc};
+    acc+=p.pct;
+    return seg;
+  });
+}
 function renderTensionGauge(items){
   const el=document.getElementById('home-tension');if(!el)return;
   if(!items.length){el.innerHTML='';return;}
@@ -7174,7 +7247,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v6.3 · Continent-mapped crisis globes with ocean gradient + rim glow');
+DBG.info('INIT','MERIDIAN v6.4 · Glassmorphic redesign phase 0 — elevated glass, shared stat components');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
