@@ -174,11 +174,31 @@
     .hero-card.aged-fallback::before{background:#BA7517!important}
     .badge-aged{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;background:rgba(186,117,23,.12);color:#BA7517;border:1px solid rgba(186,117,23,.3);font-weight:600;letter-spacing:.3px;flex-shrink:0}
     /* ── AI enrichment (Gemini) — badges + card, all optional/null-safe ── */
-    .badge-ai{font-family:'JetBrains Mono',monospace;font-size:9px;padding:1px 5px;border-radius:8px;background:rgba(200,168,107,.15);color:var(--gold);font-weight:700;letter-spacing:.2px;flex-shrink:0}
-    .ai-card{background:var(--bg-card);border:1px solid rgba(200,168,107,.25);border-radius:14px;padding:16px 18px;margin-bottom:16px;position:relative}
-    .ai-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;border-radius:14px 0 0 14px;background:var(--gold)}
-    .ai-card-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-    .ai-card-txt{font-size:13.5px;line-height:1.55;color:var(--text-sub)}
+    /* ── AI card — glass surface, animated accent bar + sweeping sheen.
+       prefers-reduced-motion is handled globally (the app-wide catch-all
+       collapses all animation-duration to .01ms), so no separate guard
+       is needed here. ── */
+    .badge-ai{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:8px;
+      background:rgba(200,168,107,.15);color:var(--gold);font-weight:700;letter-spacing:.3px;flex-shrink:0;
+      border:1px solid rgba(200,168,107,.32);animation:aiBadgePulse 2.6s ease-in-out infinite}
+    @keyframes aiBadgePulse{0%,100%{box-shadow:0 0 0 rgba(200,168,107,0)}50%{box-shadow:0 0 7px rgba(200,168,107,.55)}}
+    .ai-card{position:relative;overflow:hidden;
+      background:linear-gradient(160deg,rgba(200,168,107,.08),var(--glass) 55%);
+      backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+      border:1px solid rgba(200,168,107,.24);border-radius:16px;padding:16px 20px;margin-bottom:16px;
+      box-shadow:var(--shadow-card),inset 0 1px 0 var(--edge-hi)}
+    .ai-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;border-radius:16px 0 0 16px;
+      background:linear-gradient(180deg,transparent,var(--gold),transparent);background-size:100% 250%;
+      animation:aiBarFlow 3.6s linear infinite}
+    .ai-card::after{content:'';position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(100deg,transparent 40%,rgba(200,168,107,.08) 50%,transparent 60%);
+      background-size:250% 100%;background-position:130% 0;animation:aiSheen 6s ease-in-out infinite}
+    @keyframes aiBarFlow{0%{background-position:0 0}100%{background-position:0 250%}}
+    @keyframes aiSheen{0%,40%{background-position:130% 0}70%,100%{background-position:-30% 0}}
+    .ai-card-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1.8px;color:var(--gold);
+      text-transform:uppercase;margin-bottom:9px;position:relative;z-index:1;display:flex;align-items:center;gap:6px;
+      text-shadow:0 0 10px rgba(200,168,107,.35)}
+    .ai-card-txt{font-size:13.5px;line-height:1.6;color:var(--text);position:relative;z-index:1}
     .ai-takeaway{font-size:11px;font-style:italic;color:var(--text-sub);margin-top:6px;padding-top:6px;border-top:1px solid var(--border-sub)}
     .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;gap:8px}
     .card-top-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
@@ -708,7 +728,8 @@
     .alr-detail{flex-shrink:0;text-align:right;line-height:1.4;min-width:52px}
     .alr-sev{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--text)}
     .alr-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted)}
-    .ai-takeaway-row{display:none;flex-basis:100%;font-size:11px;font-style:italic;color:var(--text-sub);margin-top:6px}
+    .ai-takeaway-row{display:none;flex-basis:100%;font-size:11px;font-style:italic;color:var(--text);margin-top:6px;
+      padding-left:8px;border-left:2px solid rgba(200,168,107,.4)}
     .ai-takeaway-row.show{display:block}
 
     /* ── WIRE FOOTER TICKER: LIVE PIP (used in the ticker label) ── */
@@ -1507,7 +1528,7 @@
     @media(max-width:768px){
       .card,.hero-card,.brief-card,.crisis-panel-box,.crisis-summary-item,.clim-panel,.clim-hero,
       .gs-card,.gs-hero,.gs-compact,.mkt-summary-strip,.mkt-status-chip,.n50-hero,.n50-hist-card,
-      .n50-table-wrap,.topic-brief,.alert-card,.sk-card,.tension-card{
+      .n50-table-wrap,.topic-brief,.alert-card,.sk-card,.tension-card,.ai-card{
         backdrop-filter:none;-webkit-backdrop-filter:none}
       [data-theme="dark"]{--bg-card:rgba(15,21,37,.94);--bg-card-h:rgba(24,32,54,.95);--bg-surf:rgba(12,18,32,.92)}
       [data-theme="light"]{--bg-card:rgba(255,255,255,.94);--bg-card-h:rgba(255,255,255,.97);--bg-surf:rgba(255,255,255,.92)}
@@ -1619,6 +1640,7 @@
     .tension-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .tension-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text-sub);text-transform:uppercase}
     .tension-caption{font-size:11.5px;color:var(--text-sub);line-height:1.5}
+    .tension-ai-line{font-size:11.5px;color:var(--text);line-height:1.5;display:flex;gap:6px;align-items:baseline}
     .tension-breakdown{display:flex;gap:8px;flex-wrap:wrap}
     .tension-pill{display:inline-flex;align-items:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:9.5px;
       padding:3px 9px;border-radius:20px;background:var(--bg-surf);border:0.5px solid var(--border)}
@@ -1670,6 +1692,11 @@
        explainer); LISTEN reads the AI briefing prose; Climate AI takeaway; Globe View click
        shows AI context instead of auto-navigating; Search AI synthesis + related-query chips;
        ⌘K semantic search over saved stories */
+    /* v6.2 — Tension Index merged into one card: AI now computes both the score and the
+       rationale, patching the same gauge/number/marker in place instead of a separate card;
+       Nifty 50 AI analysis of the historical top-performers ranking (consistency vs magnitude,
+       grounded — no invented causes); every .ai-card redesigned with a glass surface, animated
+       gradient accent bar and sweeping sheen, pulsing AI badge */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1791,7 +1818,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.1</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.2</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1863,7 +1890,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v6.1
+    MERIDIAN v6.2
   </div>
 </main>
 
@@ -1905,7 +1932,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v6.1 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v6.2 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -4977,6 +5004,14 @@ function tensionBand(score){
   return score>=80?{lbl:'CRITICAL',col:'#8B5CE8'}:score>=55?{lbl:'ELEVATED',col:'#E24B4A'}:
          score>=30?{lbl:'WATCHFUL',col:'#F59E0B'}:{lbl:'CALM',col:'#14B8A6'};
 }
+// Shared arc geometry — used both for the initial render and for moving the
+// marker dot in place when the AI composite score later patches this card.
+function tensionArcXY(score){
+  const PI=Math.PI,r=52,cx=66,cy=68;
+  const pct=Math.min(Math.max(score,0)/100,1);
+  const ang=PI*(1-pct);
+  return[(cx+r*Math.cos(ang)).toFixed(2),(cy-r*Math.sin(ang)).toFixed(2)];
+}
 function renderTensionGauge(items){
   const el=document.getElementById('home-tension');if(!el)return;
   if(!items.length){el.innerHTML='';return;}
@@ -4990,13 +5025,12 @@ function renderTensionGauge(items){
 
   const PI=Math.PI,r=52,cx=66,cy=68;
   const arcPt=p=>[(cx+r*Math.cos(PI*(1-p))).toFixed(2),(cy-r*Math.sin(PI*(1-p))).toFixed(2)];
-  const pct=Math.min(score/100,1);
   const bands=[[0,.3,'#14B8A6'],[.3,.55,'#F59E0B'],[.55,.8,'#E24B4A'],[.8,1,'#8B5CE8']];
   const bandSVG=bands.map(([p0,p1,col])=>{
     const[x0,y0]=arcPt(p0),[x1,y1]=arcPt(p1);
     return`<path fill="none" stroke="${col}" stroke-width="6" opacity=".85" d="M${x0},${y0} A${r},${r} 0 0,1 ${x1},${y1}"/>`;
   }).join('');
-  const[markX,markY]=arcPt(pct);
+  const[markX,markY]=tensionArcXY(score);
 
   const spark=activitySparkline(items.filter(a=>a._sev.cls==='critical'),'#E24B4A');
 
@@ -5005,7 +5039,7 @@ function renderTensionGauge(items){
     <div class="tension-gauge-wrap">
       <svg class="tension-gauge-svg" viewBox="0 0 132 84">
         ${bandSVG}
-        <circle cx="${markX}" cy="${markY}" r="5" fill="${band.col}" stroke="#0B1220" stroke-width="1.5"/>
+        <circle id="tension-marker" cx="${markX}" cy="${markY}" r="5" fill="${band.col}" stroke="#0B1220" stroke-width="1.5"/>
         <text class="tension-num" id="tension-num-el" x="66" y="66" fill="${band.col}">—</text>
         <text class="tension-sub" x="66" y="78">TENSION</text>
       </svg>
@@ -5016,31 +5050,33 @@ function renderTensionGauge(items){
         <span class="tension-title">Global Tension Index</span>
         ${spark?`<span class="tension-spark">${spark}</span>`:''}
       </div>
-      <div class="tension-caption">Heuristic read on the live wire's severity mix — not a real forecast, just a quick pulse on how the day looks right now.</div>
+      <div class="tension-caption" id="tension-caption">Heuristic read on the live wire's severity mix — not a real forecast, just a quick pulse on how the day looks right now.</div>
+      <div class="tension-ai-line" id="tension-ai-line" style="display:none"></div>
       <div class="tension-breakdown">
         <span class="tension-pill"><span class="tension-pill-dot" style="background:#E24B4A"></span>${critC} Critical</span>
         <span class="tension-pill"><span class="tension-pill-dot" style="background:#F59E0B"></span>${elevC} Elevated</span>
         <span class="tension-pill"><span class="tension-pill-dot" style="background:#14B8A6"></span>${activeC} Active</span>
       </div>
     </div>
-  </div>
-  <div id="tension-ai-slot"></div>`;
+  </div>`;
   rollNum(document.getElementById('tension-num-el'),score);
 }
 
 /* ── AI Composite Tension Index (Gemini, optional) ──
-   A second, clearly-labeled card below the heuristic gauge above — never
-   overwrites its already-animated number in place (that would silently
-   re-jump mid-session with no visual cue why). Blends conflict severity
-   (same wire feed as the gauge), market volatility (VIX + top movers, only
-   if the Markets tab has been visited this session), and active GDACS
-   crisis alerts (only if Crisis has been visited) — climate/disaster signal
-   is folded into the conflict+crisis text rather than treated as a fake 4th
-   input, since it already surfaces there via CRISIS_NEWS_RSS/ELEV_W and
-   GDACS eventtype. Never triggers a fetch of its own — purely reuses
-   whatever's already in memory, so it can never add latency/failure risk
-   to the footer ticker's own load. Band mapping stays 100% client-side
-   (tensionBand) so the two cards always agree on what a score means. */
+   Both the number AND the rationale come from AI here — this patches the
+   SAME card rendered above in place (marker position, number, band, label)
+   rather than adding a second card, so there's one unified index, not two
+   competing numbers. The heuristic score still renders first (instantly,
+   no blank/loading state) and stands as-is if AI is off/unavailable — this
+   only ever upgrades what's shown, never regresses it. Blends conflict
+   severity (same wire feed as the gauge), market volatility (VIX + top
+   movers, only if the Markets tab has been visited this session), and
+   active GDACS crisis alerts (only if Crisis has been visited) —
+   climate/disaster signal is folded into the conflict+crisis text rather
+   than treated as a fake 4th input, since it already surfaces there via
+   CRISIS_NEWS_RSS/ELEV_W and GDACS eventtype. Never triggers a fetch of
+   its own — purely reuses whatever's already in memory, so it can never
+   add latency/failure risk to the footer ticker's own load. */
 const LS_AI_TENSION_META='mer18_ai_tension_meta';
 async function enrichTensionWithAi(items){
   if(!geminiEnabled()||!items||!items.length)return;
@@ -5069,7 +5105,7 @@ async function enrichTensionWithAi(items){
   const throttleMs=2*3600*1000;
   const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
   if(!shouldRegenerate){
-    if(typeof meta.score==='number')renderTensionAi(meta.score,meta.rationale);
+    if(typeof meta.score==='number')applyTensionAi(meta.score,meta.rationale);
     return;
   }
 
@@ -5093,18 +5129,31 @@ async function enrichTensionWithAi(items){
   const score=Math.round(parsed.score);
   const rationale=String(parsed.rationale||'').slice(0,220);
   try{localStorage.setItem(LS_AI_TENSION_META,JSON.stringify({hash,ts:Date.now(),score,rationale}));}catch{}
-  renderTensionAi(score,rationale);
+  applyTensionAi(score,rationale);
 }
-function renderTensionAi(score,rationale){
-  const el=document.getElementById('tension-ai-slot');if(!el)return;
+// Patches the existing tension-card in place: moves the marker dot to the
+// new score's position, re-rolls the number, recolors the band label, and
+// swaps the "heuristic" disclaimer for the AI's own rationale line. Same
+// card, same DOM nodes, one number — not a second, competing one.
+function applyTensionAi(score,rationale){
+  const numEl=document.getElementById('tension-num-el');
+  const markerEl=document.getElementById('tension-marker');
+  const lblEl=document.getElementById('tension-lbl');
+  const capEl=document.getElementById('tension-caption');
+  const lineEl=document.getElementById('tension-ai-line');
+  if(!numEl||!lblEl)return;
   const band=tensionBand(score);
-  el.innerHTML=`<div class="ai-card" style="border-color:${band.col}44">
-    <div class="ai-card-lbl">
-      <span class="badge-ai">✨ AI COMPOSITE TENSION</span>
-      <span class="tension-lbl" style="background:${band.col}22;color:${band.col};border:0.5px solid ${band.col}44">${score} · ${band.lbl}</span>
-    </div>
-    <div class="ai-card-txt">${esc(rationale)}</div>
-  </div>`;
+  const[markX,markY]=tensionArcXY(score);
+  if(markerEl){markerEl.setAttribute('cx',markX);markerEl.setAttribute('cy',markY);markerEl.setAttribute('fill',band.col);}
+  numEl.setAttribute('fill',band.col);
+  rollNum(numEl,score);
+  lblEl.textContent=band.lbl;
+  lblEl.style.background=`${band.col}22`;lblEl.style.color=band.col;lblEl.style.border=`0.5px solid ${band.col}44`;
+  if(capEl)capEl.style.display='none';
+  if(lineEl){
+    lineEl.style.display='block';
+    lineEl.innerHTML=`<span class="badge-ai">✨ AI</span> ${esc(rationale)}`;
+  }
 }
 
 /* ════════════════════════════════════════
@@ -6352,6 +6401,56 @@ function n50ComputeHistorical(){
   return{data:ranked,months:distinctMonths,insufficient:false};
 }
 
+/* ── Nifty 50: AI analysis of the historical outperformer computation
+   (Gemini, optional) — reuses n50ComputeHistorical()'s already-ranked
+   top 5 (avg return vs NIFTYBEES, win rate, months tracked) as-is, no
+   new computation. The prompt is deliberately grounded: the model is
+   only given names/tickers and the numbers already computed here, so
+   it's instructed to analyze the PATTERN in the data (consistency,
+   magnitude, win rate) rather than invent causes it has no evidence for
+   (no sector/news data is attached). Cached 24h — this dataset updates
+   about monthly. Silently no-ops if unavailable — the historical cards
+   already show every number regardless. */
+const LS_AI_N50_META='mer18_ai_n50_meta';
+async function enrichN50WithAi(){
+  if(!geminiEnabled())return;
+  const{data,months,insufficient}=n50ComputeHistorical();
+  if(insufficient||!data.length)return;
+  const listText=data.map((s,i)=>`${i+1}. ${s.name} (${s.ticker}): beat NIFTYBEES in ${s.wins}/${s.total} months `+
+    `tracked, averaging ${n50Pct(s.avg)} vs the index per month`).join('\n');
+  const digest=`${months}|${listText}`;
+  const hash=hashStr(digest);
+  let meta={};
+  try{meta=JSON.parse(localStorage.getItem(LS_AI_N50_META)||'{}');}catch{}
+  const throttleMs=24*3600*1000;
+  const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
+  if(!shouldRegenerate){
+    if(meta.text)renderN50Ai(meta.text);
+    return;
+  }
+  const prompt=`You are a cautious equity data analyst. Below is a ranked list of the top 5 `+
+    `Nifty 50 stocks by historical outperformance versus the NIFTYBEES index ETF, computed from `+
+    `${months} month(s) of tracked data (average monthly return vs the index, and how many of `+
+    `those months each stock actually beat the index). Write a short, factual analysis: note `+
+    `which entries show the most CONSISTENT outperformance (high win rate) vs the LARGEST-magnitude `+
+    `but less consistent outperformance, and end with one prudent, general suggestion for someone `+
+    `reviewing this data (e.g. caution about small sample sizes, the difference between consistency `+
+    `and magnitude, or a reminder that past performance doesn't guarantee future results). Do not `+
+    `invent reasons/causes (sector trends, company news, etc.) you have no evidence for — stick to `+
+    `what the numbers show. 3-4 sentences, plain language, no headers, no bullet points.\n\n${listText}`;
+  const text=await callGemini(prompt,{ttlHours:24});
+  if(!text)return;
+  try{localStorage.setItem(LS_AI_N50_META,JSON.stringify({hash,ts:Date.now(),text}));}catch{}
+  renderN50Ai(text);
+}
+function renderN50Ai(text){
+  const el=document.getElementById('n50-ai-brief');if(!el)return;
+  el.innerHTML=`<div class="ai-card">
+    <div class="ai-card-lbl"><span class="badge-ai">✨ AI ANALYSIS</span> Historical Outperformers</div>
+    <div class="ai-card-txt">${esc(text)}</div>
+  </div>`;
+}
+
 /* ── Step 8: Render hero cards ── */
 function n50RenderTop5(items){
   const el=document.getElementById('n50-top5');if(!el)return;
@@ -6515,6 +6614,7 @@ function n50ScaffoldHTML(heroPeriod,fallbackMsg){
     </div>
   </div>
   <div class="n50-heroes" id="n50-top5"></div>
+  <div id="n50-ai-brief"></div>
 
   <div class="n50-hero-hdr" style="margin-top:8px">
     <div class="n50-hero-hdr-left">
@@ -6569,6 +6669,7 @@ async function n50Init(){
     if(stamp) stamp.textContent=`${gridItems.length} stocks · ${n50YMLabel(n50State.gridYear,n50State.gridMonth)}`;
     n50State.loaded=true;n50State.loading=false;
     DBG.ok('N50',`Panel ready · ${n50State.raw.length} rows`);
+    enrichN50WithAi();
   }catch(e){
     DBG.err('N50',e.message);
     root.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Failed to load Nifty 50 data · ${esc(e.message)}</div></div>`;
@@ -7070,7 +7171,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v6.1 · AI Tension Index, Explain-story, Climate/Globe/Search AI, ⌘K semantic search');
+DBG.info('INIT','MERIDIAN v6.2 · Merged AI Tension Index, N50 AI analysis, redesigned AI cards');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
