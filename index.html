@@ -670,7 +670,7 @@
     .alert-card.orange{border-left-color:#F59E0B;background:rgba(245,158,11,.03)}
     @keyframes alertPulse{0%,100%{box-shadow:0 0 0 0 rgba(226,75,74,0)}50%{box-shadow:0 0 0 3px rgba(226,75,74,.12)}}
     .alert-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
-    .alert-level-badge{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.8px;padding:2px 7px;border-radius:3px}
+    .alert-level-badge{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.8px;padding:2px 8px;border-radius:10px}
     .alert-level-badge.red{background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3)}
     .alert-level-badge.orange{background:rgba(245,158,11,.12);color:#F59E0B;border:0.5px solid rgba(245,158,11,.25)}
     .alert-type-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub);display:flex;align-items:center;gap:4px}
@@ -1752,6 +1752,12 @@
        Breadth donut (advancing/declining/unchanged across every priced
        instrument), and a Sector Performance bar list that lights up further
        as sector tickers are added to the user's own Google Sheet feed */
+    /* v6.7 — Phase 3 of the glassmorphic redesign (remaining tabs): closing
+       pass verifying the elevated glass tokens read correctly across World
+       Conflicts, Economy, Tech & AI, India, Tamil Nadu, Crisis Watch, Climate
+       and Search in all three themes; pill-ified Crisis Watch's GDACS
+       .alert-level-badge to match the rounded chip language used everywhere
+       else (.wt-badge, .c-tone, .tension-pill) */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1873,7 +1879,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.6</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.7</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1945,7 +1951,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v6.6
+    MERIDIAN v6.7
   </div>
 </main>
 
@@ -1987,7 +1993,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v6.6 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v6.7 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -7376,7 +7382,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v6.6 · Glassmorphic redesign phase 2 — Markets stat tiles, breadth donut, sector bars');
+DBG.info('INIT','MERIDIAN v6.7 · Glassmorphic redesign phase 3 — remaining tabs verified, chips pill-ified');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
