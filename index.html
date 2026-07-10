@@ -200,6 +200,17 @@
       text-shadow:0 0 10px rgba(200,168,107,.35)}
     .ai-card-txt{font-size:13.5px;line-height:1.6;color:var(--text);position:relative;z-index:1}
     .ai-takeaway{font-size:11px;font-style:italic;color:var(--text-sub);margin-top:6px;padding-top:6px;border-top:1px solid var(--border-sub)}
+    /* optional richer layout for flagship AI cards (Home briefing): icon medallion
+       + a small meta-stat row under the prose. Other .ai-card call sites are
+       untouched — this only activates on .ai-card.has-medallion */
+    .ai-card.has-medallion{display:flex;gap:14px;align-items:flex-start}
+    .ai-card-icon{flex-shrink:0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:15px;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--gold) 38%,transparent),color-mix(in srgb,var(--gold) 10%,transparent) 72%);
+      border:1px solid color-mix(in srgb,var(--gold) 40%,transparent);box-shadow:0 0 12px -2px color-mix(in srgb,var(--gold) 45%,transparent);position:relative;z-index:1}
+    .ai-card-body{flex:1;min-width:0;position:relative;z-index:1}
+    .ai-card-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid var(--border-sub);
+      font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.6px;color:var(--text-sub);text-transform:uppercase}
+    .ai-card-meta b{color:var(--gold);font-weight:700}
     .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;gap:8px}
     .card-top-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
     .c-flag{font-size:12px;line-height:1;flex-shrink:0}
@@ -1740,6 +1751,10 @@
        .topic-brief mobile-blur selector bug fixed, .wt-badge pill-ified, and new shared
        .stat-tile/.sector-bar-row/.breadth-donut components + sparkline/donut-gauge JS
        helpers added as foundation for the Home/Markets redesign phases to follow */
+    /* v6.5 — Phase 1 of the glassmorphic redesign (Home tab): the Daily AI Briefing
+       card gets an icon medallion + a small meta-stat row (source count, last
+       updated) below the prose, still gold-branded (theme-adaptive via var(--gold),
+       so it renders green in terminal); degrades gracefully with no meta */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1861,7 +1876,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.4</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.5</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1933,7 +1948,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v6.4
+    MERIDIAN v6.5
   </div>
 </main>
 
@@ -1975,7 +1990,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v6.4 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v6.5 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -6845,7 +6860,7 @@ async function loadAiBriefing(){
   const throttleMs=4*3600*1000;
   const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
   if(!shouldRegenerate){
-    if(meta.text)renderAiBriefing(meta.text);
+    if(meta.text)renderAiBriefing(meta.text,{sourceCount:_briefData.length,ts:meta.ts});
     return;
   }
   const prompt=`You are a terse intelligence briefing writer. Given these headlines from `+
@@ -6854,14 +6869,24 @@ async function loadAiBriefing(){
     `points, no preamble like "Here is a summary" — just the summary itself.\n\nHeadlines:\n${headlineText}`;
   const text=await callGemini(prompt,{ttlHours:6});
   if(!text)return; // silently no-op — "Today in Brief" strip above stands as-is
-  try{localStorage.setItem(LS_AI_BRIEFING_META,JSON.stringify({hash,ts:Date.now(),text}));}catch{}
-  renderAiBriefing(text);
+  const ts=Date.now();
+  try{localStorage.setItem(LS_AI_BRIEFING_META,JSON.stringify({hash,ts,text}));}catch{}
+  renderAiBriefing(text,{sourceCount:_briefData.length,ts});
 }
-function renderAiBriefing(text){
+function renderAiBriefing(text,meta){
   const el=document.getElementById('home-ai-briefing');if(!el)return;
-  el.innerHTML=`<div class="ai-card">
-    <div class="ai-card-lbl"><span class="badge-ai">✨ AI BRIEFING</span></div>
-    <div class="ai-card-txt">${esc(text)}</div>
+  const sourceCount=meta&&meta.sourceCount;
+  const updated=meta&&meta.ts?ago(new Date(meta.ts)):'';
+  el.innerHTML=`<div class="ai-card has-medallion">
+    <div class="ai-card-icon" aria-hidden="true">✨</div>
+    <div class="ai-card-body">
+      <div class="ai-card-lbl"><span class="badge-ai">AI BRIEFING</span></div>
+      <div class="ai-card-txt">${esc(text)}</div>
+      <div class="ai-card-meta">
+        ${sourceCount?`<span>◈ Sources <b>${sourceCount}</b></span>`:''}
+        ${updated?`<span>◷ Updated <b>${updated}</b></span>`:''}
+      </div>
+    </div>
   </div>`;
 }
 
@@ -7247,7 +7272,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v6.4 · Glassmorphic redesign phase 0 — elevated glass, shared stat components');
+DBG.info('INIT','MERIDIAN v6.5 · Glassmorphic redesign phase 1 — Home AI briefing icon + meta row');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
