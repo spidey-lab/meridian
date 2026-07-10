@@ -459,16 +459,7 @@
       .gs-scroll-list{max-height:none}
     }
 
-    /* ── SUMMARY STRIP ── */
-    .mkt-summary-strip{display:flex;gap:0;margin-bottom:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;flex-wrap:wrap;box-shadow:var(--shadow-card)}
-    .mkt-summary-cell{flex:1;min-width:140px;padding:12px 16px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:4px;transition:background .18s}
-    .mkt-summary-cell:hover{background:var(--bg-card-h)}
-    .mkt-summary-cell:last-child{border-right:none}
-    .mss-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase}
-    .mss-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .mss-val.up{color:var(--pos)}
-    .mss-val.dn{color:var(--neg)}
-    .mss-val.warn{color:#D4A843}
+    /* ── SUMMARY STRIP: stat tiles + market breadth donut (see summaryStripHTML) ── */
 
     /* ── TICKER TAPE ── */
     .ticker-wrap{overflow:hidden;background:var(--bg-surf);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:18px;padding:7px 0;white-space:nowrap;position:relative;box-shadow:var(--shadow-card)}
@@ -1420,7 +1411,6 @@
     .gs-card,.gs-hero{border-radius:var(--r);box-shadow:var(--shadow-card)}
     .gs-card:hover,.gs-hero:hover{box-shadow:var(--shadow-card-h);transform:translateY(-3px)}
     .gs-compact{border-radius:12px}
-    .mkt-summary-strip{border-radius:var(--r)}
     .mkt-status-chip{border-radius:var(--r)}
     .mkt-subtab{padding:7px 18px;font-size:12px}
     .mkt-subtab.active{box-shadow:0 6px 18px -8px currentColor}
@@ -1528,7 +1518,7 @@
     /* True frosted glass: card/panel surfaces blur what's behind them.
        (bg tokens above are now translucent — blur is what makes them read as glass) */
     .card,.hero-card,.brief-card,.crisis-panel-box,.crisis-summary-item,.clim-panel,.clim-hero,
-    .gs-card,.gs-hero,.gs-compact,.mkt-summary-strip,.mkt-status-chip,.n50-hero,.n50-hist-card,
+    .gs-card,.gs-hero,.gs-compact,.mkt-status-chip,.n50-hero,.n50-hist-card,
     .n50-table-wrap,.topic-brief-card,.alert-card,.sk-card,.tension-card,.stat-tile{
       backdrop-filter:var(--blur-1);-webkit-backdrop-filter:var(--blur-1)}
     .modal,.cp-box,.toast{backdrop-filter:var(--blur-2);-webkit-backdrop-filter:var(--blur-2)}
@@ -1538,7 +1528,7 @@
        tokens near-opaque so every consumer falls back uniformly */
     @media(max-width:768px){
       .card,.hero-card,.brief-card,.crisis-panel-box,.crisis-summary-item,.clim-panel,.clim-hero,
-      .gs-card,.gs-hero,.gs-compact,.mkt-summary-strip,.mkt-status-chip,.n50-hero,.n50-hist-card,
+      .gs-card,.gs-hero,.gs-compact,.mkt-status-chip,.n50-hero,.n50-hist-card,
       .n50-table-wrap,.topic-brief-card,.alert-card,.sk-card,.tension-card,.ai-card,.stat-tile{
         backdrop-filter:none;-webkit-backdrop-filter:none}
       [data-theme="dark"]{--bg-card:rgba(15,21,37,.94);--bg-card-h:rgba(24,32,54,.95);--bg-surf:rgba(12,18,32,.92)}
@@ -1755,6 +1745,13 @@
        card gets an icon medallion + a small meta-stat row (source count, last
        updated) below the prose, still gold-branded (theme-adaptive via var(--gold),
        so it renders green in terminal); degrades gracefully with no meta */
+    /* v6.6 — Phase 2 of the glassmorphic redesign (Markets tab): the old 4-cell
+       text strip is replaced by per-index stat tiles (NIFTY 50/SENSEX/NIFTY
+       BANK/USD-INR/VIX) each with a real 3-point intraday sparkline (prev
+       close → open → current — no fabricated time series), a genuine Market
+       Breadth donut (advancing/declining/unchanged across every priced
+       instrument), and a Sector Performance bar list that lights up further
+       as sector tickers are added to the user's own Google Sheet feed */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1876,7 +1873,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.5</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.6</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1948,7 +1945,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v6.5
+    MERIDIAN v6.6
   </div>
 </main>
 
@@ -1990,7 +1987,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v6.5 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v6.6 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2589,6 +2586,9 @@ async function fetchDesc(article){
    UTILITIES
 ════════════════════════════════════════ */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// Resolves a CSS custom property to its literal value — needed wherever a
+// color has to be handed to an SVG presentation attribute rather than CSS.
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
 // Source favicon chip — only for real domains; hides itself on load failure
 function favImg(domain){
   const d=(domain||'').replace(/^www\./,'').trim();
@@ -3509,35 +3509,139 @@ function gsCardHTML(item){
 }
 
 /* ── Summary strip computation ── */
-function summaryStripHTML(items){
-  const valid=items.filter(x=>x.changePercent&&Math.abs(x.changePercent)>0.0001&&x.trend);
-  const upCount=valid.filter(x=>x.trend==='UP').length;
-  const dnCount=valid.filter(x=>x.trend==='DOWN').length;
-  const gainer=valid.reduce((a,b)=>b.changePercent>a.changePercent?b:a,{changePercent:-Infinity,name:'—'});
-  const loser =valid.reduce((a,b)=>b.changePercent<a.changePercent?b:a,{changePercent:Infinity,name:'—'});
-  const vix=items.find(x=>x.name==='India VIX');
-  const breadthCls=upCount>=dnCount?'up':'dn';
-  const gainerCls=gainer.changePercent>0?'up':'dn';
-  const loserCls=loser.changePercent<0?'dn':'up';
-  const vixCls=vix?(vix.price>=25?'dn':vix.price>=18?'warn':vix.price<13?'up':'na'):'na';
-  return`<div class="mkt-summary-strip">
-    <div class="mkt-summary-cell">
-      <div class="mss-lbl">Market Breadth</div>
-      <div class="mss-val ${breadthCls}">${upCount}↑ &nbsp;/&nbsp; ${dnCount}↓</div>
-    </div>
-    <div class="mkt-summary-cell">
-      <div class="mss-lbl">Top Gainer</div>
-      <div class="mss-val ${gainerCls}" title="${esc(gainer.name)}">${esc((gainer.name||'—').split(' ').slice(0,2).join(' '))} ${gainer.changePercent!=-Infinity?'(+'+gainer.changePercent.toFixed(2)+'%)':''}</div>
-    </div>
-    <div class="mkt-summary-cell">
-      <div class="mss-lbl">Top Loser</div>
-      <div class="mss-val ${loserCls}" title="${esc(loser.name)}">${esc((loser.name||'—').split(' ').slice(0,2).join(' '))} ${loser.changePercent!=Infinity?'('+loser.changePercent.toFixed(2)+'%)':''}</div>
-    </div>
-    <div class="mkt-summary-cell">
-      <div class="mss-lbl">Volatility · VIX</div>
-      <div class="mss-val ${vixCls}">${vix?`${vix.price.toFixed(2)} (${vix.changePercent>0?'+':''}${vix.changePercent.toFixed(2)}%)`:'—'}</div>
+/* Known Google Finance query tickers for the headline stat tiles — matched by
+   ticker (the stable query string the feed actually requests, see GS_GROUPS
+   above) rather than by display name, since name labels are whatever the
+   user's own sheet script assigns. */
+const MARKET_STAT_TICKERS=[
+  {ticker:'INDEXNSE:NIFTY_50',   lbl:'NIFTY 50'},
+  {ticker:'INDEXBOM:SENSEX',     lbl:'SENSEX'},
+  {ticker:'INDEXNSE:NIFTY_BANK', lbl:'NIFTY BANK'},
+  {ticker:'CURRENCY:USDINR',     lbl:'USD/INR'},
+];
+/* Sector Performance bars — NIFTY_IT/NIFTY_BANK are already fetched today;
+   NIFTY_AUTO/FMCG/PHARMA only appear once added to the user's own Google
+   Sheet/Apps Script feed. Renders only once at least 2 are present, so this
+   quietly lights up further as more sector tickers are added — no code
+   change needed on that end. */
+const SECTOR_TICKERS=[
+  {ticker:'INDEXNSE:NIFTY_IT',     lbl:'Nifty IT'},
+  {ticker:'INDEXNSE:NIFTY_BANK',   lbl:'Nifty Banking'},
+  {ticker:'INDEXNSE:NIFTY_AUTO',   lbl:'Nifty Auto'},
+  {ticker:'INDEXNSE:NIFTY_FMCG',   lbl:'Nifty FMCG'},
+  {ticker:'INDEXNSE:NIFTY_PHARMA', lbl:'Nifty Pharma'},
+];
+
+function statTileHTML(item,lbl){
+  const cls=item.trend==='UP'?'up':item.trend==='DOWN'?'dn':'na';
+  const arrow=item.trend==='UP'?'▲':item.trend==='DOWN'?'▼':'';
+  const pct=item.changePercent?`${arrow} ${item.changePercent>0?'+':''}${item.changePercent.toFixed(2)}%`:'—';
+  const priceStr=item.price?item.price.toLocaleString('en-IN',{maximumFractionDigits:2}):'—';
+  // 3 real intraday points (prev close → open → current) — the feed is a
+  // snapshot, not a time series, so this is the most honest trend shape
+  // available without fabricating data.
+  const series=[item.prevClose,item.open,item.price].filter(v=>v>0);
+  const hex=cls==='up'?cssVar('--pos'):cls==='dn'?cssVar('--neg'):cssVar('--text-muted');
+  const spark=series.length>=2?seriesSparkline(series,hex):'';
+  return`<div class="stat-tile">
+    <div class="stat-tile-lbl">${esc(lbl)}</div>
+    <div class="stat-tile-row">
+      <div class="stat-tile-main">
+        <div class="stat-tile-val">${priceStr}</div>
+        <div class="stat-tile-chg ${cls}">${pct}</div>
+      </div>
+      ${spark?`<div class="stat-tile-spark">${spark}</div>`:''}
     </div>
   </div>`;
+}
+function vixTileHTML(vix){
+  const cls=vix.price>=25?'dn':vix.price>=18?'warn':vix.price<13?'up':'na';
+  const arrow=vix.trend==='UP'?'▲':vix.trend==='DOWN'?'▼':'';
+  const pct=vix.changePercent?`${arrow} ${vix.changePercent>0?'+':''}${vix.changePercent.toFixed(2)}%`:'—';
+  const series=[vix.prevClose,vix.open,vix.price].filter(v=>v>0);
+  const hexMap={up:cssVar('--pos'),dn:cssVar('--neg'),warn:'#D4A843',na:cssVar('--text-muted')};
+  const spark=series.length>=2?seriesSparkline(series,hexMap[cls]):'';
+  return`<div class="stat-tile">
+    <div class="stat-tile-lbl">Volatility · VIX</div>
+    <div class="stat-tile-row">
+      <div class="stat-tile-main">
+        <div class="stat-tile-val">${vix.price.toFixed(2)}</div>
+        <div class="stat-tile-chg ${cls}">${pct}</div>
+      </div>
+      ${spark?`<div class="stat-tile-spark">${spark}</div>`:''}
+    </div>
+  </div>`;
+}
+
+/* Market Breadth donut — advancing/declining/unchanged across every priced
+   instrument the feed returns, rendered via donutSegments (see tensionArcXY's
+   sibling helper) as plain stroked circles with pathLength=100. */
+function marketBreadthDonutHTML(items){
+  const priced=items.filter(x=>x.price>0);
+  const total=priced.length||1;
+  const adv=priced.filter(x=>x.trend==='UP').length;
+  const dec=priced.filter(x=>x.trend==='DOWN').length;
+  const unch=priced.length-adv-dec;
+  const posHex=cssVar('--pos'),negHex=cssVar('--neg'),neuHex=cssVar('--text-muted');
+  const segs=donutSegments([
+    {pct:adv/total*100,col:posHex},
+    {pct:dec/total*100,col:negHex},
+    {pct:unch/total*100,col:neuHex},
+  ].filter(s=>s.pct>0));
+  const R=52,CX=75,CY=75,SW=14;
+  const rings=segs.map(s=>`<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${s.col}" stroke-width="${SW}"
+    pathLength="100" stroke-dasharray="${s.pct.toFixed(2)} ${(100-s.pct).toFixed(2)}"
+    stroke-dashoffset="${(-s.offset).toFixed(2)}" transform="rotate(-90 ${CX} ${CY})"/>`).join('');
+  const advPct=Math.round(adv/total*100);
+  return`<div class="breadth-donut-wrap">
+    <svg class="breadth-donut-svg" viewBox="0 0 150 150">
+      ${rings}
+      <text class="breadth-donut-num" x="75" y="80" font-size="26" fill="${posHex}">${advPct}%</text>
+      <text class="breadth-donut-sub" x="75" y="96">ADVANCING</text>
+    </svg>
+    <div class="breadth-legend">
+      <span class="breadth-legend-item"><span class="breadth-legend-dot" style="background:${posHex}"></span>${adv} Advancing</span>
+      <span class="breadth-legend-item"><span class="breadth-legend-dot" style="background:${negHex}"></span>${dec} Declining</span>
+      <span class="breadth-legend-item"><span class="breadth-legend-dot" style="background:${neuHex}"></span>${unch} Unchanged</span>
+    </div>
+  </div>`;
+}
+
+function sectorPerformanceHTML(items){
+  const found=SECTOR_TICKERS.map(t=>({...t,item:items.find(x=>x.ticker===t.ticker)})).filter(s=>s.item&&s.item.price>0);
+  if(found.length<2)return''; // not enough sector tickers in the feed yet — see SECTOR_TICKERS comment
+  const maxAbs=Math.max(...found.map(s=>Math.abs(s.item.changePercent||0)),0.01);
+  const rows=found.map(s=>{
+    const chg=s.item.changePercent||0;
+    const cls=chg>0?'up':chg<0?'dn':'na';
+    const hex=cls==='up'?cssVar('--pos'):cls==='dn'?cssVar('--neg'):cssVar('--text-muted');
+    const widthPct=Math.min(100,Math.abs(chg)/maxAbs*100);
+    return`<div class="sector-bar-row">
+      <div class="sector-bar-lbl">${esc(s.lbl)}</div>
+      <div class="sector-bar-track"><div class="sector-bar-fill" style="width:${widthPct.toFixed(1)}%;background:${hex}"></div></div>
+      <div class="sector-bar-val" style="color:${hex}">${chg>0?'+':''}${chg.toFixed(2)}%</div>
+    </div>`;
+  }).join('');
+  return`<div class="card" style="margin-bottom:16px">
+    <span class="section-head" style="margin:0 0 4px;border:none;padding:0;font-size:9px">// SECTOR PERFORMANCE</span>
+    ${rows}
+  </div>`;
+}
+
+function summaryStripHTML(items){
+  const vix=items.find(x=>x.name==='India VIX');
+  const tiles=MARKET_STAT_TICKERS.map(t=>{
+    const item=items.find(x=>x.ticker===t.ticker);
+    return item&&item.price>0?statTileHTML(item,t.lbl):'';
+  }).filter(Boolean);
+  if(vix&&vix.price>0)tiles.push(vixTileHTML(vix));
+  return`
+    ${tiles.length?`<div class="stat-tile-grid">${tiles.join('')}</div>`:''}
+    <div class="card" style="margin-bottom:16px">
+      <span class="section-head" style="margin:0 0 4px;border:none;padding:0;font-size:9px">// MARKET BREADTH</span>
+      ${marketBreadthDonutHTML(items)}
+    </div>
+    ${sectorPerformanceHTML(items)}`;
 }
 
 /* ── Ticker tape ── */
@@ -7272,7 +7376,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v6.5 · Glassmorphic redesign phase 1 — Home AI briefing icon + meta row');
+DBG.info('INIT','MERIDIAN v6.6 · Glassmorphic redesign phase 2 — Markets stat tiles, breadth donut, sector bars');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
