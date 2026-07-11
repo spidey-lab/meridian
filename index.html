@@ -681,11 +681,15 @@
     .alert-card:hover{background:var(--bg-card-h)}
     .alert-card.red{border-left-color:#E24B4A;background:rgba(226,75,74,.04);animation:alertPulse 2.5s ease-in-out infinite}
     .alert-card.orange{border-left-color:#F59E0B;background:rgba(245,158,11,.03)}
+    /* "Breaking Now" — AI-sourced via live search, gold-toned to read as
+       distinct from official GDACS red/orange alerts, not a replacement */
+    .alert-card.breaking{border-left-color:var(--gold);background:rgba(200,168,107,.04)}
     @keyframes alertPulse{0%,100%{box-shadow:0 0 0 0 rgba(226,75,74,0)}50%{box-shadow:0 0 0 3px rgba(226,75,74,.12)}}
     .alert-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
     .alert-level-badge{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.8px;padding:2px 8px;border-radius:10px}
     .alert-level-badge.red{background:rgba(226,75,74,.15);color:#E24B4A;border:0.5px solid rgba(226,75,74,.3)}
     .alert-level-badge.orange{background:rgba(245,158,11,.12);color:#F59E0B;border:0.5px solid rgba(245,158,11,.25)}
+    .alert-level-badge.breaking{background:rgba(200,168,107,.15);color:var(--gold);border:0.5px solid rgba(200,168,107,.3)}
     .alert-type-tag{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub);display:flex;align-items:center;gap:4px}
     .alert-country{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);line-height:1.2}
     .alert-severity{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--text)}
@@ -1809,6 +1813,16 @@
        shared prompt fragment into chat now, and into select grounded
        per-tab cards in the next phase — deliberately not injected into the
        purely data-grounded tabs (Markets/N50/Climate's numeric takeaway) */
+    /* v7.0 — Grounded per-tab rework: Home Briefing and World Conflicts now
+       use callGeminiGrounded (real Search grounding + citations) instead of
+       the plain ungrounded chain, throttle widened to 6h. Two new grounded
+       capabilities, both filling genuine gaps a single existing source
+       couldn't: Crisis Watch's "Breaking Now" feed surfaces fast-moving
+       disasters GDACS may not have logged yet (plotted on both globes via
+       the existing COUNTRY_CENTROID lookup, gold-toned to read as distinct
+       from official GDACS points) and Climate's regional weather intel adds
+       monsoon/cyclone/bulletin coverage Open-Meteo has no concept of —
+       both degrade to "nothing to report" rather than fabricating activity */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1930,7 +1944,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.9</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v7.0</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -2002,7 +2016,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v6.9
+    MERIDIAN v7.0
   </div>
 </main>
 
@@ -2044,7 +2058,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v6.9 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v7.0 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -4804,24 +4818,27 @@ async function enrichWorldConflictsSituationReport(items){
   const hash=hashStr(headlineText);
   let meta={};
   try{meta=JSON.parse(localStorage.getItem(LS_AI_WORLD_META)||'{}');}catch{}
-  const throttleMs=4*3600*1000;
+  const throttleMs=6*3600*1000; // widened from 4h — grounded calls cost more than plain generation
   const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
   if(!shouldRegenerate){
-    if(meta.text)renderWorldSituationReport(meta.text,batch.length,meta.ts);
+    if(meta.text)renderWorldSituationReport(meta.text,meta.citations,batch.length,meta.ts);
     return;
   }
-  const prompt=`You are a conflict analyst writing a short situation report. Given these current `+
-    `headlines about global conflicts and geopolitical tension, write a neutral, factual 3-4 `+
-    `sentence situation summary. Prose only, no bullet points, no preamble.\n\nHeadlines:\n${headlineText}`;
-  const text=await callGemini(prompt,{ttlHours:6});
-  if(!text)return;
+  const pers=personalizationFragment();
+  const prompt=`You are a conflict analyst writing a short situation report, grounded in live Google `+
+    `Search. Given these current headlines MERIDIAN already tracked about global conflicts and `+
+    `geopolitical tension — plus whatever additional current, relevant, organic news you find — `+
+    `write a neutral, factual 3-4 sentence situation summary. Prose only, no bullet points, no `+
+    `preamble.${pers?' '+pers:''}\n\nHeadlines:\n${headlineText}`;
+  const result=await callGeminiGrounded(prompt,{ttlHours:6});
+  if(!result)return;
   const ts=Date.now();
-  try{localStorage.setItem(LS_AI_WORLD_META,JSON.stringify({hash,ts,text}));}catch{}
-  renderWorldSituationReport(text,batch.length,ts);
+  try{localStorage.setItem(LS_AI_WORLD_META,JSON.stringify({hash,ts,text:result.text,citations:result.citations}));}catch{}
+  renderWorldSituationReport(result.text,result.citations,batch.length,ts);
 }
-function renderWorldSituationReport(text,sourceCount,ts){
+function renderWorldSituationReport(text,citations,sourceCount,ts){
   const el=document.getElementById('world-ai-report');if(!el)return;
-  el.innerHTML=renderAiResponse({summary:text},{icon:'◎',label:'AI Situation Report',sourceCount,updatedTs:ts});
+  el.innerHTML=renderAiResponse({summary:text,citations},{icon:'◎',label:'AI Situation Report',sourceCount,updatedTs:ts});
 }
 
 /* ── Generic RSS tab loader ── */
@@ -5194,6 +5211,82 @@ async function fetchGDACS(){
 let _gdacsAlerts=[];
 let _gdacsFilter='ALL';
 
+/* ── Crisis Watch: "Breaking Now" (Gemini, grounded, optional) ──
+   GDACS is an authoritative aggregator but can lag a genuinely fast-moving
+   story (a wildfire or earthquake that just happened may not be logged
+   there yet) — this is a single, non-batched grounded call that fills that
+   gap with real citations, separate from and additive to the GDACS panel
+   above. Since grounding can't use JSON mode (see callGeminiGrounded), the
+   model is asked for one event per line in a simple delimited format and
+   parsed client-side — never JSON.parse on a grounded response, and any
+   line that doesn't parse cleanly is dropped, never guessed at. */
+let _breakingNowEvents=[];
+const LS_AI_CRISIS_BREAKING_META='mer18_ai_crisis_breaking_meta';
+const BREAKING_TYPE_ICON={Hurricane:'◉',Typhoon:'◉',Wildfire:'△',Earthquake:'◬',Flood:'≋',Other:'◎'};
+
+function parseBreakingNowLines(text){
+  if(!text||/^\s*none\s*$/i.test(text.trim()))return[];
+  return text.split('\n').map(line=>{
+    const parts=line.split('|').map(s=>s.trim());
+    if(parts.length<3)return null;
+    const[type,country,summary]=parts;
+    if(!type||!country||!summary)return null;
+    return{type,country,summary};
+  }).filter(Boolean).slice(0,6);
+}
+
+async function enrichCrisisBreakingNow(){
+  const el=document.getElementById('crisis-breaking-now');if(!el)return;
+  if(!geminiEnabled())return;
+  let meta={};
+  try{meta=JSON.parse(localStorage.getItem(LS_AI_CRISIS_BREAKING_META)||'{}');}catch{}
+  const throttleMs=90*60*1000; // ~1.5h — "as it happens" without over-spending grounded quota
+  if(meta.ts&&Date.now()-meta.ts<throttleMs){
+    if(meta.events)renderCrisisBreakingNow(meta.events,meta.ts,meta.citations);
+    return;
+  }
+  const prompt=`Search for the most significant natural disasters — hurricanes, typhoons, `+
+    `wildfires, earthquakes, major floods — currently breaking or actively developing in the news `+
+    `right now, worldwide. List up to 6, most significant first. Respond with EXACTLY one event per `+
+    `line, no numbering, no headers, no extra commentary, in this exact format:\n`+
+    `TYPE | Country | One-sentence summary\n`+
+    `Where TYPE is one of: Hurricane, Typhoon, Wildfire, Earthquake, Flood, Other. If nothing `+
+    `significant is currently breaking, respond with exactly: NONE`;
+  const result=await callGeminiGrounded(prompt,{ttlHours:1.5});
+  if(!result)return;
+  const events=parseBreakingNowLines(result.text);
+  const ts=Date.now();
+  try{localStorage.setItem(LS_AI_CRISIS_BREAKING_META,JSON.stringify({ts,events,citations:result.citations}));}catch{}
+  renderCrisisBreakingNow(events,ts,result.citations);
+}
+
+function renderCrisisBreakingNow(events,ts,citations){
+  const el=document.getElementById('crisis-breaking-now');if(!el)return;
+  _breakingNowEvents=events||[];
+  if(typeof buildGlobeViewPoints==='function')buildGlobeViewPoints();
+  if(!events||!events.length){el.innerHTML='';return;}
+  const updated=ts?ago(new Date(ts)):'';
+  const rows=events.map(e=>`<div class="alert-card breaking">
+    <div class="alert-header">
+      <span class="alert-level-badge breaking">${esc((BREAKING_TYPE_ICON[e.type]||'◎')+' '+e.type.toUpperCase())}</span>
+      <span class="alert-type-tag">${esc(e.country)}</span>
+    </div>
+    <div class="ai-card-txt" style="font-size:12.5px">${esc(e.summary)}</div>
+  </div>`).join('');
+  const cites=citations&&citations.length
+    ?`<div class="ai-card-citations" style="margin-top:12px">${citations.map(c=>
+        `<a class="ai-cite-chip" href="${esc(c.uri)}" target="_blank" rel="noopener noreferrer" title="${esc(c.title)}">${esc(c.title)}</a>`
+      ).join('')}</div>`:'';
+  el.innerHTML=`<div class="card" style="margin-bottom:16px">
+    <div class="section-head" style="margin:0 0 10px;border:none;padding:0">
+      <span>✨ BREAKING NOW</span>
+      ${updated?`<span class="section-badge">as of ${updated}</span>`:''}
+    </div>
+    <div class="gdacs-grid">${rows}</div>
+    ${cites}
+  </div>`;
+}
+
 function gdacsAlertListRowHTML(a){
   const lvl=a.alertlevel.toLowerCase();
   const icon=GDACS_TYPE_ICON[a.eventtype]||'◎';
@@ -5347,6 +5440,8 @@ async function loadCrisisWatch(){
       </div>
     </div>
 
+    <div id="crisis-breaking-now"></div>
+
     <div class="crisis-dual-panel">
       <div class="crisis-panel-box">
         <div class="crisis-panel-head">
@@ -5387,6 +5482,7 @@ async function loadCrisisWatch(){
     <div class="art-grid" id="g-crisis">${skels(4)}</div>`;
 
   initCrisisGlobe();
+  enrichCrisisBreakingNow(); // fire-and-forget — independent of GDACS/USGS/RSS below
 
   await Promise.all([
     /* ── GDACS disaster alerts ── */
@@ -6652,7 +6748,7 @@ async function _loadClimateWeather(){
   el.innerHTML='<div class="clim-loading"><div class="clim-load-ico">⛅</div><div class="clim-load-txt">Fetching weather…</div></div>';
   try{
     const {w,a}=await fetchOpenMeteo(_climLoc.lat,_climLoc.lon);
-    el.innerHTML=`<div id="clim-ai-takeaway"></div>`+renderClimateData(w,a,_climLoc.name);
+    el.innerHTML=`<div id="clim-ai-takeaway"></div><div id="clim-regional-intel"></div>`+renderClimateData(w,a,_climLoc.name);
     // animate compass needle with slight delay for CSS transition
     setTimeout(()=>{
       const n=document.getElementById('clim-needle');
@@ -6661,6 +6757,7 @@ async function _loadClimateWeather(){
     // load news into embedded slot
     _loadClimateNews();
     enrichClimateWithAiTakeaway(w,a,_climLoc.name);
+    enrichClimateRegionalIntel(_climLoc.name,_climLoc.lat,_climLoc.lon);
   }catch(e){
     el.innerHTML=`<div class="clim-loading"><div class="clim-load-ico">⚠</div><div class="clim-load-txt">Weather unavailable · ${esc(e.message)}</div></div>`;
   }
@@ -6708,6 +6805,48 @@ function renderClimateAiTakeaway(text){
     <div class="ai-card-lbl"><span class="badge-ai">✨ AI TAKEAWAY</span></div>
     <div class="ai-card-txt">${esc(text)}</div>
   </div>`;
+}
+
+/* ── Climate: regional weather intelligence (Gemini, grounded, optional) ──
+   Open-Meteo (above) has no concept of monsoon progress, named cyclones, or
+   IMD-style bulletins — genuinely outside its data model. This is a single
+   grounded call scoped to whatever location is currently viewed, additive
+   to (not replacing) the numeric takeaway above. Most valuable for Indian/
+   Tamil Nadu locations given real monsoon/cyclone systems, but written
+   generically so a temperate-zone location with nothing regional to report
+   degrades to "no significant alerts" rather than fabricating activity. */
+const LS_AI_CLIMATE_REGIONAL_META='mer18_ai_climate_regional_meta';
+async function enrichClimateRegionalIntel(locName,lat,lon){
+  const el=document.getElementById('clim-regional-intel');if(!el)return;
+  if(!geminiEnabled())return;
+  const key=`${locName}|${lat.toFixed(1)}|${lon.toFixed(1)}`;
+  const hash=hashStr(key);
+  let meta={};
+  try{meta=JSON.parse(localStorage.getItem(LS_AI_CLIMATE_REGIONAL_META)||'{}');}catch{}
+  const throttleMs=3*3600*1000;
+  const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
+  if(!shouldRegenerate){
+    if(meta.text)renderClimateRegionalIntel(meta.text,meta.citations);
+    return;
+  }
+  const prompt=`Search for current regional weather intelligence relevant to ${locName} `+
+    `(latitude ${lat.toFixed(1)}, longitude ${lon.toFixed(1)}) right now: SW/NE monsoon status if `+
+    `applicable, any active cyclone/typhoon/hurricane alerts and their position or category, and `+
+    `any severe weather bulletins from the relevant national meteorological agency. Be concise `+
+    `(2-4 sentences), factual, no preamble. If there is genuinely nothing significant to report for `+
+    `this location right now, respond with exactly: NONE`;
+  const result=await callGeminiGrounded(prompt,{ttlHours:3});
+  if(!result)return;
+  const text=/^\s*none\s*$/i.test(result.text.trim())?'':result.text;
+  try{localStorage.setItem(LS_AI_CLIMATE_REGIONAL_META,JSON.stringify({hash,ts:Date.now(),text,citations:result.citations}));}catch{}
+  renderClimateRegionalIntel(text,result.citations);
+}
+function renderClimateRegionalIntel(text,citations){
+  const el=document.getElementById('clim-regional-intel');if(!el)return;
+  if(!text){el.innerHTML='';return;}
+  el.innerHTML=`<div style="margin:14px 14px 0">${
+    renderAiResponse({summary:text,citations},{icon:'🌀',label:'Regional Weather Intel'})
+  }</div>`;
 }
 
 async function _loadClimateNews(){
@@ -7263,37 +7402,28 @@ async function loadAiBriefing(){
   const hash=hashStr(headlineText);
   let meta={};
   try{meta=JSON.parse(localStorage.getItem(LS_AI_BRIEFING_META)||'{}');}catch{}
-  const throttleMs=4*3600*1000;
+  const throttleMs=6*3600*1000; // widened from 4h — grounded calls cost more than plain generation
   const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
   if(!shouldRegenerate){
-    if(meta.text)renderAiBriefing(meta.text,{sourceCount:_briefData.length,ts:meta.ts});
+    if(meta.text)renderAiBriefing(meta.text,meta.citations,_briefData.length,meta.ts);
     return;
   }
-  const prompt=`You are a terse intelligence briefing writer. Given these headlines from `+
-    `the last 24 hours across world news, economy, and crisis coverage, write a neutral, `+
-    `factual 3-5 sentence executive summary of what's happening today. Prose only, no bullet `+
-    `points, no preamble like "Here is a summary" — just the summary itself.\n\nHeadlines:\n${headlineText}`;
-  const text=await callGemini(prompt,{ttlHours:6});
-  if(!text)return; // silently no-op — "Today in Brief" strip above stands as-is
+  const pers=personalizationFragment();
+  const prompt=`You are a terse intelligence briefing writer grounded in live Google Search. Given `+
+    `these headlines MERIDIAN already tracked from the last 24 hours across world news, economy, and `+
+    `crisis coverage — plus whatever additional current, relevant, organic news you find — write a `+
+    `neutral, factual 3-5 sentence executive summary of what's happening today. Prose only, no bullet `+
+    `points, no preamble like "Here is a summary" — just the summary itself.${pers?' '+pers:''}`+
+    `\n\nHeadlines:\n${headlineText}`;
+  const result=await callGeminiGrounded(prompt,{ttlHours:6});
+  if(!result)return; // silently no-op — "Today in Brief" strip above stands as-is
   const ts=Date.now();
-  try{localStorage.setItem(LS_AI_BRIEFING_META,JSON.stringify({hash,ts,text}));}catch{}
-  renderAiBriefing(text,{sourceCount:_briefData.length,ts});
+  try{localStorage.setItem(LS_AI_BRIEFING_META,JSON.stringify({hash,ts,text:result.text,citations:result.citations}));}catch{}
+  renderAiBriefing(result.text,result.citations,_briefData.length,ts);
 }
-function renderAiBriefing(text,meta){
+function renderAiBriefing(text,citations,sourceCount,ts){
   const el=document.getElementById('home-ai-briefing');if(!el)return;
-  const sourceCount=meta&&meta.sourceCount;
-  const updated=meta&&meta.ts?ago(new Date(meta.ts)):'';
-  el.innerHTML=`<div class="ai-card has-medallion">
-    <div class="ai-card-icon" aria-hidden="true">✨</div>
-    <div class="ai-card-body">
-      <div class="ai-card-lbl"><span class="badge-ai">AI BRIEFING</span></div>
-      <div class="ai-card-txt">${esc(text)}</div>
-      <div class="ai-card-meta">
-        ${sourceCount?`<span>◈ Sources <b>${sourceCount}</b></span>`:''}
-        ${updated?`<span>◷ Updated <b>${updated}</b></span>`:''}
-      </div>
-    </div>
-  </div>`;
+  el.innerHTML=renderAiResponse({summary:text,citations},{icon:'✨',label:'AI Briefing',sourceCount,updatedTs:ts});
 }
 
 /* ════════════════════════════════════════
@@ -7687,7 +7817,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v6.9 · Ask MERIDIAN grounded chat + personalization settings');
+DBG.info('INIT','MERIDIAN v7.0 · Grounded Home/World Conflicts, Crisis Breaking Now, Climate regional intel');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
@@ -8053,6 +8183,17 @@ function buildGlobeViewPoints(){
       lat:c[0],lon:c[1],color,size:a.alertlevel==='Red'?5:4,
       label:`${a.alertlevel.toUpperCase()} · ${GDACS_TYPE_LABEL[a.eventtype]||a.eventtype||'Alert'} · ${a.country}`,
       url:a.link,
+    });
+  });
+  // AI "Breaking Now" events — same country-centroid approximation as GDACS
+  // above (never asking the model for coordinates directly), gold-colored
+  // and unlinked (no single source URL — see the citations row instead) to
+  // read as distinct from official GDACS points.
+  (_breakingNowEvents||[]).forEach(e=>{
+    const c=COUNTRY_CENTROID[e.country];if(!c)return;
+    _gvPoints.push({
+      lat:c[0],lon:c[1],color:'#C8A86B',size:4.5,
+      label:`✨ BREAKING · ${e.type} · ${e.country}`,url:'',
     });
   });
   const emptyEl=document.getElementById('globe-view-empty');
