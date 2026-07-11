@@ -211,6 +211,19 @@
     .ai-card-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;padding-top:8px;border-top:1px solid var(--border-sub);
       font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.6px;color:var(--text-sub);text-transform:uppercase}
     .ai-card-meta b{color:var(--gold);font-weight:700}
+    /* renderAiResponse()'s optional sections — shared by every grounded/structured
+       AI card and the Ask MERIDIAN chat, so this is written once and reused. */
+    .ai-card-bullets{list-style:none;margin-top:8px;display:flex;flex-direction:column;gap:5px;position:relative;z-index:1}
+    .ai-card-bullets li{font-size:12.5px;line-height:1.5;color:var(--text);padding-left:14px;position:relative}
+    .ai-card-bullets li::before{content:'—';position:absolute;left:0;color:var(--gold);opacity:.7}
+    .ai-card-stats{margin-top:10px}
+    .ai-chart-wrap{margin-top:10px;position:relative;z-index:1}
+    .ai-card-citations{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;position:relative;z-index:1}
+    .ai-cite-chip{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 9px;border-radius:20px;
+      background:var(--bg-surf);border:0.5px solid var(--border);color:var(--text-sub);text-decoration:none;
+      max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:border-color .15s,color .15s}
+    .ai-cite-chip:hover{border-color:var(--gold);color:var(--gold)}
+    .ai-cite-chip::before{content:'↗ ';opacity:.6}
     .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;gap:8px}
     .card-top-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0}
     .c-flag{font-size:12px;line-height:1;flex-shrink:0}
@@ -1664,6 +1677,7 @@
     .stat-tile-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
     .stat-tile-main{display:flex;flex-direction:column;gap:3px;min-width:0}
     .stat-tile-val{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:700;line-height:1.1;white-space:nowrap}
+    .stat-tile-val.up{color:var(--pos)}.stat-tile-val.dn{color:var(--neg)}
     .stat-tile-chg{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600}
     .stat-tile-chg.up{color:var(--pos)}.stat-tile-chg.dn{color:var(--neg)}.stat-tile-chg.na{color:var(--text-muted)}
     .stat-tile-spark{flex-shrink:0;opacity:.9}
@@ -1758,6 +1772,16 @@
        and Search in all three themes; pill-ified Crisis Watch's GDACS
        .alert-level-badge to match the rounded chip language used everywhere
        else (.wt-badge, .c-tone, .tension-pill) */
+    /* v6.8 — AI grounding foundation: callGeminiGrounded() (a sibling to
+       callGemini, never overloading its contract) adds real Google Search
+       grounding on a separate model chain restricted to Gemini 2.x (Gemini 3
+       has zero grounding quota on the free tier); citations are pulled only
+       from the API's own groundingMetadata, never asked of the model. New
+       shared renderAiResponse()/aiStatTileHTML() renderer (summary/bullets/
+       stats/chart/citations, all optional) is the one target both the
+       forthcoming Ask MERIDIAN chat and every reworked AI card will use —
+       piloted here on World Conflicts' situation report (render-only, not
+       yet grounded) to prove the schema before any grounded quota is spent */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1879,7 +1903,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.7</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.8</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1951,7 +1975,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v6.7
+    MERIDIAN v6.8
   </div>
 </main>
 
@@ -1993,7 +2017,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v6.7 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v6.8 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2098,6 +2122,142 @@ async function callGemini(prompt, opts={}){
   }
   DBG.warn('GEMINI','All models exhausted/unavailable — skipping AI enrichment');
   return null;
+}
+
+/* ── Grounded AI Gateway — real-time Google Search grounding ──
+   A SEPARATE model chain, not a mode flag on GEMINI_MODEL_CHAIN, because
+   Search-grounding quota is a genuinely different budget: per the user's own
+   aistudio.google.com/rate-limit "Tools" dashboard, Gemini 2/2.5/"Default"
+   carry 1,500 RPD of grounding quota, but the Gemini 3 tool bucket shows
+   0/0 — meaning GEMINI_MODEL_CHAIN's lead model (gemini-3.1-flash-lite,
+   otherwise the best quota in the app) cannot ground at all. Whether that
+   1,500 RPD is further bounded by each model's own ~20/day plain-generation
+   cap (see GEMINI_MODEL_CHAIN's comment above) is NOT verified — watch the
+   DBG panel under real use rather than trusting either number blindly.
+   Edit this list as your own dashboard changes; it is not guaranteed. */
+const GEMINI_GROUNDED_MODEL_CHAIN = ['gemini-2.5-flash-lite', 'gemini-2.5-flash'];
+
+function groundedCacheKey(prompt, model){
+  return LS_PFX+'gemgr_'+btoa(encodeURIComponent(model+'::G::'+prompt)).slice(0,60);
+}
+
+// Pulls real source links out of the API's own grounding metadata — NEVER
+// out of model-authored text. This is the only source of citation URLs
+// anywhere in the app; nothing here is ever asked of the model directly.
+function extractGroundingCitations(apiJson){
+  const chunks = apiJson?.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+  return chunks.map(c=>c?.web).filter(Boolean)
+    .map(w=>({title:(w.title||w.uri||'Source').trim(), uri:w.uri}))
+    .filter(c=>c.uri).slice(0,6);
+}
+
+// Sibling to callGemini, same never-throws/null-on-failure/per-model-cooldown
+// discipline (shares _geminiCooldownUntil — a 429 on a model should cool
+// down regardless of which caller hit it) — but three deliberate differences:
+// (1) iterates GEMINI_GROUNDED_MODEL_CHAIN, not GEMINI_MODEL_CHAIN; (2) always
+// sends tools:[{google_search:{}}]; (3) returns {text,citations} instead of a
+// bare string, so it's impossible to accidentally treat a grounded response
+// like an ungrounded one at a call site. opts.json is deliberately NOT
+// supported here — Google Search grounding and responseMimeType:'application/
+// json' return HTTP 400 together on this API; callers that need structured
+// output from a grounded answer must parse the prose themselves or issue a
+// second, separate, ungrounded callGemini(...,{json:true}) restructuring call.
+async function callGeminiGrounded(prompt, opts={}){
+  if(!geminiEnabled())return null;
+  const key=localStorage.getItem(LS_GEMINI_KEY);
+  const ttlMs=(opts.ttlHours??1)*3600*1000; // shorter default than callGemini's 6h — grounded answers are time-sensitive
+  for(const model of GEMINI_GROUNDED_MODEL_CHAIN){
+    const ck=groundedCacheKey(prompt,model);
+    if(ttlMs>0){
+      try{
+        const raw=localStorage.getItem(ck);
+        if(raw){
+          const{text,citations,ts}=JSON.parse(raw);
+          if(Date.now()-ts<ttlMs){DBG.ok('GEMINI-G',`CACHE HIT · ${model}`);return{text,citations:citations||[]};}
+        }
+      }catch{}
+    }
+    if(!geminiModelReady(model)){DBG.info('GEMINI-G',`${model} cooling down — skip`);continue;}
+    try{
+      const url=`${GEMINI_ENDPOINT_BASE}${model}:generateContent?key=${encodeURIComponent(key)}`;
+      const body={contents:[{parts:[{text:prompt}]}],tools:[{google_search:{}}]};
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(body),signal:AbortSignal.timeout(opts.timeoutMs||28000)});
+      if(r.status===429||r.status===503){setGeminiCooldown(model,r.status===429?600:120);continue;}
+      if(!r.ok){DBG.err('GEMINI-G',`${model} HTTP ${r.status}`);continue;}
+      const d=await r.json();
+      const text=d?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+      if(!text){DBG.warn('GEMINI-G',`${model} empty response`);continue;}
+      const citations=extractGroundingCitations(d);
+      if(ttlMs>0){try{localStorage.setItem(ck,JSON.stringify({text,citations,ts:Date.now()}));}catch{}}
+      DBG.ok('GEMINI-G',`✓ ${model} · ${citations.length} citation(s)`);
+      return{text,citations};
+    }catch(e){DBG.err('GEMINI-G',`${model} ${e.message}`);continue;}
+  }
+  DBG.warn('GEMINI-G','All grounded models exhausted/unavailable — skipping');
+  return null;
+}
+
+/* ── Shared structured AI-response renderer ──
+   The single target for both the Ask MERIDIAN chat and every AI card
+   migrated onto this schema. Only `summary` is required — every other
+   field is optional and simply isn't drawn if absent, so this degrades
+   gracefully for the simplest prose-only callers same as the richest ones.
+     resp: {summary, bullets?:[string], stats?:[{label,value,trend?}],
+            chart?:{kind:'spark'|'donut', values, hex?}, citations?:[{title,uri}]}
+     meta: {icon?, label?, sourceCount?, updatedTs?}
+   TRUST BOUNDARY — do not weaken this when wiring new callers: `stats`/
+   `chart` must only ever be populated from MERIDIAN's own already-computed
+   numbers (never asked of the model); `citations` must only ever come from
+   extractGroundingCitations()'s real API metadata (never model-authored
+   link text). The model supplies `summary`/`bullets` prose only. */
+function aiStatTileHTML(stat){
+  const cls=stat.trend==='up'?'up':stat.trend==='down'?'dn':'na';
+  return`<div class="stat-tile">
+    <div class="stat-tile-lbl">${esc(stat.label)}</div>
+    <div class="stat-tile-row"><div class="stat-tile-main">
+      <div class="stat-tile-val ${cls}">${esc(String(stat.value))}</div>
+    </div></div>
+  </div>`;
+}
+function renderAiResponse(resp, meta={}){
+  if(!resp||!resp.summary)return'';
+  const updated=meta.updatedTs?ago(new Date(meta.updatedTs)):'';
+  const bullets=resp.bullets&&resp.bullets.length
+    ?`<ul class="ai-card-bullets">${resp.bullets.map(b=>`<li>${esc(b)}</li>`).join('')}</ul>`:'';
+  const stats=resp.stats&&resp.stats.length
+    ?`<div class="ai-card-stats stat-tile-grid">${resp.stats.map(aiStatTileHTML).join('')}</div>`:'';
+  let chart='';
+  if(resp.chart&&resp.chart.values&&resp.chart.values.length){
+    const hex=resp.chart.hex||cssVar('--gold');
+    if(resp.chart.kind==='donut'){
+      const segs=donutSegments(resp.chart.values);
+      const R=40,CX=50,CY=50,SW=10;
+      const rings=segs.map(s=>`<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${s.col}" stroke-width="${SW}"
+        pathLength="100" stroke-dasharray="${s.pct.toFixed(2)} ${(100-s.pct).toFixed(2)}"
+        stroke-dashoffset="${(-s.offset).toFixed(2)}" transform="rotate(-90 ${CX} ${CY})"/>`).join('');
+      chart=`<div class="ai-chart-wrap"><svg viewBox="0 0 100 100" style="width:90px;height:90px">${rings}</svg></div>`;
+    }else{
+      chart=`<div class="ai-chart-wrap">${seriesSparkline(resp.chart.values,hex)}</div>`;
+    }
+  }
+  const citations=resp.citations&&resp.citations.length
+    ?`<div class="ai-card-citations">${resp.citations.map(c=>
+        `<a class="ai-cite-chip" href="${esc(c.uri)}" target="_blank" rel="noopener noreferrer" title="${esc(c.title)}">${esc(c.title)}</a>`
+      ).join('')}</div>`:'';
+  const metaRow=(meta.sourceCount||updated)
+    ?`<div class="ai-card-meta">
+        ${meta.sourceCount?`<span>◈ Sources <b>${meta.sourceCount}</b></span>`:''}
+        ${updated?`<span>◷ Updated <b>${updated}</b></span>`:''}
+      </div>`:'';
+  return`<div class="ai-card has-medallion">
+    <div class="ai-card-icon" aria-hidden="true">${esc(meta.icon||'✨')}</div>
+    <div class="ai-card-body">
+      <div class="ai-card-lbl"><span class="badge-ai">${esc(meta.label||'AI')}</span></div>
+      <div class="ai-card-txt">${esc(resp.summary)}</div>
+      ${bullets}${stats}${chart}${citations}${metaRow}
+    </div>
+  </div>`;
 }
 
 // Simple string hash — used to detect "did the underlying headline set
@@ -2423,7 +2583,7 @@ async function _drainQueue(){
 const SRC_CHIPS = {
   GDELT:'gdelt',CACHE:'gdelt',FALLBACK:'gdelt',FILTER:'gdelt',T5:'gdelt',
   GS:'mkt',N50:'mkt',
-  USGS:'usgs',RW:'rw',RSS:'rss',GEMINI:'ai',
+  USGS:'usgs',RW:'rw',RSS:'rss',GEMINI:'ai','GEMINI-G':'ai',
   HOME:'rss',CAT:'gdelt',AUTO:'gdelt',INIT:'',SOURCES:'',KEYS:''
 };
 const DBG = {
@@ -4606,7 +4766,7 @@ async function enrichWorldConflictsSituationReport(items){
   const throttleMs=4*3600*1000;
   const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
   if(!shouldRegenerate){
-    if(meta.text)renderWorldSituationReport(meta.text);
+    if(meta.text)renderWorldSituationReport(meta.text,batch.length,meta.ts);
     return;
   }
   const prompt=`You are a conflict analyst writing a short situation report. Given these current `+
@@ -4614,15 +4774,13 @@ async function enrichWorldConflictsSituationReport(items){
     `sentence situation summary. Prose only, no bullet points, no preamble.\n\nHeadlines:\n${headlineText}`;
   const text=await callGemini(prompt,{ttlHours:6});
   if(!text)return;
-  try{localStorage.setItem(LS_AI_WORLD_META,JSON.stringify({hash,ts:Date.now(),text}));}catch{}
-  renderWorldSituationReport(text);
+  const ts=Date.now();
+  try{localStorage.setItem(LS_AI_WORLD_META,JSON.stringify({hash,ts,text}));}catch{}
+  renderWorldSituationReport(text,batch.length,ts);
 }
-function renderWorldSituationReport(text){
+function renderWorldSituationReport(text,sourceCount,ts){
   const el=document.getElementById('world-ai-report');if(!el)return;
-  el.innerHTML=`<div class="ai-card">
-    <div class="ai-card-lbl"><span class="badge-ai">✨ AI SITUATION REPORT</span></div>
-    <div class="ai-card-txt">${esc(text)}</div>
-  </div>`;
+  el.innerHTML=renderAiResponse({summary:text},{icon:'◎',label:'AI Situation Report',sourceCount,updatedTs:ts});
 }
 
 /* ── Generic RSS tab loader ── */
@@ -7382,7 +7540,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v6.7 · Glassmorphic redesign phase 3 — remaining tabs verified, chips pill-ified');
+DBG.info('INIT','MERIDIAN v6.8 · AI grounding foundation — shared response renderer, World Conflicts pilot');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
