@@ -1823,6 +1823,16 @@
        from official GDACS points) and Climate's regional weather intel adds
        monsoon/cyclone/bulletin coverage Open-Meteo has no concept of —
        both degrade to "nothing to report" rather than fabricating activity */
+    /* v7.1 — Self-grounded display rework, closing out the AI feature pass:
+       Tension keeps its bespoke gauge-SVG patch but gains a small pill row
+       surfacing VIX/active-alert counts already blended into its score;
+       Markets wrap-up gets real stat tiles (with sparklines) for the actual
+       top movers, reusing statTileHTML verbatim, recomputed fresh every
+       render rather than cached alongside the AI text; Nifty50 analysis
+       gets stat callouts from its own already-ranked data. GDACS per-alert
+       takeaways are left untouched — each is a single inline sentence in an
+       existing compact alert card, not a candidate for the full renderer.
+       None of this adds new grounding; every number shown is MERIDIAN's own */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1944,7 +1954,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v7.0</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v7.1</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -2016,7 +2026,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v7.0
+    MERIDIAN v7.1
   </div>
 </main>
 
@@ -2058,7 +2068,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v7.0 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v7.1 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -4226,6 +4236,11 @@ async function enrichMarketsWithAiWrapup(){
   const items=_gsProcessed.raw.filter(x=>x.changePercent&&x.trend);
   if(!items.length)return;
   const top=items.slice(0,10);
+  // Real current stat tiles (reusing statTileHTML's existing sparkline logic
+  // verbatim) — recomputed fresh from _gsProcessed on every render, never
+  // cached alongside the AI text, so they never go stale relative to the
+  // live prices already on screen.
+  const topMovers=items.slice(0,3);
   const listText=top.map(x=>`${x.name}: ${x.trend==='UP'?'+':'-'}${Math.abs(x.changePercent).toFixed(2)}%`).join('\n');
   const hash=hashStr(listText);
   let meta={};
@@ -4233,7 +4248,7 @@ async function enrichMarketsWithAiWrapup(){
   const throttleMs=12*3600*1000;
   const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
   if(!shouldRegenerate){
-    if(meta.text)renderMarketsWrapup(meta.text);
+    if(meta.text)renderMarketsWrapup(meta.text,topMovers);
     return;
   }
   const prompt=`You are a markets commentator. Given these instrument moves (Indian and global `+
@@ -4242,14 +4257,15 @@ async function enrichMarketsWithAiWrapup(){
   const text=await callGemini(prompt,{ttlHours:12});
   if(!text)return;
   try{localStorage.setItem(LS_AI_MARKETS_META,JSON.stringify({hash,ts:Date.now(),text}));}catch{}
-  renderMarketsWrapup(text);
+  renderMarketsWrapup(text,topMovers);
 }
-function renderMarketsWrapup(text){
+function renderMarketsWrapup(text,topMovers){
   const el=document.getElementById('markets-ai-wrap');if(!el)return;
-  el.innerHTML=`<div class="ai-card">
-    <div class="ai-card-lbl"><span class="badge-ai">✨ AI MARKET WRAP</span></div>
-    <div class="ai-card-txt">${esc(text)}</div>
-  </div>`;
+  const card=renderAiResponse({summary:text},{icon:'✨',label:'AI Market Wrap'});
+  const tiles=(topMovers&&topMovers.length)
+    ?`<div class="stat-tile-grid" style="margin:10px 0 0">${topMovers.map(item=>statTileHTML(item,item.name)).join('')}</div>`
+    :'';
+  el.innerHTML=card+tiles;
 }
 
 
@@ -5650,6 +5666,7 @@ function renderTensionGauge(items){
         <span class="tension-pill"><span class="tension-pill-dot" style="background:#F59E0B"></span>${elevC} Elevated</span>
         <span class="tension-pill"><span class="tension-pill-dot" style="background:#14B8A6"></span>${activeC} Active</span>
       </div>
+      <div class="tension-breakdown" id="tension-ai-stats" style="display:none"></div>
     </div>
   </div>`;
   rollNum(document.getElementById('tension-num-el'),score);
@@ -5691,6 +5708,18 @@ async function enrichTensionWithAi(items){
     crisisText=[`Red: ${redC} · Orange: ${orgC}`,...lines].join('\n');
   }
 
+  // The two blended inputs the severity pills above don't already show —
+  // real numbers MERIDIAN already has in memory, never asked of the model.
+  let vixStat=null,alertStat=null;
+  if(loaded.has('markets')&&_gsProcessed&&_gsProcessed.raw&&_gsProcessed.raw.length){
+    const vix=_gsProcessed.raw.find(x=>x.name==='India VIX');
+    if(vix)vixStat={label:'VIX',value:vix.price.toFixed(2),dot:vix.price>=25?'#E24B4A':vix.price>=18?'#F59E0B':'#14B8A6'};
+  }
+  if(loaded.has('crisis')){
+    const activeAlerts=_gdacsAlerts.length;
+    alertStat={label:'Active Alerts',value:String(activeAlerts),dot:activeAlerts>0?'#F59E0B':'#14B8A6'};
+  }
+
   const digest=`${conflictText}|${marketsText}|${crisisText}`;
   const hash=hashStr(digest);
   let meta={};
@@ -5698,7 +5727,7 @@ async function enrichTensionWithAi(items){
   const throttleMs=2*3600*1000;
   const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
   if(!shouldRegenerate){
-    if(typeof meta.score==='number')applyTensionAi(meta.score,meta.rationale);
+    if(typeof meta.score==='number')applyTensionAi(meta.score,meta.rationale,meta.vixStat,meta.alertStat);
     return;
   }
 
@@ -5721,19 +5750,20 @@ async function enrichTensionWithAi(items){
   if(typeof parsed.score!=='number'||parsed.score<0||parsed.score>100)return;
   const score=Math.round(parsed.score);
   const rationale=String(parsed.rationale||'').slice(0,220);
-  try{localStorage.setItem(LS_AI_TENSION_META,JSON.stringify({hash,ts:Date.now(),score,rationale}));}catch{}
-  applyTensionAi(score,rationale);
+  try{localStorage.setItem(LS_AI_TENSION_META,JSON.stringify({hash,ts:Date.now(),score,rationale,vixStat,alertStat}));}catch{}
+  applyTensionAi(score,rationale,vixStat,alertStat);
 }
 // Patches the existing tension-card in place: moves the marker dot to the
 // new score's position, re-rolls the number, recolors the band label, and
 // swaps the "heuristic" disclaimer for the AI's own rationale line. Same
 // card, same DOM nodes, one number — not a second, competing one.
-function applyTensionAi(score,rationale){
+function applyTensionAi(score,rationale,vixStat,alertStat){
   const numEl=document.getElementById('tension-num-el');
   const markerEl=document.getElementById('tension-marker');
   const lblEl=document.getElementById('tension-lbl');
   const capEl=document.getElementById('tension-caption');
   const lineEl=document.getElementById('tension-ai-line');
+  const statsEl=document.getElementById('tension-ai-stats');
   if(!numEl||!lblEl)return;
   const band=tensionBand(score);
   const[markX,markY]=tensionArcXY(score);
@@ -5746,6 +5776,15 @@ function applyTensionAi(score,rationale){
   if(lineEl){
     lineEl.style.display='block';
     lineEl.innerHTML=`<span class="badge-ai">✨ AI</span> ${esc(rationale)}`;
+  }
+  // Surfaces the two blended inputs (markets/crisis) the severity pills
+  // above don't show — small pills matching that same component rather
+  // than the larger .stat-tile grid, since this card's real estate is
+  // compact and .stat-tile was built for the spacious Markets strip.
+  if(statsEl){
+    const stats=[vixStat,alertStat].filter(Boolean);
+    statsEl.style.display=stats.length?'flex':'none';
+    statsEl.innerHTML=stats.map(s=>`<span class="tension-pill"><span class="tension-pill-dot" style="background:${s.dot}"></span>${esc(s.label)}: ${esc(s.value)}</span>`).join('');
   }
 }
 
@@ -7054,6 +7093,15 @@ async function enrichN50WithAi(){
   if(insufficient||!data.length)return;
   const listText=data.map((s,i)=>`${i+1}. ${s.name} (${s.ticker}): beat NIFTYBEES in ${s.wins}/${s.total} months `+
     `tracked, averaging ${n50Pct(s.avg)} vs the index per month`).join('\n');
+  // Real callouts from the same ranked data the prose analyzes — top by
+  // combined score, and top by pure consistency (win rate) if it's a
+  // different stock — never asked of the model, just MERIDIAN's own numbers.
+  const topScore=data[0];
+  const topConsistency=[...data].sort((a,b)=>b.winRate-a.winRate)[0];
+  const stats=[{label:topScore.name,value:`${n50Pct(topScore.avg)} avg`,trend:topScore.avg>=0?'up':'down'}];
+  if(topConsistency&&topConsistency.ticker!==topScore.ticker){
+    stats.push({label:topConsistency.name,value:`${topConsistency.wins}/${topConsistency.total} months`,trend:'up'});
+  }
   const digest=`${months}|${listText}`;
   const hash=hashStr(digest);
   let meta={};
@@ -7061,7 +7109,7 @@ async function enrichN50WithAi(){
   const throttleMs=24*3600*1000;
   const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
   if(!shouldRegenerate){
-    if(meta.text)renderN50Ai(meta.text);
+    if(meta.text)renderN50Ai(meta.text,meta.stats||stats);
     return;
   }
   const prompt=`You are a cautious equity data analyst. Below is a ranked list of the top 5 `+
@@ -7076,15 +7124,12 @@ async function enrichN50WithAi(){
     `what the numbers show. 3-4 sentences, plain language, no headers, no bullet points.\n\n${listText}`;
   const text=await callGemini(prompt,{ttlHours:24});
   if(!text)return;
-  try{localStorage.setItem(LS_AI_N50_META,JSON.stringify({hash,ts:Date.now(),text}));}catch{}
-  renderN50Ai(text);
+  try{localStorage.setItem(LS_AI_N50_META,JSON.stringify({hash,ts:Date.now(),text,stats}));}catch{}
+  renderN50Ai(text,stats);
 }
-function renderN50Ai(text){
+function renderN50Ai(text,stats){
   const el=document.getElementById('n50-ai-brief');if(!el)return;
-  el.innerHTML=`<div class="ai-card">
-    <div class="ai-card-lbl"><span class="badge-ai">✨ AI ANALYSIS</span> Historical Outperformers</div>
-    <div class="ai-card-txt">${esc(text)}</div>
-  </div>`;
+  el.innerHTML=renderAiResponse({summary:text,stats},{icon:'✨',label:'AI Analysis · Historical Outperformers'});
 }
 
 /* ── Step 8: Render hero cards ── */
@@ -7817,7 +7862,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v7.0 · Grounded Home/World Conflicts, Crisis Breaking Now, Climate regional intel');
+DBG.info('INIT','MERIDIAN v7.1 · Self-grounded display rework — real stat tiles across Tension/Markets/N50');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
