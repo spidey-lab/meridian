@@ -1833,6 +1833,16 @@
        takeaways are left untouched — each is a single inline sentence in an
        existing compact alert card, not a candidate for the full renderer.
        None of this adds new grounding; every number shown is MERIDIAN's own */
+    /* v7.2 — Fixed a real UX gap in Crisis Watch's "Breaking Now" and
+       Climate's regional weather intel: both used to render fully empty
+       when the AI genuinely found nothing to report (or when the call
+       failed), which was indistinguishable from the feature not existing
+       at all. Now both always show something once AI is enabled: a
+       "checking…" placeholder while the grounded call is in flight, an
+       explicit "nothing significant right now" message when the AI
+       legitimately finds no events, and a distinct "unavailable — may be
+       rate-limited" message on failure — so it's always clear the feature
+       ran, and why it looks the way it does */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1954,7 +1964,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v7.1</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v7.2</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -2026,7 +2036,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v7.1
+    MERIDIAN v7.2
   </div>
 </main>
 
@@ -2068,7 +2078,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v7.1 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v7.2 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -5251,14 +5261,25 @@ function parseBreakingNowLines(text){
   }).filter(Boolean).slice(0,6);
 }
 
+function breakingNowStatusHTML(msg){
+  return`<div class="no-data-compact" style="margin-bottom:16px">
+    <span class="ndc-ico">✨</span>
+    <div class="ndc-msg"><strong style="color:var(--text-sub)">BREAKING NOW</strong> · ${esc(msg)}</div>
+  </div>`;
+}
+
 async function enrichCrisisBreakingNow(){
   const el=document.getElementById('crisis-breaking-now');if(!el)return;
-  if(!geminiEnabled())return;
+  if(!geminiEnabled())return; // stays hidden entirely — consistent with every other AI feature until opted in
+  // Always show SOMETHING once AI is on — a fully-empty div is indistinguishable
+  // from "not implemented." This placeholder is replaced the moment the real
+  // state (cached, fresh, empty, or failed) is known.
+  el.innerHTML=breakingNowStatusHTML('Checking for breaking disasters…');
   let meta={};
   try{meta=JSON.parse(localStorage.getItem(LS_AI_CRISIS_BREAKING_META)||'{}');}catch{}
   const throttleMs=90*60*1000; // ~1.5h — "as it happens" without over-spending grounded quota
   if(meta.ts&&Date.now()-meta.ts<throttleMs){
-    if(meta.events)renderCrisisBreakingNow(meta.events,meta.ts,meta.citations);
+    renderCrisisBreakingNow(meta.events||[],meta.ts,meta.citations);
     return;
   }
   const prompt=`Search for the most significant natural disasters — hurricanes, typhoons, `+
@@ -5269,7 +5290,10 @@ async function enrichCrisisBreakingNow(){
     `Where TYPE is one of: Hurricane, Typhoon, Wildfire, Earthquake, Flood, Other. If nothing `+
     `significant is currently breaking, respond with exactly: NONE`;
   const result=await callGeminiGrounded(prompt,{ttlHours:1.5});
-  if(!result)return;
+  if(!result){
+    el.innerHTML=breakingNowStatusHTML('Unavailable right now — the live-search models may be rate-limited. Will retry next refresh.');
+    return;
+  }
   const events=parseBreakingNowLines(result.text);
   const ts=Date.now();
   try{localStorage.setItem(LS_AI_CRISIS_BREAKING_META,JSON.stringify({ts,events,citations:result.citations}));}catch{}
@@ -5280,8 +5304,11 @@ function renderCrisisBreakingNow(events,ts,citations){
   const el=document.getElementById('crisis-breaking-now');if(!el)return;
   _breakingNowEvents=events||[];
   if(typeof buildGlobeViewPoints==='function')buildGlobeViewPoints();
-  if(!events||!events.length){el.innerHTML='';return;}
   const updated=ts?ago(new Date(ts)):'';
+  if(!events||!events.length){
+    el.innerHTML=breakingNowStatusHTML(`No major disasters breaking right now${updated?` · as of ${updated}`:''}`);
+    return;
+  }
   const rows=events.map(e=>`<div class="alert-card breaking">
     <div class="alert-header">
       <span class="alert-level-badge breaking">${esc((BREAKING_TYPE_ICON[e.type]||'◎')+' '+e.type.toUpperCase())}</span>
@@ -6855,9 +6882,19 @@ function renderClimateAiTakeaway(text){
    generically so a temperate-zone location with nothing regional to report
    degrades to "no significant alerts" rather than fabricating activity. */
 const LS_AI_CLIMATE_REGIONAL_META='mer18_ai_climate_regional_meta';
+function climateRegionalStatusHTML(msg){
+  return`<div class="no-data-compact" style="margin:14px 14px 0">
+    <span class="ndc-ico">🌀</span>
+    <div class="ndc-msg"><strong style="color:var(--text-sub)">REGIONAL WEATHER INTEL</strong> · ${esc(msg)}</div>
+  </div>`;
+}
+
 async function enrichClimateRegionalIntel(locName,lat,lon){
   const el=document.getElementById('clim-regional-intel');if(!el)return;
-  if(!geminiEnabled())return;
+  if(!geminiEnabled())return; // stays hidden entirely — consistent with every other AI feature until opted in
+  // Always show SOMETHING once AI is on — a fully-empty div is indistinguishable
+  // from "not implemented." Replaced the moment the real state is known.
+  el.innerHTML=climateRegionalStatusHTML('Checking for monsoon/cyclone/severe-weather bulletins…');
   const key=`${locName}|${lat.toFixed(1)}|${lon.toFixed(1)}`;
   const hash=hashStr(key);
   let meta={};
@@ -6865,7 +6902,7 @@ async function enrichClimateRegionalIntel(locName,lat,lon){
   const throttleMs=3*3600*1000;
   const shouldRegenerate=meta.hash!==hash&&(!meta.ts||Date.now()-meta.ts>=throttleMs);
   if(!shouldRegenerate){
-    if(meta.text)renderClimateRegionalIntel(meta.text,meta.citations);
+    renderClimateRegionalIntel(meta.text,meta.citations,meta.ts);
     return;
   }
   const prompt=`Search for current regional weather intelligence relevant to ${locName} `+
@@ -6875,14 +6912,22 @@ async function enrichClimateRegionalIntel(locName,lat,lon){
     `(2-4 sentences), factual, no preamble. If there is genuinely nothing significant to report for `+
     `this location right now, respond with exactly: NONE`;
   const result=await callGeminiGrounded(prompt,{ttlHours:3});
-  if(!result)return;
+  if(!result){
+    el.innerHTML=climateRegionalStatusHTML('Unavailable right now — the live-search models may be rate-limited. Will retry next refresh.');
+    return;
+  }
   const text=/^\s*none\s*$/i.test(result.text.trim())?'':result.text;
-  try{localStorage.setItem(LS_AI_CLIMATE_REGIONAL_META,JSON.stringify({hash,ts:Date.now(),text,citations:result.citations}));}catch{}
-  renderClimateRegionalIntel(text,result.citations);
+  const ts=Date.now();
+  try{localStorage.setItem(LS_AI_CLIMATE_REGIONAL_META,JSON.stringify({hash,ts,text,citations:result.citations}));}catch{}
+  renderClimateRegionalIntel(text,result.citations,ts);
 }
-function renderClimateRegionalIntel(text,citations){
+function renderClimateRegionalIntel(text,citations,ts){
   const el=document.getElementById('clim-regional-intel');if(!el)return;
-  if(!text){el.innerHTML='';return;}
+  if(!text){
+    const updated=ts?ago(new Date(ts)):'';
+    el.innerHTML=climateRegionalStatusHTML(`No significant regional alerts right now${updated?` · as of ${updated}`:''}`);
+    return;
+  }
   el.innerHTML=`<div style="margin:14px 14px 0">${
     renderAiResponse({summary:text,citations},{icon:'🌀',label:'Regional Weather Intel'})
   }</div>`;
@@ -7862,7 +7907,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v7.1 · Self-grounded display rework — real stat tiles across Tension/Markets/N50');
+DBG.info('INIT','MERIDIAN v7.2 · Fixed silent-empty states in Crisis Breaking Now + Climate regional intel');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
