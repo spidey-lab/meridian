@@ -859,6 +859,23 @@
     .mkt-subtab-nav::-webkit-scrollbar{display:none}
 
     /* ── SEARCH TAB ── */
+    .search-mode-toggle{display:flex;gap:4px;margin-top:10px}
+    .smt-btn{background:none;border:1px solid transparent;border-radius:20px;color:var(--text-muted);
+      font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.1px;padding:6px 16px;
+      cursor:pointer;transition:all .18s ease;white-space:nowrap}
+    .smt-btn:hover{color:var(--text-sub);background:rgba(255,255,255,.04);border-color:var(--border)}
+    .smt-btn.active{color:var(--clr-search);background:rgba(90,143,166,.1);border-color:rgba(90,143,166,.3)}
+    .kw-only.hidden{display:none}
+    /* ── ASK MERIDIAN CHAT ── */
+    .chat-panel{display:none}
+    .chat-panel.active{display:block}
+    .chat-thread{display:flex;flex-direction:column;gap:12px;margin:14px 0;min-height:80px;max-height:60vh;overflow-y:auto}
+    .chat-msg{align-self:flex-end;max-width:80%;background:var(--clr-search);color:#fff;border-radius:16px 16px 4px 16px;
+      padding:10px 16px;font-size:13.5px;line-height:1.5;box-shadow:var(--shadow-card)}
+    .chat-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;gap:12px;color:var(--text-muted);text-align:center}
+    .chat-thinking{display:flex;align-items:center;gap:8px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 0}
+    .chat-foot-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:6px;flex-wrap:wrap}
+    .chat-disclaimer{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);letter-spacing:.3px}
     .search-bar-wrap{display:flex;gap:8px;margin:10px 0 14px}
     .search-input{flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:24px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;font-weight:400;padding:12px 20px;outline:none;transition:all .2s ease;box-shadow:var(--shadow-card)}
     .search-input:focus{border-color:#5A8FA6;box-shadow:0 0 0 3px rgba(90,143,166,.12),var(--shadow-card)}
@@ -1782,6 +1799,16 @@
        forthcoming Ask MERIDIAN chat and every reworked AI card will use —
        piloted here on World Conflicts' situation report (render-only, not
        yet grounded) to prove the schema before any grounded quota is spent */
+    /* v6.9 — Ask MERIDIAN: a grounded chat mode inside the Search tab (toggle
+       next to keyword search), answers rendered through the shared
+       renderAiResponse() with real citation links, conversation kept
+       in-memory only (grounded answers are time-sensitive, no localStorage
+       persistence needed) and capped to the last 3 user turns fed back into
+       each prompt so history can't skew what the live search actually
+       queries for. New "Your interests" personalization setting feeds a
+       shared prompt fragment into chat now, and into select grounded
+       per-tab cards in the next phase — deliberately not injected into the
+       purely data-grounded tabs (Markets/N50/Climate's numeric takeaway) */
 
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
@@ -1903,7 +1930,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.8</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v6.9</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -1975,7 +2002,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v6.8
+    MERIDIAN v6.9
   </div>
 </main>
 
@@ -2017,7 +2044,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v6.8 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v6.9 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2069,6 +2096,20 @@ const GEMINI_ENDPOINT_BASE = 'https://generativelanguage.googleapis.com/v1beta/m
 const GEMINI_MODEL_CHAIN = ['gemini-3.1-flash-lite', 'gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-3-flash'];
 const LS_GEMINI_KEY     = 'mer18_gemini_key';
 const LS_GEMINI_ENABLED = 'mer18_gemini_enabled';
+const LS_AI_INTERESTS   = 'mer18_ai_interests';
+
+// Turns the user's free-text "interests" setting into a reusable prompt
+// fragment — not injected into every AI call site (see the Nifty50/Markets/
+// Climate prompts, which stay purely data-grounded on purpose), only where
+// broader relevance-weighting genuinely applies: chat and the grounded
+// news-synthesis tabs. Empty string (no-op) if unset.
+function personalizationFragment(){
+  const v=(localStorage.getItem(LS_AI_INTERESTS)||'').trim();
+  if(!v)return'';
+  return`The user has said they're especially interested in: ${v}. Weight relevance toward `+
+    `these topics when multiple angles genuinely exist, but do not force a connection to them `+
+    `if the material has none.`;
+}
 
 const _geminiCooldownUntil = {}; // modelId -> timestamp
 function setGeminiCooldown(modelId, secs = 300){
@@ -2657,11 +2698,11 @@ function cacheSet(q,ts,max,data){
 function cacheStale(q,ts,max){
   try{const raw=localStorage.getItem(ck(q,ts,max));if(!raw)return null;const {data,fetchedAt}=JSON.parse(raw);return{data,ageMs:Date.now()-fetchedAt};}catch{return null;}
 }
-function clearAllCache(){let n=0;Object.keys(localStorage).forEach(k=>{if(k.startsWith(LS_PFX)&&k!==LS_READ&&k!==LS_THEME&&k!==LS_GEMINI_KEY&&k!==LS_GEMINI_ENABLED){localStorage.removeItem(k);n++;}});DBG.info('CACHE',`Cleared ${n} entries`);}
+function clearAllCache(){let n=0;Object.keys(localStorage).forEach(k=>{if(k.startsWith(LS_PFX)&&k!==LS_READ&&k!==LS_THEME&&k!==LS_GEMINI_KEY&&k!==LS_GEMINI_ENABLED&&k!==LS_AI_INTERESTS){localStorage.removeItem(k);n++;}});DBG.info('CACHE',`Cleared ${n} entries`);}
 function showCacheInfo(){
   let n=0,sz=0;
   Object.keys(localStorage).forEach(k=>{
-    if(k.startsWith(LS_PFX)&&k!==LS_READ&&k!==LS_THEME&&k!==LS_GEMINI_KEY&&k!==LS_GEMINI_ENABLED){
+    if(k.startsWith(LS_PFX)&&k!==LS_READ&&k!==LS_THEME&&k!==LS_GEMINI_KEY&&k!==LS_GEMINI_ENABLED&&k!==LS_AI_INTERESTS){
       n++;try{const r=localStorage.getItem(k);sz+=r.length;const {fetchedAt}=JSON.parse(r);const m=Math.floor((Date.now()-fetchedAt)/60000);DBG.data('ENTRY',`${k.slice(-10)} · ${m}m · ${(r.length/1024).toFixed(1)}KB`);}catch{}
     }
   });
@@ -4845,27 +4886,124 @@ async function loadSearchTab(){
         <div class="cat-title-row"><div class="cat-pip" style="background:#5A8FA6;box-shadow:0 0 10px #5A8FA6"></div><div class="cat-name">Search</div></div>
         <div class="cat-meta"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)">Powered by Google News</span></div>
       </div>
-      <div class="search-bar-wrap">
-        <input type="text" id="search-input" class="search-input" placeholder="Search any topic… e.g. Tamil Nadu, Anthropic, Nifty 50" autocomplete="off">
-        <button class="search-btn" onclick="doNewsSearch()">Search</button>
+      <div class="search-mode-toggle">
+        <button class="smt-btn active" id="smt-keyword" onclick="setSearchMode('keyword')">🔍 Keyword Search</button>
+        <button class="smt-btn" id="smt-chat" onclick="setSearchMode('chat')">✨ Ask MERIDIAN</button>
       </div>
-      <div class="search-presets">
-        <button class="search-preset-chip" onclick="doNewsSearch('India Pakistan')">India Pakistan</button>
-        <button class="search-preset-chip" onclick="doNewsSearch('OpenAI OR Anthropic')">AI Race</button>
-        <button class="search-preset-chip" onclick="doNewsSearch('Nifty 50 OR Sensex')">Markets</button>
-        <button class="search-preset-chip" onclick="doNewsSearch('Gaza OR Ukraine OR Taiwan')">Conflicts</button>
-        <button class="search-preset-chip" onclick="doNewsSearch('RBI OR inflation OR GDP')">Economy</button>
-        <button class="search-preset-chip" onclick="doNewsSearch('Tamil Nadu OR Chennai')">Tamil Nadu</button>
+      <div class="kw-only" id="kw-search-ui">
+        <div class="search-bar-wrap">
+          <input type="text" id="search-input" class="search-input" placeholder="Search any topic… e.g. Tamil Nadu, Anthropic, Nifty 50" autocomplete="off">
+          <button class="search-btn" onclick="doNewsSearch()">Search</button>
+        </div>
+        <div class="search-presets">
+          <button class="search-preset-chip" onclick="doNewsSearch('India Pakistan')">India Pakistan</button>
+          <button class="search-preset-chip" onclick="doNewsSearch('OpenAI OR Anthropic')">AI Race</button>
+          <button class="search-preset-chip" onclick="doNewsSearch('Nifty 50 OR Sensex')">Markets</button>
+          <button class="search-preset-chip" onclick="doNewsSearch('Gaza OR Ukraine OR Taiwan')">Conflicts</button>
+          <button class="search-preset-chip" onclick="doNewsSearch('RBI OR inflation OR GDP')">Economy</button>
+          <button class="search-preset-chip" onclick="doNewsSearch('Tamil Nadu OR Chennai')">Tamil Nadu</button>
+        </div>
       </div>
     </div>
-    <div id="search-results">
+    <div id="search-results" class="kw-only">
       <div class="search-empty">
         <div class="se-ico">◐</div>
         <div class="se-msg">Enter a topic to search live Google News</div>
       </div>
+    </div>
+    <div class="chat-panel" id="chat-panel">
+      <div class="chat-thread" id="chat-thread"></div>
+      <div class="search-bar-wrap">
+        <input type="text" id="chat-input" class="search-input" placeholder="Ask about any current event…" autocomplete="off">
+        <button class="search-btn" onclick="sendChatMessage()">Ask</button>
+      </div>
+      <div class="chat-foot-row">
+        <span class="chat-disclaimer">✨ Grounded in live Google Search · answers may be imperfect</span>
+        <button class="btn-mark" onclick="clearChatThread()">↺ New chat</button>
+      </div>
     </div>`;
   const inp=document.getElementById('search-input');
   if(inp)inp.addEventListener('keydown',e=>{if(e.key==='Enter')doNewsSearch();});
+  const chatInp=document.getElementById('chat-input');
+  if(chatInp)chatInp.addEventListener('keydown',e=>{if(e.key==='Enter')sendChatMessage();});
+  renderChatThread();
+}
+function setSearchMode(mode){
+  document.getElementById('smt-keyword')?.classList.toggle('active',mode==='keyword');
+  document.getElementById('smt-chat')?.classList.toggle('active',mode==='chat');
+  document.querySelectorAll('.kw-only').forEach(el=>el.classList.toggle('hidden',mode!=='keyword'));
+  document.getElementById('chat-panel')?.classList.toggle('active',mode==='chat');
+  if(mode==='chat')document.getElementById('chat-input')?.focus();
+}
+
+/* ── Ask MERIDIAN — grounded chat ──
+   In-memory only (not localStorage): grounded answers are inherently
+   date-sensitive, so a persisted transcript from a prior session has little
+   reuse value and would need its own staleness UI. Since switchTab() only
+   hides panels via CSS (never unmounts), this survives normal tab-switching
+   within a session for free — a full reload or "New chat" resets it, which
+   is an acceptable, expected boundary for a client-only app with no backend. */
+let _chatThread=[]; // {role:'user'|'ai', text, citations?, ts}
+
+function buildChatPrompt(question){
+  // Only the last 3 user turns go back into the prompt — even capped
+  // history fed into a GROUNDED call can skew what the live search actually
+  // queries for on a fast-moving story, so keep it short deliberately.
+  const recent=_chatThread.filter(t=>t.role==='user').slice(-3);
+  const history=recent.length?recent.map(t=>`Q: ${t.text}`).join('\n')+'\n':'';
+  const pers=personalizationFragment();
+  return`You are MERIDIAN, a factual news assistant grounded in live Google Search results. `+
+    `Answer the user's question using current, relevant, real news — not invented facts. Be `+
+    `concise (3-6 sentences), neutral, and factual — no preamble like "Based on my search results". `+
+    `If sources disagree, say so briefly.${pers?' '+pers:''}`+
+    (history?`\n\nRecent questions in this conversation, for context only:\n${history}`:'')+
+    `\nQuestion: ${question}`;
+}
+
+async function sendChatMessage(){
+  const inp=document.getElementById('chat-input');
+  const q=(inp?.value||'').trim();
+  if(!q)return;
+  inp.value='';
+  _chatThread.push({role:'user',text:q,ts:Date.now()});
+  renderChatThread(true);
+  if(!geminiEnabled()){
+    _chatThread.push({role:'ai',text:'Ask MERIDIAN needs a Gemini API key — add one in Settings and turn on AI features.',ts:Date.now()});
+    renderChatThread();
+    return;
+  }
+  const prompt=buildChatPrompt(q);
+  const result=await callGeminiGrounded(prompt,{ttlHours:1});
+  if(!result){
+    _chatThread.push({role:'ai',text:'⚠ No grounded answer available right now — the live-search models may be rate-limited. Try again shortly.',ts:Date.now()});
+  }else{
+    _chatThread.push({role:'ai',text:result.text,citations:result.citations,ts:Date.now()});
+  }
+  if(_chatThread.length>13)_chatThread=_chatThread.slice(-13); // ~6 turns, bounded
+  renderChatThread();
+}
+
+function clearChatThread(){
+  _chatThread=[];
+  renderChatThread();
+}
+
+function renderChatThread(thinking){
+  const el=document.getElementById('chat-thread');if(!el)return;
+  if(!_chatThread.length&&!thinking){
+    el.innerHTML=`<div class="chat-empty">
+      <div class="se-ico">✨</div>
+      <div>Ask about any current event — grounded in live Google Search, with real source links.</div>
+    </div>`;
+    return;
+  }
+  const turns=_chatThread.map(t=>t.role==='user'
+    ?`<div class="chat-msg">${esc(t.text)}</div>`
+    :renderAiResponse({summary:t.text,citations:t.citations},{icon:'✨',label:'MERIDIAN'})
+  ).join('');
+  const thinkingHTML=thinking?`<div class="chat-thinking"><span class="dots">Searching</span></div>`:'';
+  el.innerHTML=turns+thinkingHTML;
+  el.scrollTop=el.scrollHeight;
 }
 
 /* Transform plain multi-word queries into OR-joined for better RSS coverage.
@@ -7489,6 +7627,10 @@ function openSettings(){
     <div class="set-row">
       <div><div class="set-lbl">Test connection</div><div class="set-sub" id="gemini-test-result">Sends one small request to verify your key works</div></div>
       <button class="set-ok-btn" onclick="testGeminiKey()">Test</button>
+    </div>
+    <div class="set-row">
+      <div><div class="set-lbl">Your interests</div><div class="set-sub">Nudges AI relevance — used by Ask MERIDIAN and grounded AI cards</div></div>
+      <textarea class="set-input" rows="2" id="ai-interests-inp" placeholder="e.g. Tamil Nadu politics, semiconductors, climate policy" onchange="saveAiInterests(this.value)">${esc(localStorage.getItem(LS_AI_INTERESTS)||'')}</textarea>
     </div>`;
   document.getElementById('set-overlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -7505,6 +7647,11 @@ function saveGeminiKey(v){
   const st=document.getElementById('gemini-status-txt');
   if(st)st.textContent=geminiEnabled()?'Enabled':(v?'Key saved — turn on the toggle to enable':'Disabled — add a key above first');
   toast(v?'Gemini key saved':'Gemini key cleared','⚙');
+}
+function saveAiInterests(v){
+  v=(v||'').trim();
+  if(v)localStorage.setItem(LS_AI_INTERESTS,v);else localStorage.removeItem(LS_AI_INTERESTS);
+  toast(v?'Interests saved':'Interests cleared','⚙');
 }
 function toggleGeminiEnabled(checked){
   if(checked&&!localStorage.getItem(LS_GEMINI_KEY)){
@@ -7540,7 +7687,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v6.8 · AI grounding foundation — shared response renderer, World Conflicts pilot');
+DBG.info('INIT','MERIDIAN v6.9 · Ask MERIDIAN grounded chat + personalization settings');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
