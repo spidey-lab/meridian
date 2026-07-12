@@ -1844,6 +1844,18 @@
        rate-limited" message on failure — so it's always clear the feature
        ran, and why it looks the way it does */
 
+    /* v7.3 — App-quality polish pass ahead of Android packaging: fixed
+       TradingView's Heatmap/Calendar/Signals embeds rendering light-themed
+       inside dark/terminal mode (stale per-tab load cache + an unmapped
+       theme value); added history/popstate handling so the Android back
+       button (and desktop Alt+Left) closes the article modal, Settings,
+       command palette and Globe View instead of navigating away; closed
+       four remaining silent-blank gaps (Today in Brief, the footer wire
+       ticker, the Tension Index card, quake-point fetch) so every one of
+       them shows a real "unavailable" message on failure instead of empty
+       space; and shipped a premium icon pack (192/512 + maskable variants)
+       for the installable app */
+
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
       border-left:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:9px;
@@ -1964,7 +1976,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v7.2</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v7.3</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -2036,7 +2048,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v7.2
+    MERIDIAN v7.3
   </div>
 </main>
 
@@ -2078,7 +2090,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v7.2 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v7.3 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -2386,12 +2398,21 @@ function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
   document.getElementById('themeBtn').textContent = t==='dark' ? '☀' : t==='terminal' ? '⌗' : '☾';
   localStorage.setItem(LS_THEME, t);
-  // Re-render active TV widget so it picks up the new theme
+  // Drop ALL TV widgets from the loaded set, not just whichever sub-tab is
+  // active right now — otherwise a widget loaded once under the old theme
+  // (e.g. Heatmap visited in light mode) stays stale forever, since
+  // switchMktSubtab() only re-inits a tab that's NOT already in tvLoaded.
+  // Guarded: applyTheme() is also called from the bootstrap IIFE near the
+  // top of the script, before tvLoaded's own `const` declaration (further
+  // down, near the Markets tab code) has executed — nothing could have
+  // loaded yet at that point anyway, so silently skipping is correct there.
   const tvTabs=['calendar','signals','heatmap'];
+  try{tvTabs.forEach(tab=>tvLoaded.delete(tab));}catch{}
+  // Immediately refresh whichever one is on screen right now
   const activeEl=document.querySelector('.mkt-sub.active');
   if(activeEl){
     const activeTab=tvTabs.find(tab=>activeEl.id==='mkt-sub-'+tab);
-    if(activeTab){ tvLoaded.delete(activeTab); switchMktSubtab(activeTab); }
+    if(activeTab)switchMktSubtab(activeTab);
   }
 }
 function toggleTheme(){
@@ -3555,6 +3576,37 @@ async function cardClick(id,hex){
 /* ════════════════════════════════════════
    MODAL
 ════════════════════════════════════════ */
+/* ── Modal history: makes the Android/mobile back button (and browser back)
+   close whichever overlay is open, instead of navigating away or doing
+   nothing — there was previously no history/popstate handling anywhere in
+   the app, only an Escape-key listener per overlay, which has no mobile
+   equivalent. One shared pattern for all 4 full-screen overlays (article
+   modal, settings, command palette, globe view): each open*() call pushes
+   a history entry; each close*() call consumes it (via history.back(),
+   UNLESS the close was itself triggered by a real back-press, in which
+   case the entry is already gone and we just clean up the UI) — so a
+   user's actual back gesture and an in-app "✕ close" button both funnel
+   through the exact same close path, and the history stack never grows
+   unboundedly across repeated open/close cycles. */
+let _modalHistoryPushed=false;
+let _closingViaPopstate=false;
+function pushModalState(){
+  history.pushState({meridianModal:true},'',location.href);
+  _modalHistoryPushed=true;
+}
+function consumeModalState(){
+  if(_modalHistoryPushed&&!_closingViaPopstate){_modalHistoryPushed=false;history.back();}
+  else _modalHistoryPushed=false;
+}
+window.addEventListener('popstate',()=>{
+  _closingViaPopstate=true;
+  if(document.getElementById('overlay')?.classList.contains('open'))closeModal();
+  else if(document.getElementById('set-overlay')?.classList.contains('open'))closeSettings();
+  else if(document.getElementById('cp-overlay')?.classList.contains('open'))closeCmdk();
+  else if(document.getElementById('globe-overlay')?.classList.contains('open'))closeGlobeView();
+  _closingViaPopstate=false;
+});
+
 function openModalShell(id,hex){
   const a=artStore[id];if(!a)return;
   const c=CATS.find(x=>x.hex===hex)||CATS[0];
@@ -3602,6 +3654,7 @@ function openModalShell(id,hex){
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
   triggerHoloMaterialize(document.querySelector('#overlay .modal'));
+  pushModalState();
 }
 function triggerHoloMaterialize(el){
   if(!el||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
@@ -3609,7 +3662,7 @@ function triggerHoloMaterialize(el){
   void el.offsetWidth; // force reflow so the animation restarts on repeat opens
   el.classList.add('materialize');
 }
-function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';}
+function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';consumeModalState();}
 function handleOvClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
@@ -4420,7 +4473,11 @@ function switchMktSubtab(tab){
   }
 }
 
-function tvTheme(){ return document.documentElement.getAttribute('data-theme')||'dark'; }
+// TradingView's colorTheme param only accepts 'light'/'dark' — MERIDIAN's
+// third theme ('terminal') has no TV equivalent, so it maps to 'dark' (the
+// closer visual fit) rather than being passed through raw and silently
+// falling back to TradingView's own default (light).
+function tvTheme(){ return document.documentElement.getAttribute('data-theme')==='light'?'light':'dark'; }
 function injectTVWidget(containerId,widgetName,config){
   const el=document.getElementById(containerId);if(!el)return;
   el.innerHTML='';
@@ -5605,16 +5662,20 @@ async function loadCrisisWatch(){
    the site-wide footer ticker (see bottom of <body>)
 ════════════════════════════════════════ */
 async function loadWireFeed(){
+  const tickerEl=document.getElementById('wire-footer-ticker');
+  const wtMsg=msg=>`<span class="wt-item" style="color:var(--text-muted)">${esc(msg)}</span>`;
+  if(tickerEl)tickerEl.innerHTML=wtMsg('Loading wire feed…');
   try{
     const feeds=[...cat('home')._rss, ...cat('world')._rss, ...CRISIS_NEWS_RSS];
     const items=await fetchRssFeeds(feeds);
     items.forEach(a=>{ a._sev=wireSeverity(a); });
-    const tickerEl=document.getElementById('wire-footer-ticker');
-    if(tickerEl)tickerEl.innerHTML=wireFooterTickerHTML(items.slice(0,20));
+    if(tickerEl)tickerEl.innerHTML=items.length?wireFooterTickerHTML(items.slice(0,20)):wtMsg('Wire feed unavailable right now');
     renderTensionGauge(items);
     enrichTensionWithAi(items);
   }catch(e){
     DBG.err('RSS',`loadWireFeed(): ${e.message}`);
+    if(tickerEl)tickerEl.innerHTML=wtMsg(`Wire feed unavailable · ${e.message}`);
+    renderTensionGauge([]);
   }
 }
 
@@ -5650,7 +5711,10 @@ function donutSegments(parts){
 }
 function renderTensionGauge(items){
   const el=document.getElementById('home-tension');if(!el)return;
-  if(!items.length){el.innerHTML='';return;}
+  if(!items.length){
+    el.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Tension Index unavailable · the wire feed may be rate-limited or offline. Will retry next refresh.</div></div>`;
+    return;
+  }
   const critC=items.filter(a=>a._sev.cls==='critical').length;
   const elevC=items.filter(a=>a._sev.cls==='elevated').length;
   const activeC=items.length-critC-elevC;
@@ -7472,7 +7536,10 @@ async function loadDigestBrief(){
     }
   }));
   const list=document.getElementById('brief-list');
-  if(list&&!list.children.length){el.innerHTML='';return;}
+  if(list&&!list.children.length){
+    el.innerHTML=`<div class="no-data-compact"><span class="ndc-ico">◎</span><div class="ndc-msg">Today's brief is unavailable · the news feeds may be rate-limited or offline. Will retry next refresh.</div></div>`;
+    return;
+  }
   const timeEl=document.getElementById('brief-time');
   if(timeEl)timeEl.textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 }
@@ -7712,8 +7779,9 @@ function openCmdk(){
   const inp=document.getElementById('cp-input');
   if(inp){inp.value='';inp.focus();}
   _cpRender();
+  pushModalState();
 }
-function closeCmdk(){document.getElementById('cp-overlay').classList.remove('open');}
+function closeCmdk(){document.getElementById('cp-overlay').classList.remove('open');consumeModalState();}
 document.getElementById('cp-input')?.addEventListener('input',()=>{_cpSel=0;_cpRender();});
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCmdk();return;}
@@ -7852,12 +7920,18 @@ function openSettings(){
       <div><div class="set-lbl">Your interests</div><div class="set-sub">Nudges AI relevance — used by Ask MERIDIAN and grounded AI cards</div></div>
       <textarea class="set-input" rows="2" id="ai-interests-inp" placeholder="e.g. Tamil Nadu politics, semiconductors, climate policy" onchange="saveAiInterests(this.value)">${esc(localStorage.getItem(LS_AI_INTERESTS)||'')}</textarea>
     </div>`;
+  const wasOpen=document.getElementById('set-overlay').classList.contains('open');
   document.getElementById('set-overlay').classList.add('open');
   document.body.style.overflow='hidden';
+  // openSettings() also gets called while ALREADY open (Clear cache/Clear
+  // saved re-render the panel in place) — only push a fresh history entry
+  // on a genuine open, not on every content refresh.
+  if(!wasOpen)pushModalState();
 }
 function closeSettings(){
   document.getElementById('set-overlay').classList.remove('open');
   document.body.style.overflow='';
+  consumeModalState();
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings();});
 
@@ -7907,7 +7981,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v7.2 · Fixed silent-empty states in Crisis Breaking Now + Climate regional intel');
+DBG.info('INIT','MERIDIAN v7.3 · App-quality polish: TV theme fix, back-button handling, blank-state audit, icon pack');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
@@ -8254,7 +8328,7 @@ async function ensureQuakePoints(){
     _quakeFetchPromise=fetch(USGS_URL,{signal:AbortSignal.timeout(15000)})
       .then(r=>r.json())
       .then(d=>{_quakePoints=extractQuakePoints(d.features);})
-      .catch(()=>{});
+      .catch(e=>{DBG.err('USGS',`ensureQuakePoints(): ${e.message}`);});
   }
   await _quakeFetchPromise;
 }
@@ -8433,6 +8507,7 @@ async function enrichGlobePointWithAi(p){
 async function openGlobeView(){
   const ov=document.getElementById('globe-overlay');if(!ov)return;
   ov.classList.add('open');document.body.style.overflow='hidden';
+  pushModalState();
   buildGlobeViewPoints();
   initGlobeView();
   if(!_quakePoints.length){
@@ -8444,6 +8519,7 @@ function closeGlobeView(){
   const ov=document.getElementById('globe-overlay');if(ov)ov.classList.remove('open');
   document.body.style.overflow='';
   cancelAnimationFrame(_globeViewRAF);_globeViewRAF=0;
+  consumeModalState();
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGlobeView();});
 
