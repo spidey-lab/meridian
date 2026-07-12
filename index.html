@@ -1856,6 +1856,13 @@
        space; and shipped a premium icon pack (192/512 + maskable variants)
        for the installable app */
 
+    /* v7.4 — Fixed the Live Wire footer ticker never populating on first
+       load: #wire-footer-ticker is declared in the HTML after this inline
+       script block, so the original bootstrap call ran before the element
+       existed in the DOM and silently no-opped (auto-refresh is off by
+       default, so nothing ever re-populated it afterward either) — the
+       bootstrap call is now deferred to DOMContentLoaded */
+
     /* ── WORLD CLOCK STRIP (masthead, wide screens only) ── */
     .world-clock{display:inline-flex;align-items:center;gap:7px;margin-left:14px;padding-left:14px;
       border-left:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:9px;
@@ -1976,7 +1983,7 @@
   <span class="sig-line" aria-hidden="true"></span>
   <div class="hdr-left">
     <div class="logo">MERI<em>DI</em>AN</div>
-    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v7.3</div>
+    <div class="tagline">// GLOBAL INTELLIGENCE FEED · v7.4</div>
     <span class="telemetry" id="telemetry" aria-hidden="true">
       <span class="tm-dot"></span>UPLINK LIVE<span class="tm-sep">·</span><span class="tm-val" id="tm-tabs">1/10</span> TABS<span class="tm-sep">·</span><span class="tm-val" id="tm-stories">0</span> STORIES<span class="tm-sep">·</span><span class="tm-val" id="tm-cache">—</span>
     </span>
@@ -2048,7 +2055,7 @@
     USGS · GDACS · Open-Meteo &nbsp;·&nbsp;
     localStorage cache · 15 min TTL &nbsp;·&nbsp;
     100% free · no accounts · no tracking &nbsp;·&nbsp;
-    MERIDIAN v7.3
+    MERIDIAN v7.4
   </div>
 </main>
 
@@ -2090,7 +2097,7 @@
 <div id="dbg-panel">
   <div class="dbg-hdr">
     <div style="display:flex;align-items:center;gap:8px">
-      <span class="dbg-hdr-l">// MERIDIAN v7.3 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
+      <span class="dbg-hdr-l">// MERIDIAN v7.4 · RSS + GDELT + Gemini AI + Google Finance + USGS + GDACS</span>
       <span class="dbg-cooldown" id="dbg-cooldown">GDELT COOLING</span>
     </div>
     <div class="dbg-btns">
@@ -7981,7 +7988,7 @@ window.addEventListener('online',()=>{document.body.classList.remove('is-offline
 if(navigator.onLine===false)document.body.classList.add('is-offline');
 
 buildNav();
-DBG.info('INIT','MERIDIAN v7.3 · App-quality polish: TV theme fix, back-button handling, blank-state audit, icon pack');
+DBG.info('INIT','MERIDIAN v7.4 · App-quality polish: TV theme fix, back-button handling, blank-state audit, icon pack');
 DBG.info('SOURCES','RSS (rss2json.com) · GDELT Project · Google Sheets (GOOGLEFINANCE + N50) · USGS · GDACS · Open-Meteo');
 DBG.info('KEYS','Keyboard: 1-0 = tabs · Ctrl+K = palette · R = refresh · Esc = close · Enter = open focused card');
 
@@ -8528,7 +8535,14 @@ updateLogoGlow();
 setInterval(updateLogoGlow,60000);
 
 loadHome();
-loadWireFeed();
+/* #wire-footer-ticker is declared further down in the HTML, after this
+   script tag — deferred so the very first load doesn't silently miss it
+   (the element doesn't exist in the DOM yet at this point in parsing) */
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',loadWireFeed);
+}else{
+  loadWireFeed();
+}
 </script>
 
 <!-- SITE-WIDE WIRE FOOTER TICKER — lives outside <main> so switchTab() never touches it -->
