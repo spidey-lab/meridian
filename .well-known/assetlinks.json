@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "io.github.spideylab.meridian",
+    "sha256_cert_fingerprints": ["46:7E:9D:8A:86:7D:B7:25:BC:BC:DE:6C:03:AC:DB:80:77:BA:0C:25:45:F8:AD:E7:17:23:52:A3:E7:67:93:EA"]
+  }
+}]
