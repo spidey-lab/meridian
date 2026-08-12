@@ -616,6 +616,7 @@ function wireArticleThumbFallbacks(root) {
 }
 
 function timeAgo(date) {
+  if (!(date instanceof Date)) date = new Date(date);
   const mins = Math.max(0, Math.round((Date.now() - date.getTime()) / 60000));
   if (mins < 1) return 'just now';
   if (mins < 60) return `${mins}m ago`;
@@ -728,7 +729,10 @@ async function fetchFeed(url, forceRefresh) {
       const raw = localStorage.getItem(key);
       if (raw) {
         const { items, ts } = JSON.parse(raw);
-        if (Date.now() - ts < CACHE_TTL) return items;
+        // localStorage round-trips through JSON, which turns each item's
+        // `pub` Date into a string — revive it, or timeAgo() throws on the
+        // cached path and leaves the article list stuck on its spinner.
+        if (Date.now() - ts < CACHE_TTL) return items.map(it => ({ ...it, pub: new Date(it.pub) }));
       }
     } catch {}
   }
@@ -871,27 +875,38 @@ async function loadAndRenderArticles(forceRefresh) {
 
   document.getElementById('readerCount').textContent = `${items.length} stories · ${pub.name}`;
   const list = document.getElementById('articleList');
-  list.innerHTML = items.map((a, i) => {
-    const art = a.img
-      ? `<img class="article-thumb" src="${a.img}" alt="" loading="lazy" data-photo-fallback="1" data-favicon="${faviconUrl(pub.domain, 128)}" data-seal="${esc(pub.name)}" data-seal-size="128" />`
-      : `<img class="article-seal" data-seal="${esc(pub.name)}" data-seal-size="128" src="${faviconUrl(pub.domain, 128)}" alt="${esc(pub.name)}" title="${esc(pub.name)}" />`;
-    return `
-    <div class="article${i === 0 ? ' lead' : ''}" data-idx="${i}" tabindex="0" role="button" aria-expanded="false">
-      ${art}
-      <div class="article-body">
-        <div class="article-row">
-          <h3 class="article-headline">${esc(a.title)}</h3>
-          <span class="article-meta">${timeAgo(a.pub)}</span>
-        </div>
-        ${a.dek ? `<p class="article-dek">${esc(a.dek)}</p>` : ''}
-        <div class="article-expand">
-          <div class="article-expand-inner">
-            <a class="read-more-link" href="${safeHref(a.link)}" target="_blank" rel="noopener noreferrer">Read full story on ${esc(pub.name)} ↗</a>
+
+  // Rendering shouldn't be able to throw now that cached dates are revived
+  // above, but guard it anyway — a stray bad field from a feed should
+  // surface a retryable error, never leave the old spinner stuck forever.
+  try {
+    list.innerHTML = items.map((a, i) => {
+      const art = a.img
+        ? `<img class="article-thumb" src="${a.img}" alt="" loading="lazy" data-photo-fallback="1" data-favicon="${faviconUrl(pub.domain, 128)}" data-seal="${esc(pub.name)}" data-seal-size="128" />`
+        : `<img class="article-seal" data-seal="${esc(pub.name)}" data-seal-size="128" src="${faviconUrl(pub.domain, 128)}" alt="${esc(pub.name)}" title="${esc(pub.name)}" />`;
+      return `
+      <div class="article${i === 0 ? ' lead' : ''}" data-idx="${i}" tabindex="0" role="button" aria-expanded="false">
+        ${art}
+        <div class="article-body">
+          <div class="article-row">
+            <h3 class="article-headline">${esc(a.title)}</h3>
+            <span class="article-meta">${timeAgo(a.pub)}</span>
+          </div>
+          ${a.dek ? `<p class="article-dek">${esc(a.dek)}</p>` : ''}
+          <div class="article-expand">
+            <div class="article-expand-inner">
+              <a class="read-more-link" href="${safeHref(a.link)}" target="_blank" rel="noopener noreferrer">Read full story on ${esc(pub.name)} ↗</a>
+            </div>
           </div>
         </div>
-      </div>
-    </div>`;
-  }).join('');
+      </div>`;
+    }).join('');
+  } catch (renderErr) {
+    document.getElementById('readerCount').textContent = pub.name;
+    showListStatus(`<div class="is-error">Couldn't display ${esc(pub.name)} right now.<br>${esc(renderErr.message)}</div><button class="retry-btn" id="retryBtn">↻ Retry</button>`);
+    document.getElementById('retryBtn').addEventListener('click', () => loadAndRenderArticles(true));
+    return;
+  }
 
   wireFaviconFallbacks(list);
   wireArticleThumbFallbacks(list);
