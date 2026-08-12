@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NewsStand</title>
+<meta name="description" content="NewsStand — every publisher, one rack. A free, single-file news reader pulling live RSS from dozens of outlets across five sections, with no account and no tracking.">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#1b2b22" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ece1c4" media="(prefers-color-scheme: light)">
+<meta property="og:title" content="NewsStand — every publisher, one rack">
+<meta property="og:description" content="A free, single-file news reader pulling live RSS from dozens of outlets across five sections.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23132218'/%3E%3Cpath d='M14 20h36v28a4 4 0 01-4 4H18a4 4 0 01-4-4V20z' fill='none' stroke='%23cda434' stroke-width='3'/%3E%3Cpath d='M14 20l18-8 18 8' fill='none' stroke='%23cda434' stroke-width='3' stroke-linejoin='round'/%3E%3Cline x1='32' y1='12' x2='32' y2='52' stroke='%23cda434' stroke-width='2.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Day Desk — pale vellum, emerald ink, muted gold */
+  --desk-1: #ece1c4;
+  --desk-2: #cdb583;
+  --desk-vignette-top: rgba(255,250,235,0.5);
+  --desk-vignette-bottom: rgba(60,45,15,0.16);
+  --desk-grain: rgba(80,55,20,0.045);
+  --wm1: #132218; --wm2: #3c6b4a; --wm3: #132218;
+  --brand-solid: #1f3a29;
+  --eyebrow: rgba(19,34,24,0.55);
+  --paper: #faf3e2;
+  --paper-shade: #eddec2;
+  --paper-dark: #ddc99c;
+  --ink: #241a10;
+  --ink-soft: #6b5c44;
+  --ink-faint: #96876a;
+  --rule: #cdb98c;
+  --stamp: #7a1a1a;
+  --stamp-soft: #f1ddd4;
+  --gold: #b8973a;
+  --gold-bright: #e8d59a;
+  --gold-deep: #8a6a1f;
+  --tile-shadow-1: 0 2px 3px rgba(55,35,10,0.2);
+  --tile-shadow-2: 0 18px 30px -14px rgba(55,35,10,0.48);
+  --toggle-bg: rgba(19,34,24,0.12);
+  --toggle-thumb: #1f3a29;
+  --spot: rgba(180,140,60,0.10);
+  --err: #a3341f;
+  --err-bg: #f6e2da;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --desk-1: #1b2b22;
+    --desk-2: #0c130f;
+    --desk-vignette-top: rgba(255,214,150,0.09);
+    --desk-vignette-bottom: rgba(0,0,0,0.6);
+    --desk-grain: rgba(255,255,255,0.02);
+    --wm1: #8a6a1f; --wm2: #f0d888; --wm3: #8a6a1f;
+    --brand-solid: #d8bb5e;
+    --eyebrow: rgba(232,213,163,0.55);
+    --paper: #f4ecd8;
+    --paper-shade: #e8dab8;
+    --paper-dark: #d9c48f;
+    --ink: #241a10;
+    --ink-soft: #6b5c44;
+    --ink-faint: #9c8c6d;
+    --rule: #c9b78e;
+    --stamp: #8a241f;
+    --stamp-soft: #f1ddd4;
+    --gold: #cda434;
+    --gold-bright: #f0d888;
+    --gold-deep: #8a6a1f;
+    --tile-shadow-1: 0 2px 3px rgba(0,0,0,0.3);
+    --tile-shadow-2: 0 18px 30px -14px rgba(0,0,0,0.7);
+    --toggle-bg: rgba(205,177,115,0.16);
+    --toggle-thumb: #cda434;
+    --spot: rgba(255,214,140,0.09);
+    --err: #e07a5f;
+    --err-bg: #3a1a14;
+  }
+}
+
+:root[data-theme="dark"] {
+  --desk-1: #1b2b22;
+  --desk-2: #0c130f;
+  --desk-vignette-top: rgba(255,214,150,0.09);
+  --desk-vignette-bottom: rgba(0,0,0,0.6);
+  --desk-grain: rgba(255,255,255,0.02);
+  --wm1: #8a6a1f; --wm2: #f0d888; --wm3: #8a6a1f;
+  --brand-solid: #d8bb5e;
+  --eyebrow: rgba(232,213,163,0.55);
+  --paper: #f4ecd8;
+  --paper-shade: #e8dab8;
+  --paper-dark: #d9c48f;
+  --ink: #241a10;
+  --ink-soft: #6b5c44;
+  --ink-faint: #9c8c6d;
+  --rule: #c9b78e;
+  --stamp: #8a241f;
+  --stamp-soft: #f1ddd4;
+  --gold: #cda434;
+  --gold-bright: #f0d888;
+  --gold-deep: #8a6a1f;
+  --tile-shadow-1: 0 2px 3px rgba(0,0,0,0.3);
+  --tile-shadow-2: 0 18px 30px -14px rgba(0,0,0,0.7);
+  --toggle-bg: rgba(205,177,115,0.16);
+  --toggle-thumb: #cda434;
+  --spot: rgba(255,214,140,0.09);
+  --err: #e07a5f;
+  --err-bg: #3a1a14;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; background: var(--desk-2); color: var(--ink); font-family: 'Source Serif 4', Georgia, serif; }
+
+:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+
+/* ================= Desk surface ================= */
+
+.desk {
+  min-height: 100vh;
+  position: relative;
+  background:
+    radial-gradient(ellipse 900px 300px at 50% -5%, var(--desk-vignette-top), transparent 60%),
+    radial-gradient(ellipse 1200px 500px at 50% 115%, var(--desk-vignette-bottom), transparent 60%),
+    repeating-linear-gradient(96deg, var(--desk-grain) 0px, var(--desk-grain) 1px, transparent 1px, transparent 4px),
+    linear-gradient(155deg, var(--desk-1), var(--desk-2) 75%);
+  transition: background .3s ease;
+  overflow: hidden;
+}
+
+.desk::before {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.desk-spotlight {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--mx,50%) var(--my,10%), var(--spot), transparent 62%);
+  mix-blend-mode: soft-light;
+}
+
+.reader-page.hidden, .front-page.hidden { display: none; }
+
+.shell { max-width: 1100px; margin: 0 auto; padding: 0 22px 90px; position: relative; }
+
+/* ================= Masthead ================= */
+
+.site-masthead { padding: 42px 0 26px; text-align: center; position: relative; }
+
+.theme-toggle {
+  position: absolute; top: 42px; right: 0;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--toggle-bg);
+  border: 1px solid var(--toggle-bg);
+  border-radius: 999px;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-family: Inter, sans-serif;
+}
+.theme-toggle .tt-track { position: relative; width: 36px; height: 20px; border-radius: 999px; background: var(--toggle-bg); }
+.theme-toggle .tt-thumb {
+  position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+  border-radius: 50%; background: var(--toggle-thumb);
+  transition: transform .2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+.theme-toggle.is-dark .tt-thumb { transform: translateX(16px); }
+.theme-toggle .tt-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--eyebrow); }
+
+.est-line {
+  font-family: Inter, sans-serif; font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--eyebrow); margin-bottom: 12px;
+}
+.est-line::before, .est-line::after { content: "❧"; margin: 0 12px; opacity: 0.6; }
+
+.brass-wordmark {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-size: clamp(38px, 6.5vw, 62px);
+  letter-spacing: 0.02em;
+  margin: 0;
+  background: linear-gradient(100deg, var(--wm1) 0%, var(--wm2) 45%, var(--wm3) 60%, var(--wm2) 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: 0 3px 14px rgba(0,0,0,0.22);
+  animation: foilSweep 2.2s ease-out 1;
+}
+@keyframes foilSweep { from { background-position: 180% 0; } to { background-position: -10% 0; } }
+
+.desk-tagline { font-family: Inter, sans-serif; font-size: 12.5px; color: var(--eyebrow); margin-top: 12px; letter-spacing: 0.03em; }
+
+.dateline-strip {
+  display: flex; justify-content: center; gap: 18px; margin-top: 18px;
+  font-family: Inter, sans-serif; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--eyebrow);
+}
+.dateline-strip .sep { opacity: 0.5; }
+
+/* ================= Front page: newsstand rack ================= */
+
+.rack {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 50px 30px;
+  padding: 34px 10px 20px;
+  align-items: stretch;
+}
+
+@media (min-width: 760px) {
+  .paper-tile.featured { grid-column: span 2; }
+}
+
+.paper-tile {
+  position: relative;
+  display: flex; flex-direction: column; height: 100%;
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(255,255,255,0.35), transparent 55%),
+    linear-gradient(180deg, var(--paper) 0%, var(--paper-shade) 100%);
+  padding: 24px 22px 28px;
+  cursor: pointer;
+  box-shadow: var(--tile-shadow-1), var(--tile-shadow-2), inset -3px 0 0 rgba(180,145,55,0.55), 0 2px 0 rgba(255,255,255,0.15) inset;
+  transform: rotate(var(--rot, 0deg));
+  animation: tileIn .65s cubic-bezier(.2,.8,.3,1) backwards;
+  transition: transform .28s cubic-bezier(.2,.8,.3,1), box-shadow .28s ease;
+}
+@keyframes tileIn {
+  from { opacity: 0; transform: translateY(28px) rotate(0deg) scale(.96); }
+  to { opacity: 1; transform: translateY(0) rotate(var(--rot, 0deg)) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .paper-tile { animation: none; }
+  .brass-wordmark { animation: none; background-position: 40% 0; }
+}
+
+.paper-tile::before {
+  content: ""; position: absolute; inset: 0; opacity: 0.5; mix-blend-mode: multiply; pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.025 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+.paper-tile::after {
+  content: ""; position: absolute; top: 0; bottom: 10%; left: 50%; width: 14px; margin-left: -7px;
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.16) 45%, rgba(0,0,0,0.16) 55%, transparent);
+  pointer-events: none;
+}
+.paper-tile.featured::after { display: none; }
+
+.dog-ear {
+  position: absolute; top: 0; right: 0; width: 0; height: 0;
+  border-style: solid; border-width: 0 24px 24px 0;
+  border-color: transparent var(--paper-dark) transparent transparent;
+  filter: drop-shadow(-2px 2px 2px rgba(0,0,0,0.3));
+}
+
+.tile-inner { position: relative; z-index: 1; display: flex; flex-direction: column; flex: 1; }
+
+.tile-eyebrow {
+  font-family: Inter, sans-serif; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-faint); border-bottom: 1px solid var(--rule); padding-bottom: 8px; margin-bottom: 12px;
+  display: flex; justify-content: space-between;
+}
+.tile-eyebrow .flag { color: var(--stamp); font-weight: 700; }
+
+.tile-glyph { color: var(--stamp); line-height: 0; }
+.tile-glyph svg { width: 30px; height: 30px; display: block; }
+.paper-tile.featured .tile-glyph svg { width: 38px; height: 38px; }
+
+.tile-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 23px; margin: 10px 0 8px; color: var(--ink); }
+.paper-tile.featured .tile-title { font-size: 32px; }
+
+.tile-desc { font-family: Inter, sans-serif; font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; margin: 0; max-width: 42ch; }
+
+.tile-papers { margin-top: auto; padding-top: 18px; }
+.tile-papers-label { font-family: Inter, sans-serif; font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 9px; }
+.paper-chip-row { display: flex; align-items: center; }
+.paper-chip, .paper-chip-more {
+  width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--paper);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3); margin-left: -10px; display: block; background: var(--paper-dark);
+}
+.paper-chip:first-child, .paper-chip-more:first-child { margin-left: 0; }
+.paper-chip-more {
+  display: flex; align-items: center; justify-content: center;
+  font-family: Inter, sans-serif; font-size: 10px; font-weight: 700; color: var(--ink-soft);
+}
+
+.paper-tile:hover, .paper-tile:focus-visible {
+  transform: translateY(-8px) rotate(0deg) !important;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3), 0 30px 40px -16px rgba(0,0,0,0.55), inset -3px 0 0 rgba(180,145,55,0.7), 0 2px 0 rgba(255,255,255,0.18) inset;
+}
+
+/* ================= Reader view ================= */
+
+.reader-page { padding-top: 26px; }
+
+.back-row { display: flex; align-items: center; gap: 10px; padding-bottom: 16px; font-family: Inter, sans-serif; font-size: 12.5px; }
+.back-link { color: var(--brand-solid); cursor: pointer; font-weight: 600; letter-spacing: 0.03em; }
+.back-link:hover { text-decoration: underline; }
+.back-crumb-sep { color: var(--eyebrow); }
+.back-crumb-current { color: var(--eyebrow); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; }
+
+.paper-sheet {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(255,255,255,0.3), transparent 55%),
+    linear-gradient(180deg, var(--paper) 0%, var(--paper-shade) 100%);
+  padding: 44px 40px 44px;
+  box-shadow: 0 3px 4px rgba(0,0,0,0.3), 0 30px 55px -20px rgba(0,0,0,0.6), inset -4px 0 0 rgba(180,145,55,0.5);
+}
+.paper-sheet::before {
+  content: ""; position: absolute; inset: 0; opacity: 0.4; mix-blend-mode: multiply; pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.02 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+.sheet-inner { position: relative; z-index: 1; }
+
+.ribbon {
+  position: absolute; top: -8px; left: 50px; width: 36px; height: 70px;
+  background: linear-gradient(180deg, var(--stamp), #4c0f0c);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 76%, 0 100%);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+  display: flex; align-items: flex-start; justify-content: center; padding-top: 12px;
+  z-index: 2; color: var(--stamp-soft);
+}
+.ribbon svg { width: 17px; height: 17px; }
+.ribbon::before {
+  content: ""; position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+  width: 7px; height: 7px; border-radius: 50%; background: var(--gold-bright);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-bottom: 3px solid var(--ink); padding-bottom: 10px; padding-left: 46px; }
+.section-head h1 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; margin: 0; }
+.section-head .count { font-family: Inter, sans-serif; font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
+
+.publisher-tabs { display: flex; gap: 10px; overflow-x: auto; padding: 18px 0 20px 46px; }
+
+.pub-tab {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: Inter, sans-serif; font-size: 12.5px; font-weight: 600; white-space: nowrap;
+  padding: 6px 15px 6px 8px; border-radius: 3px 3px 8px 8px;
+  border: 1px solid var(--rule); background: rgba(255,255,255,0.35); color: var(--ink-soft);
+  cursor: pointer; position: relative;
+}
+.pub-tab img { width: 20px; height: 20px; border-radius: 50%; display: block; background: var(--paper-dark); }
+.pub-tab::before {
+  content: ""; position: absolute; top: -1px; left: 8px; right: 8px; height: 3px;
+  background: var(--gold); border-radius: 2px 2px 0 0; opacity: 0.6;
+}
+.pub-tab:hover, .pub-tab:focus-visible { color: var(--ink); border-color: var(--ink-faint); }
+.pub-tab.active { background: var(--stamp); border-color: var(--stamp); color: var(--stamp-soft); }
+.pub-tab.active::before { background: rgba(255,255,255,0.4); }
+
+.article-list { border-top: 1px solid var(--rule); padding-left: 46px; min-height: 140px; }
+
+.article { border-bottom: 1px solid var(--rule); padding: 22px 0; cursor: pointer; display: flex; gap: 18px; transition: background .15s ease; }
+.article:hover, .article:focus-visible { background: linear-gradient(90deg, rgba(0,0,0,0.035), transparent); margin: 0 -14px; padding-left: 14px; padding-right: 14px; border-radius: 4px; }
+
+.article-thumb, .article-seal {
+  flex: none; width: 84px; height: 84px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.08);
+  object-fit: cover; transform: rotate(-1.4deg); background: var(--paper-dark);
+}
+.article-thumb { border-radius: 2px; border: 3px solid #fff; }
+.article-seal { border-radius: 50%; border: 3px solid var(--paper-dark); object-fit: contain; padding: 6px; }
+.article.lead .article-thumb, .article.lead .article-seal { width: 128px; height: 128px; }
+
+.article-body { flex: 1; min-width: 0; }
+.article-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+
+.article-headline { font-family: 'Source Serif 4', Georgia, serif; font-size: 18.5px; font-weight: 700; line-height: 1.35; margin: 0; }
+.article.lead .article-headline { font-size: 25px; }
+.article-meta { font-family: Inter, sans-serif; font-size: 11.5px; color: var(--ink-faint); white-space: nowrap; padding-top: 3px; }
+.article-dek { font-family: 'Source Serif 4', Georgia, serif; font-size: 14px; color: var(--ink-soft); margin: 6px 0 0; max-width: 62ch; line-height: 1.5; }
+.article.lead .article-dek { font-size: 15.5px; max-width: 58ch; }
+.article.lead .article-dek::first-letter {
+  float: left; font-family: 'Playfair Display', serif; font-weight: 900; font-size: 2.7em; line-height: 0.75;
+  padding: 3px 8px 0 0; color: var(--stamp);
+}
+
+.article-expand { max-height: 0; overflow: hidden; transition: max-height .25s ease; }
+.article.open .article-expand { max-height: 220px; }
+.article-expand-inner { padding-top: 12px; }
+
+.read-more-link {
+  font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; color: var(--stamp);
+  text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+}
+.read-more-link:hover { text-decoration: underline; }
+
+.list-status { padding: 34px 10px; text-align: center; font-family: Inter, sans-serif; font-size: 13px; color: var(--ink-soft); }
+.list-status .spinner {
+  width: 22px; height: 22px; margin: 0 auto 14px;
+  border: 2.5px solid var(--rule); border-top-color: var(--stamp); border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.list-status.is-error { color: var(--err); }
+.list-status .retry-btn {
+  margin-top: 12px; font-family: Inter, sans-serif; font-size: 12.5px; font-weight: 600;
+  padding: 8px 18px; border-radius: 6px; border: 1px solid var(--err); background: transparent; color: var(--err); cursor: pointer;
+}
+.list-status .retry-btn:hover { background: var(--err); color: var(--err-bg); }
+
+.notice {
+  font-family: Inter, sans-serif; font-size: 11.5px; color: var(--ink-faint); text-align: center;
+  padding: 24px 0 0; border-top: 1px dashed var(--rule); margin-top: 18px;
+}
+.notice a { color: inherit; }
+</style>
+</head>
+<body>
+
+<div class="desk" id="desk">
+  <div class="desk-spotlight" id="spotlight"></div>
+  <div class="shell">
+    <div class="site-masthead">
+      <div class="theme-toggle" id="themeToggle" tabindex="0" role="button" aria-label="Toggle day and night desk">
+        <span class="tt-label" id="ttLabel">Night Desk</span>
+        <span class="tt-track"><span class="tt-thumb"></span></span>
+      </div>
+      <div class="est-line">Established Today</div>
+      <h1 class="brass-wordmark">NewsStand</h1>
+      <div class="desk-tagline">Every publisher, one rack &nbsp;·&nbsp; live headlines, latest on top</div>
+      <div class="dateline-strip">
+        <span id="datelineDay">—</span>
+        <span class="sep">/</span>
+        <span>5 sections</span>
+        <span class="sep">/</span>
+        <span id="datelineCount">— papers</span>
+      </div>
+    </div>
+
+    <div class="front-page" id="frontPage">
+      <div class="rack" id="rack"></div>
+    </div>
+
+    <div class="reader-page hidden" id="readerPage">
+      <div class="back-row">
+        <span class="back-link" id="backLink" tabindex="0" role="button">← Back to the rack</span>
+        <span class="back-crumb-sep">/</span>
+        <span class="back-crumb-current" id="crumbCurrent"></span>
+      </div>
+      <div class="paper-sheet">
+        <div class="ribbon" id="ribbon"></div>
+        <div class="sheet-inner">
+          <div class="section-head">
+            <h1 id="readerTitle"></h1>
+            <span class="count" id="readerCount"></span>
+          </div>
+          <div class="publisher-tabs" id="publisherTabs"></div>
+          <div class="article-list" id="articleList"></div>
+        </div>
+      </div>
+      <div class="notice">Headlines are pulled live from each publisher's RSS feed and cached for a few minutes. Reading here shows a summary — click a story to read the full piece on the source's own site.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ICONS = {
+  general: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c3 3.2 3 14.8 0 18"/><path d="M12 3c-3 3.2-3 14.8 0 18"/></svg>',
+  sports: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4a4 4 0 01-4 4 4 4 0 01-4-4V4z"/><path d="M8 5H5.5A1.5 1.5 0 004 6.5 2.5 2.5 0 007 9"/><path d="M16 5h2.5A1.5 1.5 0 0120 6.5 2.5 2.5 0 0117 9"/><path d="M12 12v3.5"/><path d="M9 19.5h6"/><path d="M9.7 16.5h4.6l1 3H8.7l1-3z"/></svg>',
+  business: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M3 13h18"/></svg>',
+  health: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.2-4.4-9.4-9A5.4 5.4 0 0112 5.6 5.4 5.4 0 0121.4 11c-2.2 4.6-9.4 9-9.4 9z"/><path d="M4.2 12h3.6l1.4-2.6 1.8 5 1.3-3.4h5.5"/></svg>',
+  entertainment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="11" rx="1.5"/><path d="M3 9l2-4.5h4L7 9"/><path d="M9.5 9l2-4.5h4L13.5 9"/><path d="M16 9l2-4.5h2.5L18.5 9"/><path d="M3 9h18"/></svg>',
+};
+
+// Only publishers confirmed reachable in a manual audit are listed here.
+// Each entry: display name, the domain used for its favicon, and its RSS URL.
+const SECTIONS = {
+  general: {
+    label: 'General News', hue: 208, featured: true,
+    desc: 'World & national headlines from wire services and major outlets, gathered in one place.',
+    publishers: [
+      { name: 'NPR — World', domain: 'npr.org', url: 'http://www.npr.org/rss/rss.php?id=1004' },
+      { name: 'Fox News', domain: 'foxnews.com', url: 'http://feeds.foxnews.com/foxnews/latest?format=xml' },
+      { name: 'BBC News', domain: 'bbc.com', url: 'http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml' },
+      { name: 'Yahoo News — World', domain: 'yahoo.com', url: 'http://rss.news.yahoo.com/rss/world' },
+      { name: 'Christian Science Monitor', domain: 'csmonitor.com', url: 'http://rss.csmonitor.com/feeds/usa' },
+      { name: 'NBC News', domain: 'nbcnews.com', url: 'http://feeds.nbcnews.com/feeds/topstories' },
+      { name: 'ABC News', domain: 'abcnews.go.com', url: 'http://feeds.abcnews.com/abcnews/usheadlines' },
+      { name: 'Time', domain: 'time.com', url: 'http://time.com/newsfeed/feed/' },
+      { name: 'NPR — National', domain: 'npr.org', url: 'http://www.npr.org/rss/rss.php?id=1003' },
+      { name: 'Yahoo News — US', domain: 'yahoo.com', url: 'http://news.yahoo.com/rss/us' },
+      { name: 'NBC News — World', domain: 'nbcnews.com', url: 'http://feeds.nbcnews.com/feeds/worldnews' },
+    ],
+  },
+  sports: {
+    label: 'Sports', hue: 142,
+    desc: 'Scores, transfers, and storylines from the leagues that matter.',
+    publishers: [
+      { name: 'Yahoo Sports', domain: 'sports.yahoo.com', url: 'https://sports.yahoo.com/top/rss.xml' },
+      { name: 'Fox News — Sports', domain: 'foxnews.com', url: 'http://feeds.foxnews.com/foxnews/sports' },
+      { name: 'BuzzFeed — Sports', domain: 'buzzfeed.com', url: 'http://www.buzzfeed.com/sports.xml' },
+    ],
+  },
+  business: {
+    label: 'Business', hue: 42,
+    desc: 'Markets, earnings, and the deals reshaping the economy.',
+    publishers: [
+      { name: 'CNN Business', domain: 'cnn.com', url: 'http://rss.cnn.com/rss/edition_business.rss' },
+      { name: 'Business Standard', domain: 'business-standard.com', url: 'http://www.business-standard.com/rss/latest.rss' },
+      { name: 'Dow Jones — Markets', domain: 'wsj.com', url: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml' },
+      { name: 'Harvard Business Review', domain: 'hbr.org', url: 'http://feeds.harvardbusiness.org/harvardbusiness?format=xml' },
+      { name: 'WSJ — US Business', domain: 'wsj.com', url: 'https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml' },
+    ],
+  },
+  health: {
+    label: 'Health', hue: 358,
+    desc: 'Medicine, wellness, and public-health developments.',
+    publishers: [
+      { name: 'BBC Health', domain: 'bbc.com', url: 'http://feeds.bbci.co.uk/news/health/rss.xml?edition=us' },
+      { name: 'NPR — Health', domain: 'npr.org', url: 'http://www.npr.org/rss/rss.php?id=1128' },
+      { name: 'CNN Health', domain: 'cnn.com', url: 'http://rss.cnn.com/rss/cnn_health.rss' },
+      { name: 'BuzzFeed — Health', domain: 'buzzfeed.com', url: 'http://www.buzzfeed.com/health.xml' },
+      { name: "Men's Health", domain: 'menshealth.com', url: 'https://www.menshealth.com/rss/all.xml/' },
+      { name: 'NBC News — Health', domain: 'nbcnews.com', url: 'http://feeds.nbcnews.com/feeds/health' },
+      { name: 'Yahoo — Health', domain: 'yahoo.com', url: 'http://news.yahoo.com/rss/health' },
+      { name: 'ABC News — Health', domain: 'abcnews.go.com', url: 'http://feeds.abcnews.com/abcnews/healthheadlines' },
+      { name: 'Time — Health', domain: 'time.com', url: 'http://time.com/health/feed/' },
+    ],
+  },
+  entertainment: {
+    label: 'Entertainment', hue: 275,
+    desc: 'Film, TV, and culture headlines from the newsroom floor.',
+    publishers: [
+      { name: 'Deadline', domain: 'deadline.com', url: 'http://deadline.com/feed/' },
+      { name: 'Yahoo — Entertainment', domain: 'yahoo.com', url: 'http://news.yahoo.com/rss/entertainment' },
+      { name: 'Vulture', domain: 'vulture.com', url: 'http://feeds.feedburner.com/nymag/vulture' },
+      { name: 'CNN — Showbiz', domain: 'cnn.com', url: 'http://rss.cnn.com/rss/cnn_showbiz.rss' },
+      { name: 'ABC News — Entertainment', domain: 'abcnews.go.com', url: 'http://feeds.abcnews.com/abcnews/entertainmentheadlines' },
+      { name: 'CBS News — Entertainment', domain: 'cbsnews.com', url: 'http://www.cbsnews.com/latest/rss/entertainment' },
+      { name: 'TMZ', domain: 'tmz.com', url: 'http://www.tmz.com/rss.xml' },
+      { name: 'NBC News — Entertainment', domain: 'nbcnews.com', url: 'http://feeds.nbcnews.com/feeds/todayentertainment' },
+      { name: 'HuffPost — Entertainment', domain: 'huffpost.com', url: 'https://www.huffpost.com/dept/entertainment/feed' },
+      { name: 'BuzzFeed — TV & Movies', domain: 'buzzfeed.com', url: 'http://www.buzzfeed.com/tvandmovies.xml' },
+      { name: 'Variety', domain: 'variety.com', url: 'http://variety.com/feed/' },
+    ],
+  },
+};
+
+const state = { section: null, pubIndex: 0, requestId: 0 };
+const sealCache = {};
+
+/* ---------- helpers ---------- */
+
+function esc(s) {
+  return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function safeHref(url) { return /^https?:\/\//i.test(url || '') ? url : '#'; }
+function hashStr(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+
+// Generated seal — used only when a publisher's real favicon (loaded from
+// Google's s2 favicon service) fails to load. Never fetched over the
+// network; drawn locally so there's always something on the page.
+function sealImage(name, size) {
+  const cacheKey = name + '-' + size;
+  if (sealCache[cacheKey]) return sealCache[cacheKey];
+  const c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  const ctx = c.getContext('2d');
+  const hash = hashStr(name);
+  const hue = 26 + (hash % 30);
+  ctx.beginPath(); ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2); ctx.closePath(); ctx.clip();
+  const g = ctx.createLinearGradient(0, 0, size, size);
+  g.addColorStop(0, `hsl(${hue}, 42%, 48%)`);
+  g.addColorStop(1, `hsl(${hue + 10}, 55%, 26%)`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, size, size);
+  const hi = ctx.createRadialGradient(size * 0.3, size * 0.25, 0, size * 0.3, size * 0.25, size * 0.6);
+  hi.addColorStop(0, 'rgba(255,255,255,0.35)'); hi.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = hi; ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#f6ecd8';
+  ctx.font = `700 ${Math.round(size * 0.46)}px Georgia, serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(name.trim()[0].toUpperCase(), size / 2, size / 2 + size * 0.03);
+  const url = c.toDataURL('image/png');
+  sealCache[cacheKey] = url;
+  return url;
+}
+
+function faviconUrl(domain, size) {
+  return `https://www.google.com/s2/favicons?sz=${size}&domain=${encodeURIComponent(domain)}`;
+}
+
+// After inserting markup, wire every favicon-style <img> to fall back to a
+// generated seal if the real favicon 404s or the network blocks it.
+function wireFaviconFallbacks(root) {
+  root.querySelectorAll('img[data-seal]:not([data-photo-fallback])').forEach(img => {
+    img.addEventListener('error', () => {
+      img.src = sealImage(img.dataset.seal, parseInt(img.dataset.sealSize, 10) || 60);
+    }, { once: true });
+  });
+}
+
+// Article photos get a two-stage fallback: real photo -> publisher favicon
+// -> generated seal. Handled as DOM swaps (not inline HTML strings) so
+// publisher names with quotes/apostrophes can't break attribute parsing.
+function wireArticleThumbFallbacks(root) {
+  root.querySelectorAll('img[data-photo-fallback]').forEach(img => {
+    img.addEventListener('error', function onPhotoError() {
+      img.classList.remove('article-thumb');
+      img.classList.add('article-seal');
+      img.src = img.dataset.favicon;
+      img.addEventListener('error', function onFaviconError() {
+        img.src = sealImage(img.dataset.seal, parseInt(img.dataset.sealSize, 10) || 128);
+      }, { once: true });
+    }, { once: true });
+  });
+}
+
+function timeAgo(date) {
+  const mins = Math.max(0, Math.round((Date.now() - date.getTime()) / 60000));
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const h = Math.floor(mins / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
+function torn(seed) {
+  let s = seed;
+  const rnd = () => { s |= 0; s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const n = 14;
+  const pts = ['0% 0%', '100% 0%'];
+  for (let i = n; i >= 0; i--) {
+    const x = (i / n * 100).toFixed(1);
+    const y = (95.5 + rnd() * 4).toFixed(1);
+    pts.push(`${x}% ${Math.min(100, y)}%`);
+  }
+  return `polygon(${pts.join(',')})`;
+}
+
+/* ---------- RSS fetching (rss2json proxy + localStorage cache) ---------- */
+// Same technique as index.html: rss2json.com as a CORS proxy, since GitHub
+// Pages is static and browsers can't fetch most publisher RSS directly.
+const RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const CACHE_TTL = 10 * 60 * 1000;
+const LS_PFX = 'newsstand_v1_';
+
+function stripHtml(s) {
+  return (s || '').replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ').trim();
+}
+function parseFeedDate(s) { if (!s) return new Date(0); const d = new Date(s); return isNaN(d.getTime()) ? new Date(0) : d; }
+
+function normalizeItem(item) {
+  const title = stripHtml(item.title || '(untitled)');
+  const link = item.link || item.url || '';
+  const descRaw = stripHtml(item.description || item.content || '');
+  const dek = descRaw.slice(0, 220) + (descRaw.length > 220 ? '…' : '');
+  let img = item.thumbnail || (item.enclosure && (item.enclosure.link || item.enclosure.thumbnail)) || '';
+  if (typeof img !== 'string' || !/^https:\/\//.test(img)) img = '';
+  return { title, link, dek, img, pub: parseFeedDate(item.pubDate || item.published) };
+}
+
+async function fetchFeed(url, forceRefresh) {
+  const key = LS_PFX + btoa(encodeURIComponent(url)).slice(0, 80);
+  if (!forceRefresh) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        const { items, ts } = JSON.parse(raw);
+        if (Date.now() - ts < CACHE_TTL) return items;
+      }
+    } catch {}
+  }
+  const r = await fetch(RSS_PROXY + encodeURIComponent(url), { signal: AbortSignal.timeout(15000) });
+  if (!r.ok) throw new Error(`Feed service returned HTTP ${r.status}`);
+  const j = await r.json();
+  if (j.status !== 'ok') throw new Error(j.message || 'This feed is temporarily unavailable.');
+  const items = (j.items || []).slice(0, 20).map(normalizeItem).sort((a, b) => b.pub - a.pub);
+  try { localStorage.setItem(key, JSON.stringify({ items, ts: Date.now() })); } catch {}
+  return items;
+}
+
+/* ---------- Front page ---------- */
+
+function renderFrontPage() {
+  const rack = document.getElementById('rack');
+  const keys = Object.keys(SECTIONS);
+  let totalPapers = 0;
+  rack.innerHTML = keys.map((key, i) => {
+    const s = SECTIONS[key];
+    totalPapers += s.publishers.length;
+    const rot = (i % 2 === 0 ? -1 : 1) * (1 + (i % 3) * 0.6);
+    const shown = s.publishers.slice(0, 4);
+    const extra = s.publishers.length - shown.length;
+    const chips = shown.map(p => `<img class="paper-chip" data-seal="${esc(p.name)}" data-seal-size="60" src="${faviconUrl(p.domain, 64)}" alt="${esc(p.name)}" title="${esc(p.name)}" />`).join('')
+      + (extra > 0 ? `<span class="paper-chip-more">+${extra}</span>` : '');
+    return `
+    <div class="paper-tile${s.featured ? ' featured' : ''}" data-section="${key}" tabindex="0" role="button" aria-label="Open ${esc(s.label)}" style="--rot:${rot}deg; animation-delay:${i * 80}ms; clip-path:${torn(i * 97 + 3)}">
+      <div class="dog-ear"></div>
+      <div class="tile-inner">
+        <div class="tile-eyebrow"><span>Section ${String(i + 1).padStart(2, '0')} of ${keys.length}</span>${s.featured ? '<span class="flag">Flagship</span>' : ''}</div>
+        <div class="tile-glyph">${ICONS[key]}</div>
+        <h2 class="tile-title">${esc(s.label)}</h2>
+        <p class="tile-desc">${esc(s.desc)}</p>
+        <div class="tile-papers">
+          <div class="tile-papers-label">On the rack</div>
+          <div class="paper-chip-row">${chips}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('datelineCount').textContent = `${totalPapers} papers`;
+  wireFaviconFallbacks(rack);
+  rack.querySelectorAll('.paper-tile').forEach(el => {
+    el.addEventListener('click', () => openSection(el.dataset.section));
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openSection(el.dataset.section); } });
+  });
+}
+
+/* ---------- Reader view ---------- */
+
+function openSection(key) {
+  state.section = key;
+  state.pubIndex = 0;
+  const s = SECTIONS[key];
+
+  document.getElementById('frontPage').classList.add('hidden');
+  document.getElementById('readerPage').classList.remove('hidden');
+  document.getElementById('crumbCurrent').textContent = s.label;
+  document.getElementById('readerTitle').textContent = s.label;
+  document.getElementById('ribbon').innerHTML = ICONS[key];
+
+  renderPublisherTabs();
+  loadAndRenderArticles();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closeSection() {
+  document.getElementById('frontPage').classList.remove('hidden');
+  document.getElementById('readerPage').classList.add('hidden');
+}
+
+function renderPublisherTabs() {
+  const s = SECTIONS[state.section];
+  const wrap = document.getElementById('publisherTabs');
+  wrap.innerHTML = s.publishers.map((p, i) => `
+    <div class="pub-tab ${i === state.pubIndex ? 'active' : ''}" data-idx="${i}" tabindex="0" role="button" aria-label="Switch to ${esc(p.name)}">
+      <img data-seal="${esc(p.name)}" data-seal-size="40" src="${faviconUrl(p.domain, 64)}" alt="" />${esc(p.name)}
+    </div>
+  `).join('');
+  wireFaviconFallbacks(wrap);
+  wrap.querySelectorAll('.pub-tab').forEach(el => {
+    const go = () => { state.pubIndex = parseInt(el.dataset.idx, 10); renderPublisherTabs(); loadAndRenderArticles(); };
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+}
+
+function showListStatus(html) {
+  document.getElementById('articleList').innerHTML = `<div class="list-status">${html}</div>`;
+}
+
+async function loadAndRenderArticles(forceRefresh) {
+  const s = SECTIONS[state.section];
+  const pub = s.publishers[state.pubIndex];
+  const myRequest = ++state.requestId;
+
+  document.getElementById('readerCount').textContent = `Loading · ${pub.name}`;
+  showListStatus(`<div class="spinner"></div>Fetching the latest from ${esc(pub.name)}…`);
+
+  let items;
+  try {
+    items = await fetchFeed(pub.url, forceRefresh);
+  } catch (e) {
+    if (myRequest !== state.requestId) return;
+    document.getElementById('readerCount').textContent = pub.name;
+    showListStatus(`<div class="is-error">Couldn't load ${esc(pub.name)} right now.<br>${esc(e.message)}</div><button class="retry-btn" id="retryBtn">↻ Retry</button>`);
+    document.getElementById('retryBtn').addEventListener('click', () => loadAndRenderArticles(true));
+    return;
+  }
+  if (myRequest !== state.requestId) return;
+
+  if (!items.length) {
+    document.getElementById('readerCount').textContent = pub.name;
+    showListStatus(`No stories came back from ${esc(pub.name)} just now — try again shortly.`);
+    return;
+  }
+
+  document.getElementById('readerCount').textContent = `${items.length} stories · ${pub.name}`;
+  const list = document.getElementById('articleList');
+  list.innerHTML = items.map((a, i) => {
+    const art = a.img
+      ? `<img class="article-thumb" src="${a.img}" alt="" loading="lazy" data-photo-fallback="1" data-favicon="${faviconUrl(pub.domain, 128)}" data-seal="${esc(pub.name)}" data-seal-size="128" />`
+      : `<img class="article-seal" data-seal="${esc(pub.name)}" data-seal-size="128" src="${faviconUrl(pub.domain, 128)}" alt="${esc(pub.name)}" title="${esc(pub.name)}" />`;
+    return `
+    <div class="article${i === 0 ? ' lead' : ''}" data-idx="${i}" tabindex="0" role="button" aria-expanded="false">
+      ${art}
+      <div class="article-body">
+        <div class="article-row">
+          <h3 class="article-headline">${esc(a.title)}</h3>
+          <span class="article-meta">${timeAgo(a.pub)}</span>
+        </div>
+        ${a.dek ? `<p class="article-dek">${esc(a.dek)}</p>` : ''}
+        <div class="article-expand">
+          <div class="article-expand-inner">
+            <a class="read-more-link" href="${safeHref(a.link)}" target="_blank" rel="noopener noreferrer">Read full story on ${esc(pub.name)} ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  wireFaviconFallbacks(list);
+  wireArticleThumbFallbacks(list);
+  list.querySelectorAll('.article').forEach(el => {
+    const toggle = (e) => {
+      if (e.target.closest('.read-more-link')) return;
+      const open = el.classList.toggle('open');
+      el.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    el.addEventListener('click', toggle);
+    el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('.read-more-link')) { e.preventDefault(); toggle(e); } });
+  });
+}
+
+const backLinkEl = document.getElementById('backLink');
+backLinkEl.addEventListener('click', closeSection);
+backLinkEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeSection(); } });
+
+/* ---------- Theme ---------- */
+const THEME_KEY = 'newsstand_theme';
+function systemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; }
+function effectiveTheme() { return document.documentElement.getAttribute('data-theme') || systemTheme(); }
+function updateToggleUI() {
+  const dark = effectiveTheme() === 'dark';
+  document.getElementById('themeToggle').classList.toggle('is-dark', dark);
+  document.getElementById('ttLabel').textContent = dark ? 'Night Desk' : 'Day Desk';
+}
+const themeToggleEl = document.getElementById('themeToggle');
+function toggleTheme() {
+  const next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(THEME_KEY, next);
+  updateToggleUI();
+}
+themeToggleEl.addEventListener('click', toggleTheme);
+themeToggleEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTheme(); } });
+const savedTheme = localStorage.getItem(THEME_KEY);
+if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (!localStorage.getItem(THEME_KEY)) updateToggleUI(); });
+updateToggleUI();
+
+/* ---------- Cursor spotlight (skipped under reduced-motion) ---------- */
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const desk = document.getElementById('desk');
+  desk.addEventListener('mousemove', (e) => {
+    const r = desk.getBoundingClientRect();
+    desk.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+    desk.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+  });
+}
+
+document.getElementById('datelineDay').textContent = new Date().toLocaleDateString('en-US', {
+  weekday: 'long', month: 'long', day: 'numeric'
+}).toUpperCase();
+
+renderFrontPage();
+</script>
+</body>
+</html>
