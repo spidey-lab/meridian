@@ -213,6 +213,10 @@ body { margin: 0; background: var(--desk-2); color: var(--ink); font-family: 'So
 }
 
 @media (min-width: 760px) {
+  /* Fixed 3-column grid (not auto-fit) so the featured tile's span-2 always
+     leaves a deliberate, fully-filled layout: row 1 = featured + 1 tile,
+     row 2 = the remaining 3 tiles — never a ragged half-empty row. */
+  .rack { grid-template-columns: repeat(3, 1fr); }
   .paper-tile.featured { grid-column: span 2; }
 }
 
@@ -633,12 +637,26 @@ function torn(seed) {
   return `polygon(${pts.join(',')})`;
 }
 
-/* ---------- RSS fetching (rss2json proxy + localStorage cache) ---------- */
-// Same technique as index.html: rss2json.com as a CORS proxy, since GitHub
-// Pages is static and browsers can't fetch most publisher RSS directly.
-const RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
-const CACHE_TTL = 10 * 60 * 1000;
-const LS_PFX = 'newsstand_v1_';
+/* ---------- RSS fetching (two-tier CORS proxy + localStorage cache) ---------- */
+// GitHub Pages is static, so browsers can't fetch most publisher RSS
+// directly — same problem index.html solves with rss2json.com. That
+// service's free anonymous tier rate-limits bursts of "new" feed
+// conversions per IP, which shows up as real 403/429s once a page gets
+// real traffic. To stay resilient without requiring an API key, a failed
+// rss2json call falls back to a raw CORS proxy + client-side XML parsing.
+const CACHE_TTL = 20 * 60 * 1000;
+const LS_PFX = 'newsstand_v2_';
+const FETCH_TIMEOUT = 10000; // per-proxy attempt
+const HARD_TIMEOUT = 24000;  // absolute ceiling across all attempts combined
+
+function withTimeout(ms) {
+  // AbortSignal.timeout() alone is enough in modern browsers, but this
+  // adds a belt-and-suspenders manual timer so a stuck request can never
+  // leave the UI spinning indefinitely regardless of environment quirks.
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(new DOMException('Timed out', 'TimeoutError')), ms);
+  return { signal: ctrl.signal, clear: () => clearTimeout(t) };
+}
 
 function stripHtml(s) {
   return (s || '').replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ').trim();
@@ -655,6 +673,54 @@ function normalizeItem(item) {
   return { title, link, dek, img, pub: parseFeedDate(item.pubDate || item.published) };
 }
 
+// Tier 1: rss2json — returns pre-parsed JSON, fast and simple.
+async function viaRss2Json(url) {
+  const t = withTimeout(FETCH_TIMEOUT);
+  try {
+    const r = await fetch('https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(url), { signal: t.signal });
+    if (!r.ok) throw new Error(`rss2json HTTP ${r.status}`);
+    const j = await r.json();
+    if (j.status !== 'ok') throw new Error(j.message || 'rss2json error');
+    return (j.items || []).slice(0, 20).map(normalizeItem);
+  } finally { t.clear(); }
+}
+
+// Tier 2: a raw CORS proxy handing back the original XML, parsed client-side.
+// Covers RSS 2.0 <item> and Atom <entry> shapes.
+function textOf(el, selector) {
+  const found = el.querySelector(selector);
+  return found ? found.textContent.trim() : '';
+}
+function parseXmlFeed(xmlText) {
+  const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
+  if (doc.querySelector('parsererror')) throw new Error('Feed XML could not be parsed');
+  const nodes = [...doc.querySelectorAll('item'), ...doc.querySelectorAll('entry')];
+  if (!nodes.length) throw new Error('No stories found in this feed');
+  return nodes.slice(0, 20).map(el => {
+    const title = textOf(el, 'title');
+    let link = textOf(el, 'link');
+    if (!link) {
+      const linkEl = el.querySelector('link[href]');
+      if (linkEl) link = linkEl.getAttribute('href') || '';
+    }
+    const pubDate = textOf(el, 'pubDate') || textOf(el, 'published') || textOf(el, 'updated');
+    const description = textOf(el, 'description') || textOf(el, 'summary') || textOf(el, 'content');
+    let img = '';
+    const media = el.querySelector('thumbnail, [url]');
+    if (media && media.getAttribute('url')) img = media.getAttribute('url');
+    return normalizeItem({ title, link, pubDate, description, thumbnail: img });
+  });
+}
+async function viaRawProxy(url) {
+  const t = withTimeout(FETCH_TIMEOUT);
+  try {
+    const r = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url), { signal: t.signal });
+    if (!r.ok) throw new Error(`Proxy HTTP ${r.status}`);
+    const text = await r.text();
+    return parseXmlFeed(text);
+  } finally { t.clear(); }
+}
+
 async function fetchFeed(url, forceRefresh) {
   const key = LS_PFX + btoa(encodeURIComponent(url)).slice(0, 80);
   if (!forceRefresh) {
@@ -666,13 +732,27 @@ async function fetchFeed(url, forceRefresh) {
       }
     } catch {}
   }
-  const r = await fetch(RSS_PROXY + encodeURIComponent(url), { signal: AbortSignal.timeout(15000) });
-  if (!r.ok) throw new Error(`Feed service returned HTTP ${r.status}`);
-  const j = await r.json();
-  if (j.status !== 'ok') throw new Error(j.message || 'This feed is temporarily unavailable.');
-  const items = (j.items || []).slice(0, 20).map(normalizeItem).sort((a, b) => b.pub - a.pub);
-  try { localStorage.setItem(key, JSON.stringify({ items, ts: Date.now() })); } catch {}
-  return items;
+
+  const attempt = (async () => {
+    let firstError;
+    try {
+      return await viaRss2Json(url);
+    } catch (e) { firstError = e; }
+    try {
+      return await viaRawProxy(url);
+    } catch (e2) {
+      throw new Error(`Couldn't reach this feed right now (${firstError.message}; ${e2.message}).`);
+    }
+  })();
+
+  const items = await Promise.race([
+    attempt,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out waiting on the feed service.')), HARD_TIMEOUT)),
+  ]);
+
+  const sorted = items.sort((a, b) => b.pub - a.pub);
+  try { localStorage.setItem(key, JSON.stringify({ items: sorted, ts: Date.now() })); } catch {}
+  return sorted;
 }
 
 /* ---------- Front page ---------- */
@@ -763,17 +843,24 @@ async function loadAndRenderArticles(forceRefresh) {
 
   document.getElementById('readerCount').textContent = `Loading · ${pub.name}`;
   showListStatus(`<div class="spinner"></div>Fetching the latest from ${esc(pub.name)}…`);
+  const slowNotice = setTimeout(() => {
+    if (myRequest === state.requestId) {
+      showListStatus(`<div class="spinner"></div>Still working — the feed service is slow right now, trying a backup source for ${esc(pub.name)}…`);
+    }
+  }, 6000);
 
   let items;
   try {
     items = await fetchFeed(pub.url, forceRefresh);
   } catch (e) {
+    clearTimeout(slowNotice);
     if (myRequest !== state.requestId) return;
     document.getElementById('readerCount').textContent = pub.name;
     showListStatus(`<div class="is-error">Couldn't load ${esc(pub.name)} right now.<br>${esc(e.message)}</div><button class="retry-btn" id="retryBtn">↻ Retry</button>`);
     document.getElementById('retryBtn').addEventListener('click', () => loadAndRenderArticles(true));
     return;
   }
+  clearTimeout(slowNotice);
   if (myRequest !== state.requestId) return;
 
   if (!items.length) {
